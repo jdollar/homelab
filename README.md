@@ -2,6 +2,7 @@
 
 ## Overview
 
+
 ### Structure of Repository
 
 This repository is split up into three parts for the various components of setting up my homelab:
