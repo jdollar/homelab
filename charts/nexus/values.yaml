@@ -1,0 +1,146 @@
+hull:
+  config:
+    specific:
+      httpPort: 8081
+      ingressHost: nexus.joeldollarhide.com
+
+  objects:
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            nexus-pvc-data:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: nexus-pvc-data
+          containers:
+            app:
+              image:
+                repository: sonatype/nexus3
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              volumeMounts:
+                nexus-pvc-data:
+                  name: nexus-pvc-data
+                  mountPath: /nexus-data
+              env:
+                NEXUS_DATASTORE_NEXUS_JDBCURL:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: nexus-nexus-app-app
+                      key: jdbc-uri
+                      optional: false
+                NEXUS_DATASTORE_NEXUS_USERNAME:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: nexus-nexus-app-app
+                      key: username
+                      optional: false
+                NEXUS_DATASTORE_NEXUS_PASSWORD:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: nexus-nexus-app-app
+                      key: password
+                      optional: false
+              resources:
+                requests:
+                  cpu: 500m
+                  memory: 1500Mi
+                limits:
+                  cpu: 500m
+                  memory: 1500Mi
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Nexus"
+          gethomepage.dev/description: "Artifact Repository"
+          gethomepage.dev/group: "Development"
+          gethomepage.dev/icon: "nexus"
+          gethomepage.dev/weight: "20"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    customresource:
+      app:
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Cluster
+        spec:
+          instances: 1
+
+          monitoring:
+            enablePodMonitor: true
+
+          managed:
+            services:
+              disabledDefaultServices: ["ro", "r"]
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+            limits:
+              cpu: 100m
+              memory: 1Gi
+
+          storage:
+            storageClass: nfs
+            size: 5Gi
+
+    persistentvolumeclaim:
+      nexus-pvc-data:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: nfs
+        resources:
+          requests:
+            storage: 20Gi

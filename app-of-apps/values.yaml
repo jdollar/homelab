@@ -74,6 +74,11 @@ hull:
             destination:
               namespace: nextcloud
 
+          nexus:
+            <<: *defaultComponent
+            destination:
+              namespace: nexus
+
           nzbget: *defaultComponent
 
           pihole: *defaultComponent
@@ -251,6 +256,8 @@ hull:
       mongodb: *defaultApplication
 
       nextcloud: *defaultApplication
+
+      nexus: *defaultApplication
 
       nzbget: *defaultApplication
 
