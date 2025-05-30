@@ -54,14 +54,14 @@ roleRef:
 apiVersion: actions.summerwind.dev/v1alpha1
 kind: RunnerDeployment
 metadata:
-  name: misc-pi
+  name: homelab
 spec:
   # This will deploy 2 runners now
   replicas: 1
   template:
     spec:
       serviceAccountName: actions-runner
-      repository: jdollar/misc-pi
+      repository: jdollar/homelab
 ---
 apiVersion: actions.summerwind.dev/v1alpha1
 kind: RunnerDeployment

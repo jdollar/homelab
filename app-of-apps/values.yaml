@@ -9,7 +9,7 @@ hull:
       namespaceOverride: argocd
 
     specific:
-      repoURL: "git@github.com:jdollar/misc-pi.git"
+      repoURL: "git@github.com:jdollar/homelab.git"
       destinationServer: https://kubernetes.default.svc
 
       components:
