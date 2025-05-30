@@ -25,7 +25,7 @@ appVersion: "1.16.0"
 
 dependencies:
   - name: mongodb
-    version: 16.5.12
+    version: 16.5.13
     repository: oci://registry-1.docker.io/bitnamicharts
   - name: pilibchart
     version: 0.1.0
