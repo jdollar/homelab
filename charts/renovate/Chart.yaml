@@ -25,7 +25,7 @@ appVersion: "1.16.0"
 
 dependencies:
   - name: renovate
-    version: 39.264.0
+    version: 40.36.2
     repository: https://docs.renovatebot.com/helm-charts
   - name: pilibchart
     version: 0.1.0
