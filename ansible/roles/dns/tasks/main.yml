@@ -1,0 +1,25 @@
+---
+- name: create check_dns script
+  become: true
+  ansible.builtin.template:
+    src: templates/check_dns.sh.j2
+    dest: /etc/keepalived/scripts.d/check_dns.sh
+    group: keepalived_script
+    owner: keepalived_script
+    mode: 0755
+
+- name: create config script
+  become: true
+  ansible.builtin.template:
+    src: templates/dns.conf.j2
+    dest: /etc/keepalived/conf.d/dns.conf
+    group: root
+    owner: root
+    mode: 0644
+
+- name: reload keepalived config
+  become: true
+  ansible.builtin.systemd_service:
+    name: keepalived
+    state: reloaded
+

@@ -1,0 +1,166 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+
+hull:
+  config:
+    specific:
+      httpPort: 8123
+      ingressHost: homeassistant.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data:
+          TZ:
+            inline: "America/New_York"
+          configuration.yaml:
+            path: files/configuration.yaml
+      storage-files:
+        data:
+          _HT!:
+            "_": |-
+              {{ range $path, $_ :=  (index . "$").Files.Glob  "files/storage/*" }}
+                {{ $path }}:
+                  path: {{ $path }}
+              {{ end }}
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          hostNetwork: true
+          volumes:
+            homeassistant-pvc-config-longhorn:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: homeassistant-pvc-config-longhorn
+            app:
+              active: configMap
+              configMap:
+                name: app
+            storage-files:
+              active: configMap
+              configMap:
+                name: storage-files
+            homeassistant-secret:
+              active: secret
+              secret:
+                staticName: true
+                secretName: homeassistant-secret
+          initContainers:
+            01-storage-copy:
+              image:
+                repository: busybox
+                pullPolicy: IfNotPresent
+                tag: "1.37"
+              command: ["/bin/sh", "-c", "mkdir -p /config/.storage && cp /tmp/storage/* /config/.storage"]
+              volumeMounts:
+                storageFiles:
+                  name: storage-files
+                  mountPath: /tmp/storage
+                homeassistant-pvc-config-longhorn:
+                  name: homeassistant-pvc-config-longhorn
+                  mountPath: /config
+          containers:
+            app:
+              image:
+                repository: homeassistant/home-assistant
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              securityContext:
+                privileged: true
+                capabilities:
+                  add:
+                    - NET_ADMIN
+                    - NET_RAW
+                    - NET_BROADCAST
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              volumeMounts:
+                homeassistant-pvc-config-longhorn:
+                  name: homeassistant-pvc-config-longhorn
+                  mountPath: /config
+                app:
+                  name: app
+                  mountPath: /config/configuration.yaml
+                  subPath: configuration.yaml
+                secrets:
+                  name: homeassistant-secret
+                  mountPath: /config/secrets.yaml
+                  subPath: secrets.yaml
+                  readOnly: true
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              resources:
+                requests:
+                  cpu: 200m
+                  memory: 2Gi
+                limits:
+                  memory: 2Gi
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: _HT*hull.config.specific.httpPort
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Home Assistant"
+          gethomepage.dev/description: "Home automation tool"
+          gethomepage.dev/group: "Applications"
+          gethomepage.dev/icon: "home-assistant"
+          gethomepage.dev/weight: "25"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    persistentvolumeclaim:
+      homeassistant-pvc-config-longhorn:
+        staticName: true
+        labels:
+          "recurring-job.longhorn.io/snapshot-cleanup": "enabled"
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 10Gi

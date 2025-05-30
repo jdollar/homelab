@@ -1,0 +1,147 @@
+hull:
+  config:
+    specific:
+      replicas: 1
+      minecraftPort: 25565
+      voicechatUdpPort: 24454
+      minecraftUdpPort: 19132
+
+  objects:
+    configmap:
+      app:
+        data:
+          vanillatweaks-craftingtweaks.json:
+            path: files/vanillatweaks-craftingtweaks.json
+          vanillatweaks-datapacks.json:
+            path: files/vanillatweaks-datapacks.json
+          voicechat-server.properties:
+            path: files/voicechat-server.properties
+
+    deployment:
+      app:
+        replicas: _HT*hull.config.specific.replicas
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            minecraft-pvc-server-longhorn:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: minecraft-pvc-server-longhorn
+            app:
+              active: configMap
+              configMap:
+                name: app
+            secrets:
+              active: secret
+              secret:
+                staticName: true
+                secretName: minecraft-secret
+          containers:
+            app:
+              image:
+                repository: itzg/minecraft-server
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                minecraft:
+                  containerPort: _HT*hull.config.specific.minecraftPort
+                  protocol: TCP
+                minecraftudp:
+                  containerPort: _HT*hull.config.specific.minecraftUdpPort
+                  protocol: UDP
+                voicechatudp:
+                  containerPort: _HT*hull.config.specific.voicechatUdpPort
+                  protocol: UDP
+              volumeMounts:
+                minecraft-pvc-server-longhorn:
+                  name: minecraft-pvc-server-longhorn
+                  mountPath: /data
+                vanillatweaks-craftingtweaks:
+                  name: app
+                  mountPath: /config/vanillatweaks-craftingtweaks.json
+                  subPath: vanillatweaks-craftingtweaks.json
+                  readOnly: true
+                vanillatweaks-datapacks:
+                  name: app
+                  mountPath: /config/vanillatweaks-datapacks.json
+                  subPath: vanillatweaks-datapacks.json
+                  readOnly: true
+                fabricproxy-lite:
+                  name: secrets
+                  mountPath: /config/FabricProxy-Lite.toml
+                  subPath: FabricProxy-Lite.toml
+                voicechat-server:
+                  name: app
+                  mountPath: /config/voicechat/voicechat-server.properties
+                  subPath: voicechat-server.properties
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              resources:
+                requests:
+                  memory: 5Gi
+                  cpu: 1
+                limits:
+                  memory: 5Gi
+                  cpu: 3
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          minecraft:
+            port: _HT*hull.config.specific.minecraftPort
+            targetPort: minecraft
+            protocol: TCP
+          minecraftudp:
+            port: _HT*hull.config.specific.minecraftUdpPort
+            targetPort: minecraftudp
+            protocol: UDP
+          voicechatudp:
+            port: _HT*hull.config.specific.voicechatUdpPort
+            targetPort: voicechatudp
+            protocol: UDP
+
+    customresource:
+      app:
+        apiVersion: traefik.io/v1alpha1
+        kind: IngressRouteUDP
+        spec:
+          entryPoints:
+            - minecraftudp
+            - minevoiceedp
+          routes:
+            - services:
+                - name: _HT^app
+                  port: _HT*hull.config.specific.minecraftUdpPort
+                - name: _HT^app
+                  port: _HT*hull.config.specific.voicechatUdpPort
+
+      app-tcp:
+        apiVersion: traefik.io/v1alpha1
+        kind: IngressRouteTCP
+        spec:
+          entryPoints:
+            - minecrafttcp
+          routes:
+            - match: HostSNI(`*`)
+              services:
+                - name: _HT^app
+                  port: _HT*hull.config.specific.minecraftPort
+
+    persistentvolumeclaim:
+      minecraft-pvc-server-longhorn:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 10Gi
+

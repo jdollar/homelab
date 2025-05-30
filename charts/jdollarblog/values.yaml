@@ -1,0 +1,67 @@
+hull:
+  config:
+    general:
+      rbac: false
+
+  objects:
+    persistentvolumeclaim:
+      pvc-public:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: nfs
+        resources:
+          requests:
+            storage: 5Gi
+
+nameOverride: ""
+fullnameOverride: ""
+
+nginx:
+  staticSitePVC: "jdollarblog-prod-jdollarblog-pvc-public"
+
+  service:
+    type: ClusterIP
+    ports:
+      http: 8080
+
+  extraDeploy: 
+    - |-
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: {{ template "common.names.fullname" . }}-confs
+        namespace: {{ include "common.names.namespace" . | quote }}
+        labels: {{- include "common.labels.standard" . | nindent 4 }}
+          {{- if .Values.commonLabels }}
+          {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+          {{- end }}
+        {{- if .Values.commonAnnotations }}
+        annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+        {{- end }}
+      data:
+        custom_404.conf: |-
+          error_page 404 /404.html;
+          location = /404.html {
+            root /opt/bitnami/nginx/html;
+            internal;
+          }
+
+  extraVolumes: |-
+    - name: {{ template "common.names.fullname" . }}-confs
+      configMap:
+        name: {{ template "common.names.fullname" . }}-confs
+
+  extraVolumeMounts: |-
+    - name: {{ template "common.names.fullname" . }}-confs
+      mountPath: /opt/bitnami/nginx/conf/bitnami/custom_404.conf
+      subPath: custom_404.conf
+
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: "traefik"
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+    hostname: joeldollarhide.com
+    tls: true
+

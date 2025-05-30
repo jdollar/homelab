@@ -1,0 +1,90 @@
+hull:
+  config:
+    specific:
+      httpPort: 5690
+      ingressHost: wizarr.joeldollarhide.com
+
+  objects:
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            wizarr-pvc-db-longhorn:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: wizarr-pvc-db-longhorn
+          containers:
+            app:
+              image:
+                repository: ghcr.io/wizarrrr/wizarr
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              volumeMounts:
+                wizarr-pvc-db-longhorn:
+                  name: wizarr-pvc-db-longhorn
+                  mountPath: /data/database
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Wizarr"
+          gethomepage.dev/description: "User Invites for Jellyfin"
+          gethomepage.dev/group: "Streaming"
+          gethomepage.dev/icon: "wizarr.png"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    persistentvolumeclaim:
+      wizarr-pvc-db-longhorn:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 5Gi

@@ -1,0 +1,109 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+
+hull:
+  config:
+    specific:
+      httpPort: 3000
+      ingressHost: schedule.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data:
+          NEXT_PUBLIC_WEBAPP_URL:
+            inline: _HT!{{ printf "https://%s" _HT*hull.config.specific.ingressHost }}
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          containers:
+            app:
+              image:
+                repository: calcom/cal.com
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              env:
+                DATABASE_URL:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: cloudnative-pg-operator-cloudnative-pg-calcom-app
+                      key: uri
+                      optional: false
+                DATABASE_DIRECT_URL:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: cloudnative-pg-operator-cloudnative-pg-calcom-app
+                      key: uri
+                      optional: false
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+                sealed:
+                  secretRef:
+                    staticName: true
+                    name: calcom-secret
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 1Gi
+                limits:
+                  memory: 1Gi
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: _HT*hull.config.specific.httpPort
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Cal.com"
+          gethomepage.dev/description: "Scheduling time"
+          gethomepage.dev/group: "Applications"
+          gethomepage.dev/icon: "cal.com"
+          gethomepage.dev/weight: "24"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]

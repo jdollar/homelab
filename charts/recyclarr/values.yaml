@@ -1,0 +1,77 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+
+hull:
+  config:
+    specific: {}
+
+  objects:
+    configmap:
+      recyclarr:
+        data:
+          TZ:
+            inline: "America/New_York"
+          RADARR_BASE_URL:
+            inline: "http://radarr.joeldollarhide.com/radarr"
+          SONARR_BASE_URL:
+            inline: "http://sonarr.joeldollarhide.com/sonarr"
+      configs:
+        data:
+          recyclarr.yml:
+            path: files/recyclarr.yml
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            recyclarr-tmp:
+              emptyDir:
+                medium: Memory
+            recyclarr-configs:
+              configMap:
+                name: configs
+
+          containers:
+            recyclarr:
+              image:
+                repository: ghcr.io/recyclarr/recyclarr
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              volumeMounts:
+                recyclarr-tmp:
+                  name: recyclarr-tmp
+                  mountPath: /tmp
+                recyclarr-config:
+                  name: recyclarr-configs
+                  mountPath: /config/recyclarr.yml
+                  subPath: recyclarr.yml
+              env:
+                RADARR_API_KEY:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: recyclarr-secret
+                      key: RADARR_API_KEY
+                      optional: false
+                SONARR_API_KEY:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: recyclarr-secret
+                      key: SONARR_API_KEY
+                      optional: false
+              envFrom:
+                recyclarr:
+                  configMapRef:
+                    name: recyclarr
+                    optional: false
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+                limits:
+                  memory: 256Mi

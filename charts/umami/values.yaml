@@ -1,0 +1,112 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+
+hull:
+  config:
+    specific:
+      httpPort: 3000
+      ingressHost: umami.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data: {}
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          containers:
+            app:
+              image:
+                repository: ghcr.io/umami-software/umami
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              env:
+                DATABASE_URL:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: cloudnative-pg-operator-cloudnative-pg-umami-app
+                      key: uri
+                      optional: false
+                DATABASE_TYPE:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: umami-secret
+                      key: DATABASE_TYPE
+                      optional: false
+                APP_SECRET:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: umami-secret
+                      key: APP_SECRET
+                      optional: false
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 750Mi
+                limits:
+                  cpu: 100m
+                  memory: 750Mi
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Umami"
+          gethomepage.dev/description: "Website metrics"
+          gethomepage.dev/group: "Site"
+          gethomepage.dev/icon: "umami"
+          gethomepage.dev/weight: "10"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+

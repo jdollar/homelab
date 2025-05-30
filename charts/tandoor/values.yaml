@@ -1,0 +1,208 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+
+hull:
+  config:
+    specific:
+      httpPort: 8080
+      ingressHost: tandoor.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data:
+          EMAIL_USE_TLS:
+            inline: "1"
+          DB_ENGINE:
+            inline: django.db.backends.postgresql
+          TANDOOR_PORT:
+            inline: _HT*hull.config.specific.httpPort
+          LDAP_AUTH:
+            inline: "1"
+          AUTH_LDAP_SERVER_URI:
+            inline: "ldap://lldap.joeldollarhide.com:3890/"
+          AUTH_LDAP_BIND_DN:
+            inline: "uid=admin,ou=people,DC=joeldollarhide,DC=com"
+          AUTH_LDAP_USER_SEARCH_BASE_DN:
+            inline: "ou=people,DC=joeldollarhide,DC=com"
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            tandoor-pvc-staticfiles-longhorn:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: tandoor-pvc-staticfiles-longhorn
+            tandoor-pvc-mediafiles-longhorn:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: tandoor-pvc-mediafiles-longhorn
+          containers:
+            app:
+              image:
+                repository: vabene1111/recipes
+                pullPolicy: Always
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              volumeMounts:
+                tandoor-pvc-staticfiles-longhorn:
+                  name: tandoor-pvc-staticfiles-longhorn
+                  mountPath: /opt/recipes/staticfiles
+                tandoor-pvc-mediafiles-longhorn:
+                  name: tandoor-pvc-mediafiles-longhorn
+                  mountPath: /opt/recipes/mediafiles
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              env:
+                POSTGRES_USER:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: cloudnative-pg-operator-cloudnative-pg-tandoor-app
+                      key: username
+                      optional: false
+                POSTGRES_PASSWORD:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: cloudnative-pg-operator-cloudnative-pg-tandoor-app
+                      key: password
+                      optional: false
+                POSTGRES_HOST:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: cloudnative-pg-operator-cloudnative-pg-tandoor-app
+                      key: host
+                      optional: false
+                POSTGRES_DB:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: cloudnative-pg-operator-cloudnative-pg-tandoor-app
+                      key: dbname
+                      optional: false
+                SECRET_KEY:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: tandoor-secret
+                      key: secretkey
+                      optional: false
+                AUTH_LDAP_BIND_PASSWORD:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: tandoor-secret
+                      key: ldapadminpassword
+                      optional: false
+                EMAIL_HOST:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: email-secret
+                      key: host
+                      optional: false
+                EMAIL_PORT:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: email-secret
+                      key: port
+                      optional: false
+                EMAIL_HOST_USER:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: email-secret
+                      key: user
+                      optional: false
+                EMAIL_PASSWORD:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: email-secret
+                      key: password
+                      optional: false
+              resources:
+                requests:
+                  cpu: 200m
+                  memory: 700Mi
+                limits:
+                  memory: 700Mi
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Tandoor"
+          gethomepage.dev/description: "Recipe Management"
+          gethomepage.dev/group: "Applications"
+          gethomepage.dev/icon: "tandoor"
+          gethomepage.dev/weight: "0"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    persistentvolumeclaim:
+      tandoor-pvc-staticfiles-longhorn:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: nfs
+        resources:
+          requests:
+            storage: 5Gi
+      tandoor-pvc-mediafiles-longhorn:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: nfs
+        resources:
+          requests:
+            storage: 5Gi

@@ -1,0 +1,10 @@
+---
+dns_keepalived_check_dns_script_url: "pihole.joeldollarhide.com"
+dns_keepalived_check_dns_script_interval: 10
+
+dns_keepalived_state: MASTER
+dns_keepalived_interface: eth0
+dns_keepalived_virtual_router_id: 50
+dns_keepalived_priority: 255
+
+dns_keepalived_vip: "10.0.0.210/24"

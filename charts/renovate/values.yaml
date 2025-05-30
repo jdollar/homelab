@@ -1,0 +1,81 @@
+renovate:
+  cronjob:
+    # -- Schedules the job to run using cron notation
+    schedule: "@hourly"
+    # -- If it is set to true, all subsequent executions are suspended. This setting does not apply to already started executions.
+    suspend: false
+    # -- "Allow" to allow concurrent runs, "Forbid" to skip new runs if a previous run is still running or "Replace" to replace the previous run
+    concurrencyPolicy: "Forbid"
+    # -- Amount of failed jobs to keep in history
+    failedJobsHistoryLimit: "10"
+    # -- Amount of completed jobs to keep in history
+    successfulJobsHistoryLimit: "10"
+    # -- Set to Never to restart the job when the pod fails or to OnFailure to restart when a container fails
+    jobRestartPolicy: Never
+    # -- Additional initContainers that can be executed before renovate
+    initContainers: []
+    # initContainers:
+    # - name: INIT_CONTAINER_NAME
+    #   image: INIT_CONTAINER_IMAGE
+
+    # -- Prepend shell commands before renovate runs
+    preCommand: ""
+    # preCommand: |
+    #   echo hello
+    #   echo world
+
+    # -- Append shell commands after renovate runs
+    postCommand: ""
+    # postCommand: |
+    #   echo hello
+    #   echo world
+
+  image:
+    # -- Registry to pull image from
+    registry: ghcr.io
+    # -- Image name to pull
+    repository: renovatebot/renovate
+    pullPolicy: IfNotPresent
+
+  apiVersionOverrides:
+    # -- String to override apiVersion of cronjob rendered by this helm chart
+    cronjob: "batch/v1"
+
+  securityContext:
+    fsGroup: 1000
+
+  renovate:
+    # -- Custom exiting global renovate config
+    existingConfigFile: ""
+    # -- Inline global renovate config.json
+    # See https://docs.renovatebot.com/self-hosted-configuration
+    config: |
+      {
+        "extends": ["config:recommended"],
+        "endpoint": 'https://forgejo.joeldollarhide.com/api/v1/',
+        "platform": "gitea",
+        "autodiscover": true,
+        "printConfig": true,
+      }
+
+    # -- Options related to persistence
+    persistence:
+      cache:
+        # -- Allow the cache to persist between runs
+        enabled: true
+        # -- Storage class of the cache PVC
+        storageClass: "longhorn"
+        # -- Storage size of the cache PVC
+        storageSize: "8Gi"
+
+  # -- k8s secret to reference environment variables from. Overrides secrets if set
+  existingSecret: "renovate-secret"
+
+  serviceAccount:
+    # -- Specifies whether a service account should be created
+    create: true
+    # -- Annotations to add to the service account
+    annotations: {}
+    # -- The name of the service account to use
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""

@@ -1,0 +1,45 @@
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: "Frigate"
+    gethomepage.dev/type: "frigate"
+    gethomepage.dev/description: "Camera feed viewer"
+    gethomepage.dev/group: "Applications"
+    gethomepage.dev/icon: "frigate.png"
+    gethomepage.dev/weight: "0"
+  hosts:
+    - host: frigate.joeldollarhide.com
+      paths: 
+        - "/"
+  tls:
+    - secretName: frigate-tls
+      hosts:
+        - frigate.joeldollarhide.com
+
+config: |
+  mqtt: 
+    enabled: false
+  detectors:
+    cpu1:
+      type: cpu
+  cameras:
+    test:
+      enabled: false
+      ffmpeg:
+        inputs:
+          - path: rtsp://127.0.0.1:554/rtsp
+            roles:
+              - detect
+
+persistence:
+  config:
+    enabled: true
+    storageClass: "longhorn"
+  media:
+    enabled: true
+    storageClass: "nfs"
+    size: "50Gi"

@@ -1,0 +1,125 @@
+hull:
+  config:
+    specific:
+      replicas: 1
+      httpPort: 8686
+      ingressHost: lidarr.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data:
+          TZ:
+            inline: "America/New_York"
+          UMASK:
+            inline: "002"
+          PUID:
+            inline: "1000"
+          PGID:
+            inline: "1000"
+
+    deployment:
+      app:
+        replicas: _HT*hull.config.specific.replicas
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            jellyfin-pvc-media:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: jellyfin-pvc-media
+            lidarr-pvc-config-longhorn:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: lidarr-pvc-config-longhorn
+          containers:
+            app:
+              image:
+                repository: hotio/lidarr
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              volumeMounts:
+                lidarr-pvc-config-longhorn:
+                  name: lidarr-pvc-config-longhorn
+                  mountPath: /config
+                jellyfin-pvc-media:
+                  name: jellyfin-pvc-media
+                  mountPath: /data
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+                limits:
+                  cpu: 100m
+                  memory: 256Mi
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Lidarr"
+          gethomepage.dev/type: "lidarr"
+          gethomepage.dev/description: "Music download manager"
+          gethomepage.dev/group: "Streaming"
+          gethomepage.dev/icon: "lidarr.png"
+          gethomepage.dev/weight: "0"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    persistentvolumeclaim:
+      lidarr-pvc-config-longhorn:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 5Gi

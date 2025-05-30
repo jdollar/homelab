@@ -1,0 +1,24 @@
+{{- define "pilibchart.pvc" -}}
+{{- $fullName := include "helper.fullname" . -}}
+{{- range .Values.pvc }}
+{{- if not .remote -}}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{$fullName}}-{{ .name}}
+  {{- with .labels }}
+  labels:
+    {{- range $k, $v := . }}
+    {{ $k }}: {{ ($v | quote) }}
+    {{- end }}
+  {{- end }}
+spec:
+  accessModes: {{ .accessModes }}
+  storageClassName: {{ .storageClassName }}
+  resources:
+    requests:
+      storage: {{ .storage }}
+{{ end }}
+{{- end }}
+{{- end }}

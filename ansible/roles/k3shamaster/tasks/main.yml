@@ -1,0 +1,41 @@
+---
+- name: Get node token from master
+  become: true
+  slurp:
+    src: /var/lib/rancher/k3s/server/node-token
+  delegate_to: "{{ groups['k3s-master'] | first }}"
+  remote_user: "{{ ansible_user }}"
+  register: k3s_node_token
+
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: install k3s required packages
+  become: true
+  package:
+    name:
+      - curl
+      - nfs-common
+      - open-iscsi
+    state: latest
+
+- name: Download k3s installer
+  get_url:
+    url: https://get.k3s.io
+    dest: /tmp/k3s-installer.sh
+    mode: 'u+rwx'
+  when: ansible_facts.services['k3s.service'] is not defined
+  register: download
+
+- name: Run the install script
+  become: true
+  shell: /tmp/k3s-installer.sh server
+  when: download.changed
+  environment:
+    K3S_TOKEN: "{{ k3s_node_token['content'] | b64decode | trim }}"
+    K3S_URL: "https://{{ groups['k3s-master'] | first }}:6443"
+
+- name: Remove the k3s-installer.sh
+  file:
+    path: /tmp/k3s-installer.sh
+    state: absent

@@ -1,0 +1,15 @@
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: controller-manager
+  namespace: actions-runner-system
+spec:
+  encryptedData:
+    github_token: AgCIyTxHOYRP7SeCQj+JRT98vmwSFzG+7yTKYcpqYCNVkqIKEhE62sHzCeRcmVOeDYn53fXcdESwHENymKJllNeCE/ZTKwVNJrT1emLJQ0SGDq93VrZ/3opAwbLYOlj/D1v1eDIInIozg2mfAz3txNSZT0S55p+LGeyaHXJe6Mz0M1HVDs+AolXsZaZAXb+ehWtKu4y4VXBNaM5qG9aWkHW8LvzIpIUoXiAvq4N+WbFMG1LMDvhpf2zXRTZXGpayzKa90fH6/q1q8BNWpCOaApSsJr8iLvSH26Ab1ICFwJ1YFyjQyVUK62bJ7Bk2WkG1H2EhENSPEKQj5YrMhWEDQbJzTyDeUTn75lhkh8yh4SPalH/ewgxGUHFqZdes5fC9kgkAEi9TLaljWifDi/H1z5jVVDHvFDfjDzGRintV8ccMeg4arMSP9X8qmBHeWSfLJ0dJ7N+jFH/gfLTclaablxy8pVYk0A1/OKu+7A3mtdfdV13UN3YdTix1pNAoRLw6CIR4nmyMykg16+wBTBdAxtDj2yKqwzTHrJn/5ix8Szfj1V/017HwAkGp4Jacr4HrNRWa2hf8e64k9d8i/fbQf6WU8+KDadsNDktqq7mHGdi+M8Mzv2Jfw00lM8IS+Q8VIiU/8qZrgez5QptTqwC8WRLW6cePLk1arTbeou5EYv44SkzIFISUqNwF05D6tB9LCzelnldw43gw62gWHPAkw4905GIzD2T35V32XJsTDA0r1BbiEhxR9jJX
+  template:
+    metadata:
+      creationTimestamp: null
+      name: controller-manager
+      namespace: actions-runner-system
+

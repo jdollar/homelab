@@ -1,0 +1,205 @@
+hull:
+  config:
+    specific:
+      httpPort: 7878
+      ingressHost: radarr.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data:
+          TZ:
+            inline: "America/New_York"
+          UMASK:
+            inline: "002"
+          PUID:
+            inline: "1000"
+          PGID:
+            inline: "1000"
+          RADARR__SERVER__URLBASE:
+            inline: "/radarr"
+          RADARR__LOG__SQL:
+            inline: "false"
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            jellyfin-pvc-media:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: jellyfin-pvc-media
+            radarr-pvc-config-longhorn:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: radarr-pvc-config-longhorn
+          containers:
+            app:
+              image:
+                repository: hotio/radarr
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              volumeMounts:
+                radarr-pvc-config-longhorn:
+                  name: radarr-pvc-config-longhorn
+                  mountPath: /cache
+                jellyfin-pvc-media:
+                  name: jellyfin-pvc-media
+                  mountPath: /data
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+                sealed:
+                  secretRef:
+                    staticName: true
+                    name: radarr-secret
+              env:
+                RADARR__POSTGRES__HOST:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: radarr-radarr-app-app
+                      key: host
+                      optional: false
+                RADARR__POSTGRES__USER:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: radarr-radarr-app-app
+                      key: username
+                      optional: false
+                RADARR__POSTGRES__PASSWORD:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: radarr-radarr-app-app
+                      key: password
+                      optional: false
+                RADARR__POSTGRES__MAINDB:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: radarr-radarr-app-app
+                      key: dbname
+                      optional: false
+                RADARR__POSTGRES__LOGDB:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: radarr-radarr-app-app
+                      key: dbname
+                      optional: false
+
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 512Mi
+                limits:
+                  cpu: 100m
+                  memory: 512Mi
+              livenessProbe:
+                httpGet:
+                  path: /radarr/ping
+                  port: _HT*hull.config.specific.httpPort
+                periodSeconds: 3
+              startupProbe:
+                httpGet:
+                  path: /radarr/ping
+                  port: _HT*hull.config.specific.httpPort
+                failureThreshold: 30
+                periodSeconds: 10
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Radarr"
+          gethomepage.dev/description: "Movie download monitoring"
+          gethomepage.dev/group: "Streaming"
+          gethomepage.dev/icon: "radarr"
+          gethomepage.dev/weight: "20"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    customresource:
+      app:
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Cluster
+        spec:
+          instances: 1
+
+          monitoring:
+            enablePodMonitor: true
+
+          managed:
+            services:
+              disabledDefaultServices: ["ro", "r"]
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+            limits:
+              cpu: 100m
+              memory: 1Gi
+
+          storage:
+            storageClass: nfs
+            size: 5Gi
+
+    persistentvolumeclaim:
+      radarr-pvc-config-longhorn:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 1Gi

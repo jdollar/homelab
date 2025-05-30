@@ -1,0 +1,58 @@
+---
+hull:
+  objects:
+    deployment:
+      app:
+        replicas: 0
+        pod:
+          containers:
+            app:
+              env:
+                TYPE:
+                  value: "FABRIC"
+                EULA:
+                  value: "TRUE"
+                MEMORY:
+                  value: "4G"
+                TZ:
+                  value: "America/New_York"
+                USE_AIKAR_FLAGS:
+                  value: "true"
+                VERSION:
+                  value: "1.20.4"
+                DIFFICULTY:
+                  value: "hard"
+                VIEW_DISTANCE:
+                  value: "16"
+                MODE:
+                  value: "survival"
+                SERVER_NAME:
+                  value: "Dollarcraft"
+                ENABLE_WHITELIST:
+                  value: "true"
+                WHITELIST:
+                  value: "ionizedwarhead"
+                JVM_DD_OPTS:
+                  value: "disable.watchdog:true"
+                MAX_TICK_TIME:
+                  value: "-1"
+                ENABLE_AUTOPAUSE:
+                  value: "true"
+                VANILLATWEAKS_FILE:
+                  value: "/config/vanillatweaks-datapacks.json,/config/vanillatweaks-craftingtweaks.json,"
+                MODRINTH_PROJECTS:
+                  value: |-
+                    lithium
+                    view-distance-fix:beta
+                    simple-voice-chat:beta
+                    status:beta
+                    audioplayer
+                    armor-poser:beta
+                    fabric-api
+                    carpet
+                    fabricexporter
+                    enhanced-groups:alpha
+                    shulker+:4WoxRZtH
+                    spark
+                    cloth-config
+                    fabricproxy-lite

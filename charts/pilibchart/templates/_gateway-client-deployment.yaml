@@ -1,0 +1,51 @@
+{{- define "pilibchart.gateway-client-deployment" -}}
+{{- $fullName := include "helper.fullname" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullName }}-gw-client
+  labels:
+    {{- include "helper.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.gwc.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "helper.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "helper.selectorLabels" . | nindent 8 }}
+    spec:
+      imagePullSecrets: []
+      serviceAccountName: {{ include "helper.serviceAccountName" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          image: "{{ .Values.gwc.image.repository }}:{{ .Values.gwc.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.gwc.image.pullPolicy }}
+          {{- if (index .Values.gwc "env")}}
+          env: {{- toYaml .Values.gwc.env | nindent 10 }}
+          {{- end}}
+          envFrom:
+            - configMapRef:
+                name: {{ $fullName }}-gw-client
+          resources: {}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end -}}
+{{- define "pilibchart.deployment.tpl" -}}
+{{- include "pilibchart.util.merge" (append . "pilibchart.deployment") -}}
+{{- end -}}

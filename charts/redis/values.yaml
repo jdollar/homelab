@@ -1,0 +1,8 @@
+---
+auth:
+  enabled: false
+master:
+  persistence:
+    storageClass: nfs
+replica:
+  replicaCount: 0

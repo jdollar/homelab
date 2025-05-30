@@ -1,0 +1,124 @@
+hull:
+  config:
+    specific:
+      httpPort: 6789
+      ingressHost: nzbget.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data:
+          TZ:
+            inline: "America/New_York"
+          UMASK:
+            inline: "002"
+          PUID:
+            inline: "1000"
+          PGID:
+            inline: "1000"
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            jellyfin-pvc-media:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: jellyfin-pvc-media
+            nzbget-pvc-config:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: nzbget-pvc-config
+          containers:
+            app:
+              image:
+                repository: hotio/nzbget
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              volumeMounts:
+                nzbget-pvc-config:
+                  name: nzbget-pvc-config
+                  mountPath: /config
+                jellyfin-pvc-media:
+                  name: jellyfin-pvc-media
+                  mountPath: /data
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 1500Mi
+                limits:
+                  cpu: 100m
+                  memory: 1500Mi
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "NZBGet"
+          gethomepage.dev/description: "Usenet Downloader"
+          gethomepage.dev/group: "Streaming"
+          gethomepage.dev/icon: "nzbget"
+          gethomepage.dev/weight: "10"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    persistentvolumeclaim:
+      nzbget-pvc-config:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: nfs
+        resources:
+          requests:
+            storage: 1Gi

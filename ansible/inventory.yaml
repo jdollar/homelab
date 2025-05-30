@@ -1,0 +1,52 @@
+all:
+  children:
+    k3s-master:
+      hosts:
+        10.0.0.91:
+      vars:
+        dns_keepalived_state: MASTER
+        dns_keepalived_priority: 255
+        dns_keepalived_interface: ens18
+    k3s-ha-master:
+      hosts:
+      vars:
+        dns_keepalived_state: BACKUP
+        dns_keepalived_interface: eth0
+    k3s-agent:
+      hosts:
+        10.0.0.7:
+          dns_keepalived_priority: 252
+        10.0.0.90:
+          dns_keepalived_priority: 253
+        10.0.0.92:
+          dns_keepalived_priority: 254
+        10.0.0.93:
+          dns_keepalived_priority: 251
+        10.0.0.94:
+          dns_keepalived_priority: 250
+      vars:
+        dns_keepalived_state: BACKUP
+        dns_keepalived_interface: eth0
+    k3s:
+      children:
+        k3s-master:
+        k3s-agent:
+        k3s-ha-master:
+      vars:
+        ansible_port: 2222
+    rpi:
+      hosts:
+        10.0.0.6:
+          dns_keepalived_priority: 150
+      vars:
+        dns_keepalived_state: BACKUP
+        dns_keepalived_interface: eth0
+    vps:
+      hosts:
+        107.173.164.18:
+    other:
+      children:
+        rpi:
+        vps:
+  vars:
+    ansible_user: jdollar

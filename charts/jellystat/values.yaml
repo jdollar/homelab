@@ -1,0 +1,180 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+
+hull:
+  config:
+    specific:
+      httpPort: 3000
+      ingressHost: jellystat.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data:
+          TZ:
+            inline: "America/New_York"
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            jellystat-backup-data:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: jellystat-backup-data
+          containers:
+            app:
+              image:
+                repository: cyfershepard/jellystat
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              volumeMounts:
+                jellystat-backup-data:
+                  name: jellystat-backup-data
+                  mountPath: /app/backend/backup-data
+              env:
+                POSTGRES_DB:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: jellystat-jellystat-app-app
+                      key: dbname
+                      optional: false
+                POSTGRES_IP:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: jellystat-jellystat-app-app
+                      key: host
+                      optional: false
+                POSTGRES_USER:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: jellystat-jellystat-app-app
+                      key: username
+                      optional: false
+                POSTGRES_PASSWORD:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: jellystat-jellystat-app-app
+                      key: password
+                      optional: false
+                POSTGRES_PORT:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: jellystat-jellystat-app-app
+                      key: port
+                      optional: false
+                JWT_SECRET:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: jellystat-secret
+                      key: jwtsecret
+                      optional: false
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              resources:
+                requests:
+                  cpu: 200m
+                  memory: 256Mi
+                limits:
+                  cpu: 200m
+                  memory: 256Mi
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Jellystat"
+          gethomepage.dev/type: "jellystat"
+          gethomepage.dev/description: "Analytics for Jellyfin"
+          gethomepage.dev/group: "Streaming"
+          gethomepage.dev/icon: "jellystat.png"
+          gethomepage.dev/weight: "1"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    persistentvolumeclaim:
+      jellystat-backup-data:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: nfs
+        resources:
+          requests:
+            storage: 5Gi
+
+    customresource:
+      app:
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Cluster
+        spec:
+          instances: 1
+
+          monitoring:
+            enablePodMonitor: true
+
+          managed:
+            services:
+              disabledDefaultServices: ["ro", "r"]
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+            limits:
+              cpu: 100m
+              memory: 1Gi
+
+          storage:
+            storageClass: nfs
+            size: 5Gi

@@ -1,0 +1,19 @@
+vrrp_script chk_dns {
+        script "/etc/keepalived/scripts.d/check_dns.sh"
+        interval {{ dns_keepalived_check_dns_script_interval }}
+}
+
+vrrp_instance VI_1 {
+        state {{ dns_keepalived_state }}
+        interface {{ dns_keepalived_interface }}
+        virtual_router_id {{ dns_keepalived_virtual_router_id }}
+        priority {{ dns_keepalived_priority }}
+        advert_int 1
+        virtual_ipaddress {
+                {{ dns_keepalived_vip }}
+        }
+        track_script {
+                chk_dns
+        }
+}
+

@@ -1,0 +1,15 @@
+nameOverride: ""
+fullnameOverride: ""
+
+mongodb:
+  auth:
+    enabled: true
+    existingSecret: mongodb-secret
+
+  persistence:
+    enabled: true
+    resourcePolicy: "keep"
+    storageClass: "nfs"
+
+  updateStrategy:
+    type: Recreate

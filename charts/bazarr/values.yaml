@@ -1,0 +1,181 @@
+hull:
+  config:
+    specific:
+      httpPort: 6767
+      ingressHost: bazarr.joeldollarhide.com
+
+
+  objects:
+    configmap:
+      app:
+        data:
+          TZ:
+            inline: "America/New_York"
+          UMASK:
+            inline: "002"
+          PUID:
+            inline: "1000"
+          PGID:
+            inline: "1000"
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            jellyfin-pvc-media:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: jellyfin-pvc-media
+            bazarr-pvc-config-longhorn:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: bazarr-pvc-config-longhorn
+          containers:
+            app:
+              image:
+                repository: hotio/bazarr
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              volumeMounts:
+                bazarr-pvc-config-longhorn:
+                  name: bazarr-pvc-config-longhorn
+                  mountPath: /config
+                jellyfin-pvc-media:
+                  name: jellyfin-pvc-media
+                  mountPath: /data
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              env:
+                POSTGRES_ENABLED:
+                  value: "true"
+                POSTGRES_HOST:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: bazarr-bazarr-app-app
+                      key: host
+                      optional: false
+                POSTGRES_USERNAME:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: bazarr-bazarr-app-app
+                      key: username
+                      optional: false
+                POSTGRES_PASSWORD:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: bazarr-bazarr-app-app
+                      key: password
+                      optional: false
+                POSTGRES_DATABASE:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: bazarr-bazarr-app-app
+                      key: dbname
+                      optional: false
+              resources:
+                requests:
+                  cpu: 200m
+                  memory: 512Mi
+                limits:
+                  cpu: 200m
+                  memory: 512Mi
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Bazarr"
+          gethomepage.dev/description: "Subtitle download monitoring"
+          gethomepage.dev/group: "Streaming"
+          gethomepage.dev/icon: "bazarr"
+          gethomepage.dev/weight: "25"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    customresource:
+      app:
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Cluster
+        spec:
+          instances: 1
+
+          monitoring:
+            enablePodMonitor: true
+
+          managed:
+            services:
+              disabledDefaultServices: ["ro", "r"]
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+            limits:
+              cpu: 100m
+              memory: 1Gi
+
+          storage:
+            storageClass: nfs
+            size: 5Gi
+
+    persistentvolumeclaim:
+      bazarr-pvc-config-longhorn:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 1Gi

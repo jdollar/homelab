@@ -1,0 +1,141 @@
+hull:
+  config:
+    specific:
+      replicas: 1
+      httpPort: 8989
+      ingressHost: sonarr.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data:
+          TZ:
+            inline: "America/New_York"
+          UMASK:
+            inline: "002"
+          PUID:
+            inline: "1000"
+          PGID:
+            inline: "1000"
+
+    deployment:
+      app:
+        replicas: _HT*hull.config.specific.replicas
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            jellyfin-pvc-media:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: jellyfin-pvc-media
+            sonarr-pvc-config-longhorn:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: sonarr-pvc-config-longhorn
+          containers:
+            app:
+              image:
+                repository: hotio/sonarr
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              volumeMounts:
+                sonarr-pvc-config-longhorn:
+                  name: sonarr-pvc-config-longhorn
+                  mountPath: /config
+                jellyfin-pvc-media:
+                  name: jellyfin-pvc-media
+                  mountPath: /data
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              resources:
+                requests:
+                  cpu: 200m
+                  memory: 512Mi
+                limits:
+                  cpu: 200m
+                  memory: 512Mi
+              livenessProbe:
+                httpGet:
+                  path: /ping
+                  port: _HT*hull.config.specific.httpPort
+                periodSeconds: 3
+              readinessProbe:
+                httpGet:
+                  path: /ping
+                  port: _HT*hull.config.specific.httpPort
+                periodSeconds: 3
+              startupProbe:
+                httpGet:
+                  path: /ping
+                  port: _HT*hull.config.specific.httpPort
+                failureThreshold: 30
+                periodSeconds: 10
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Sonarr"
+          gethomepage.dev/description: "Show download monitoring"
+          gethomepage.dev/group: "Streaming"
+          gethomepage.dev/icon: "sonarr"
+          gethomepage.dev/weight: "21"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    persistentvolumeclaim:
+      sonarr-pvc-config-longhorn:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 1Gi
+

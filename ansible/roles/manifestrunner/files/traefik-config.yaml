@@ -1,0 +1,179 @@
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    ports:
+      traefik:
+        port: 9000
+      forgejossh:
+        expose: &defaultExpose
+          default: true
+        port: 22
+        exposedPort: 22
+        protocol: TCP
+      jellyfinad:
+        expose: *defaultExpose
+        port: 7359
+        exposedPort: 7359
+        protocol: UDP
+      jellyfinsad:
+        expose: *defaultExpose
+        port: 1900
+        exposedPort: 1900
+        protocol: UDP
+      udpdns:
+        expose: *defaultExpose
+        port: 53
+        exposedPort: 53
+        protocol: UDP
+      tcpdns:
+        expose: *defaultExpose
+        port: 53
+        exposedPort: 53
+        protocol: TCP
+      udptorrent:
+        expose: *defaultExpose
+        port: 6881
+        exposedPort: 6881
+        protocol: UDP
+      tcptorrent:
+        expose: *defaultExpose
+        port: 6881
+        exposedPort: 6881
+        protocol: TCP
+      tcptdarrserver:
+        expose: *defaultExpose
+        port: 8266
+        exposedPort: 8266
+        protocol: TCP
+      tcptdarrnode:
+        expose: *defaultExpose
+        port: 8267
+        exposedPort: 8267
+        protocol: TCP
+      tcpmariadb:
+        expose: *defaultExpose
+        port: 3306
+        exposedPort: 3306
+        protocol: TCP
+      syncthingtcp:
+        expose: *defaultExpose
+        port: 22000
+        exposedPort: 22000
+        protocol: TCP
+      syncthingudp:
+        expose: *defaultExpose
+        port: 22000
+        exposedPort: 22000
+        protocol: UDP
+      syncthingudp2:
+        expose: *defaultExpose
+        port: 21027
+        exposedPort: 21027
+        protocol: UDP
+      minecrafttcp:
+        expose: *defaultExpose
+        port: 25565
+        exposedPort: 25565
+        protocol: TCP
+      minecraftudp:
+        expose: *defaultExpose
+        port: 19132
+        exposedPort: 19132
+        protocol: UDP
+      minevoiceedp:
+        expose: *defaultExpose
+        port: 24454
+        exposedPort: 24454
+        protocol: UDP
+      calibretcp:
+        expose: *defaultExpose
+        port: 8081
+        exposedPort: 8081
+        protocol: TCP
+      lldaptcp:
+        expose: *defaultExpose
+        port: 3890
+        exposedPort: 3890
+        protocol: TCP
+      lldapudp:
+        expose: *defaultExpose
+        port: 3890
+        exposedPort: 3890
+        protocol: UDP
+      matrixfedtcp:
+        expose: *defaultExpose
+        port: 8448
+        exposedPort: 8448
+        protocol: TCP
+      postgrestcp:
+        expose: *defaultExpose
+        port: 5432
+        exposedPort: 5432
+        protocol: TCP
+      unifistun:
+        expose: *defaultExpose
+        port: 3478
+        exposedPort: 3478
+        protocol: UDP
+      unifidiscovery:
+        expose: *defaultExpose
+        port: 10001
+        exposedPort: 10001
+        protocol: UDP
+      unifispeedtest:
+        expose: *defaultExpose
+        port: 6789
+        exposedPort: 6789
+        protocol: TCP
+      unifisyslog:
+        expose: *defaultExpose
+        port: 5514
+        exposedPort: 5514
+        protocol: UDP
+      altweb:
+        expose: *defaultExpose
+        port: 8080
+        exposedPort: 8080
+        protocol: TCP
+    dashboard:
+      enabled: true
+    env:
+      - name: CF_DNS_API_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: cloudflare-api-token-secret
+            key: api-token
+    certificatesResolvers:
+      letsencrypt:
+        acme:
+          # for challenge options cf. https://doc.traefik.io/traefik/https/acme/
+          email: dollarhidejoel@gmail.com
+          dnsChallenge:
+            # also add the provider's required configuration under env
+            # or expand then from secrets/configmaps with envfrom
+            # cf. https://doc.traefik.io/traefik/https/acme/#providers
+            provider: cloudflare
+            # add futher options for the dns challenge as needed
+            # cf. https://doc.traefik.io/traefik/https/acme/#dnschallenge
+            delayBeforeCheck: 30
+            resolvers:
+              - 1.1.1.1
+              - 8.8.8.8
+          storage: /data/acme.json
+    tolerations:
+    - key: "actor"
+      operator: "Exists"
+      effect: "NoSchedule"
+    - key: "CriticalAddonsOnly"
+      operator: "Exists"
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+    - key: "node-role.kubernetes.io/master"
+      operator: "Exists"
+      effect: "NoSchedule"

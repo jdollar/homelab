@@ -1,0 +1,50 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+
+hull:
+  config:
+    specific:
+      httpPort: 8191
+
+  objects:
+    configmap:
+      app:
+        data:
+          LOG_LEVEL:
+            inline: info
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        pod:
+          containers:
+            main:
+              image:
+                repository: ghcr.io/flaresolverr/flaresolverr
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 512Mi
+                limits:
+                  memory: 512Mi
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: _HT*hull.config.specific.httpPort
+            protocol: TCP

@@ -1,0 +1,112 @@
+---
+- name: Install pre-reqs
+  become: true
+  ansible.builtin.package:
+    name:
+      - ca-certificates
+      - apt-transport-https
+      - gnupg
+    state: latest
+
+- name: Ensure group "velocity" exists
+  become: true
+  ansible.builtin.group:
+    name: velocity
+    state: present
+
+- name: Add the user 'velocity'
+  become: true
+  ansible.builtin.user:
+    name: velocity
+    create_home: false
+    shell: /sbin/nologin
+    groups: velocity
+
+- name: Add corretto repo
+  block:
+    - name: download corretto gpg key
+      become: true
+      ansible.builtin.get_url:
+        url: https://apt.corretto.aws/corretto.key
+        dest: /usr/share/keyrings/corretto.key
+
+    - name: De-Armor Docker GPG key
+      become: true
+      command: gpg --dearmor < /usr/share/keyrings/corretto.key -o /usr/share/keyrings/corretto-keyring.gpg
+      no_log: false
+      args:
+        creates: /usr/share/keyrings/corretto-keyring.gpg
+
+    - name: setup stable repo
+      become: true
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/corretto-keyring.gpg] https://apt.corretto.aws stable main"
+        state: present
+        update-cache: true
+
+- name: Install New Deps
+  become: true
+  ansible.builtin.package:
+    name:
+      - java-21-amazon-corretto-jdk
+      - libxi6
+      - libxtst6
+      - libxrender1
+    state: latest
+
+- name: ensures velocity config dirs exists
+  become: true
+  file:
+    path: "{{ item.name }}"
+    state: directory
+    group: "{{ item.group }}"
+    owner: "{{ item.owner}}"
+    mode: "{{ item.mode}}"
+  loop:
+    - {
+        name: "/opt/velocity",
+        owner: "velocity",
+        group: "velocity",
+        mode: "0774",
+      }
+    - {
+        name: "/opt/velocity/plugins",
+        owner: "velocity",
+        group: "velocity",
+        mode: "0774",
+      }
+
+- name: download velocity
+  become: true
+  ansible.builtin.get_url:
+    url: https://api.papermc.io/v2/projects/velocity/versions/3.3.0-SNAPSHOT/builds/371/downloads/velocity-3.3.0-SNAPSHOT-371.jar
+    dest: /opt/velocity/velocity-3.3.0-SNAPSHOT-371.jar
+
+- name: download velocity mods
+  become: true
+  ansible.builtin.get_url:
+    url: https://cdn.modrinth.com/data/9eGKb6K1/versions/PiiCjCEr/voicechat-velocity-2.5.9.jar
+    dest: /opt/velocity/plugins/voicechat-velocity-2.5.9.jar
+
+- name: Copy config files
+  become: true
+  copy:
+    src: files/
+    dest: "/opt/velocity/"
+    owner: "velocity"
+    group: "velocity"
+    mode: "0774"
+
+- name: Create Script file
+  become: true
+  template: src=velocity.sh.j2 dest=/opt/velocity/velocity.sh mode=755
+
+- name: Create Unit file
+  become: true
+  template: src=velocity.service.j2 dest=/lib/systemd/system/velocity.service mode=644
+
+- name: Start velocity
+  become: true
+  ansible.builtin.systemd_service:
+    name: velocity
+    state: restarted

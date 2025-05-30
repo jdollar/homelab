@@ -1,0 +1,189 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+
+hull:
+  config:
+    specific:
+      httpPort: 8096
+      httpsPort: 8920
+      sadPort: 1900
+      adPort: 7359
+      ingressHost: jellyfin.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data: {}
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            jellyfin-pvc-cache:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: jellyfin-pvc-cache
+            jellyfin-pvc-config-longhorn:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: jellyfin-pvc-config-longhorn
+            jellyfin-pvc-media:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: jellyfin-pvc-media
+          containers:
+            app:
+              image:
+                repository: jellyfin/jellyfin
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+                https:
+                  containerPort: _HT*hull.config.specific.httpsPort
+                  protocol: TCP
+                sad:
+                  containerPort: _HT*hull.config.specific.sadPort
+                  protocol: UDP
+                ad:
+                  containerPort: _HT*hull.config.specific.adPort
+                  protocol: UDP
+              volumeMounts:
+                jellyfin-pvc-cache:
+                  name: jellyfin-pvc-cache
+                  mountPath: /cache
+                jellyfin-pvc-config-longhorn:
+                  name: jellyfin-pvc-config-longhorn
+                  mountPath: /config
+                jellyfin-pvc-media:
+                  name: jellyfin-pvc-media
+                  mountPath: /media
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              resources:
+                requests:
+                  cpu: 400m
+                  memory: 2500Mi
+                  #gpu.intel.com/i915: "1"
+                limits:
+                  cpu: 2
+                  memory: 2500Mi
+                  #gpu.intel.com/i915: "1"
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+          https:
+            port: _HT*hull.config.specific.httpsPort
+            targetPort: http
+            protocol: TCP
+          sad:
+            port: _HT*hull.config.specific.sadPort
+            targetPort: sad
+            protocol: UDP
+          ad:
+            port: _HT*hull.config.specific.adPort
+            targetPort: sad
+            protocol: UDP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Jellyfin"
+          gethomepage.dev/type: "jellyfin"
+          gethomepage.dev/description: "Selfhosted Media Streaming Service"
+          gethomepage.dev/group: "Streaming"
+          gethomepage.dev/icon: "jellyfin.png"
+          gethomepage.dev/weight: "0"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    customresource:
+      app:
+        apiVersion: traefik.io/v1alpha1
+        kind: IngressRouteUDP
+        spec:
+          entryPoints:
+            - jellyfinad
+            - jellyfinsad
+          routes:
+            - services:
+                - name: _HT^app
+                  port: _HT*hull.config.specific.adPort
+                - name: _HT^app
+                  port: _HT*hull.config.specific.sadPort
+
+    persistentvolumeclaim:
+      jellyfin-pvc-cache:
+        staticName: true
+        labels:
+          "schedule/daily": "enabled"
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: nfs
+        resources:
+          requests:
+            storage: 5Gi
+      jellyfin-pvc-config-longhorn:
+        staticName: true
+        labels:
+          "schedule/daily": "enabled"
+          "recurring-job.longhorn.io/snapshot-cleanup": "enabled"
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 5Gi
+      jellyfin-pvc-media:
+        staticName: true
+        labels:
+          "schedule/monthly": "enabled"
+        accessModes:
+          - ReadWriteMany
+        storageClassName: nfs
+        resources:
+          requests:
+            storage: 6Ti

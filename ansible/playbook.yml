@@ -1,0 +1,61 @@
+- hosts:
+    - k3s
+  # Don't gather facts, the role configures the ssh port
+  # based on what the host has set. Need this to be able to
+  # connect and gather facts
+  gather_facts: false
+  become: true
+  roles:
+    - role: ssh
+      tags: ssh
+
+- hosts: all
+  become: true
+  tasks:
+    - name: Update Package Cache (apt/debian)
+      tags: always
+      apt:
+        update_cache: yes
+      changed_when: false
+      when: ansible_distribution == "Debian"
+
+    - name: install swapspace
+      become: true
+      ansible.builtin.package:
+        name:
+          - swapspace
+        state: latest
+
+- hosts:
+    - k3s
+    - rpi
+  roles:
+    - role: dns
+      tags: dns
+
+- hosts:
+    - k3s-master
+  roles:
+    - role: manifestrunner
+      tags: manifestrunner
+
+# Needs to run after the master server is configured
+- hosts:
+    - k3s-agent
+  roles:
+    - role: k3sagent
+      tags: k3sagent
+
+- hosts:
+    - k3s-ha-master
+  roles:
+    - role: k3shamaster
+      tags: k3shamaster
+
+- hosts:
+    - vps
+  roles:
+    - role: outerproxy
+      tags: outerproxy
+    - role: minecraftProxy
+      tags: minecraftProxy

@@ -1,0 +1,7 @@
+---
+http:
+  cors_allowed_origins:
+    - "{{ printf "https://%s" .Values.hull.config.specific.ingressHost }}"
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 10.0.0.0/8

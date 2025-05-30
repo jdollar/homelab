@@ -1,0 +1,61 @@
+{{- define "pilibchart.ingresstcp" -}}
+{{- if .Values.ingressTcp.enabled -}}
+{{- $fullName := include "helper.fullname" . -}}
+{{- if .Values.ingressTcp.defs }}
+{{- range .Values.ingressTcp.defs }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: {{ .prefix }}-{{ $fullName }}
+  labels:
+    {{- include "helper.labels" $ | nindent 4 }}
+  {{- with .annotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+  {{- end}}
+spec:
+  entryPoints:
+  {{- range .entryPoints }}
+  - {{ . }}
+  {{- end }}
+  routes:
+  {{- range .routes }}
+  - match: {{ .match }}
+    services:
+    {{- range .ports }}
+    - name: {{ $fullName }}
+      port: {{ . }}
+    {{- end }}
+  {{- end }}
+  {{- with .tls }}
+  tls: {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- else }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "helper.labels" . | nindent 4 }}
+spec:
+  entryPoints:
+  {{- range .Values.ingressTcp.entryPoints }}
+  - {{ . }}
+  {{- end }}
+  routes:
+  {{- range .Values.ingressTcp.routes }}
+  - match: {{ .match }}
+    services:
+    {{- range .ports }}
+    - name: {{ $fullName }}
+      port: {{ . }}
+    {{- end }}
+  {{- end }}
+  {{- with .Values.ingressTcp.tls }}
+  tls: {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

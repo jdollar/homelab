@@ -1,0 +1,9 @@
+dependencies:
+- name: pilibchart
+  repository: file://../pilibchart
+  version: 0.1.0
+- name: hull
+  repository: https://vidispine.github.io/hull
+  version: 1.32.3
+digest: sha256:b4d4139924b829e58066ef54be734b717ef7d7536c640692ad86487d4a037d8c
+generated: "2025-04-26T05:02:49.868956077Z"

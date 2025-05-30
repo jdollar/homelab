@@ -1,0 +1,81 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: grafana
+  namespace: diagnostic
+spec:
+  chart: grafana
+  repo: https://grafana.github.io/helm-charts
+  targetNamespace: diagnostic
+  valuesContent: |-
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: "traefik"
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/name: "Grafana"
+        gethomepage.dev/description: "Clusterwide logging and dashboard"
+        gethomepage.dev/group: "Homelab"
+        gethomepage.dev/icon: "grafana"
+        gethomepage.dev/weight: "2"
+      hosts:
+        - grafana.joeldollarhide.com
+      path: /
+      pathType: ImplementationSpecific
+      tls:
+        - secretName: grafana-tls
+          hosts:
+            - grafana.joeldollarhide.com
+    persistence:
+      enabled: true
+      storageClassName: nfs
+    grafana.ini:
+      auth.ldap:
+        enabled: true
+        allow_sign_up: false
+        config_file: /etc/grafana/ldap.toml
+    ldap:
+      enabled: true
+      existingSecret: grafana-env-secret
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+        - name: &prometheusDatasource Cluster Prometheus
+          type: prometheus
+          url: http://kube-prometheus-stack-prometheus.metrics.svc.cluster.local:9090
+          access: proxy
+        - name: Loki
+          type: loki
+          access: proxy
+          url: http://loki-gateway.diagnostic.svc.cluster.local
+
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+
+    dashboards:
+      default:
+        cloudnative-pg:
+          url: https://raw.githubusercontent.com/cloudnative-pg/grafana-dashboards/refs/heads/main/charts/cluster/grafana-dashboard.json
+        cluster-health:
+          gnetId: 21960
+          datasource: *prometheusDatasource
+        cluster-health-summary:
+          gnetId: 9706
+          datasource: *prometheusDatasource
+        pod-overview:
+          gnetId: 11670
+          datasource: *prometheusDatasource

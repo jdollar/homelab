@@ -1,0 +1,45 @@
+
+# Access to jellyfin
+jellyfin.joeldollarhide.com {
+    reverse_proxy jellyfin:8096
+}
+
+authentik.joeldollarhide.com {
+    reverse_proxy authentik:9000
+}
+
+# Access to jellyseerr
+jellyseerr.joeldollarhide.com {
+    reverse_proxy jellyseerr:5055
+}
+
+# Access to coral comments for blog
+coral.joeldollarhide.com {
+    reverse_proxy coral:5000
+}
+
+# Access to umami analytics
+umami.joeldollarhide.com {
+    reverse_proxy umami:3000
+}
+
+# UI access to matrix
+matrix.joeldollarhide.com {
+  reverse_proxy /_matrix/* matrix:8008
+  reverse_proxy /_synapse/client/* matrix:8008
+}
+
+# Matrix federation access to http api route
+joeldollarhide.com:8448 {
+    reverse_proxy matrix:8008
+}
+
+# Recipe Manager UI access
+tandoor.joeldollarhide.com {
+    reverse_proxy tandoor:8080
+}
+
+# Cal.com UI access
+schedule.joeldollarhide.com {
+    reverse_proxy calcom:3000
+}

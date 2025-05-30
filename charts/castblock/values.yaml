@@ -1,0 +1,15 @@
+hull:
+  objects:
+    deployment:
+      app:
+        replicas: 1
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          hostNetwork: true
+          containers:
+            app:
+              image:
+                repository: erdnaxeli/castblock
+                pullPolicy: Always
+                tag: _HT**Chart.appVersion

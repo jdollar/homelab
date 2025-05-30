@@ -1,0 +1,13 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: promtail
+  namespace: diagnostic
+spec:
+  chart: promtail
+  repo: https://grafana.github.io/helm-charts
+  targetNamespace: diagnostic
+  valuesContent: |-
+    config:
+      clients:
+      - url: http://loki-gateway.diagnostic.svc.cluster.local/loki/api/v1/push

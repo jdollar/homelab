@@ -1,0 +1,28 @@
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: snapshot-controller
+  namespace: kube-system
+spec:
+  chart: snapshot-controller
+  repo: https://piraeus.io/helm-charts
+  version: 2.2.0
+  targetNamespace: kube-system
+  valuesContent: |-
+    webhook:
+      image:
+        tag: v6.3.2
+      webhook:
+        failurePolicy: Ignore
+    controller:
+      image:
+        tag: v6.3.2
+      volumeSnapshotClasses:
+        - name: longhorn-snapclass-vsc
+          labels:
+            velero.io/csi-volumesnapshot-class: "true"
+          driver: driver.longhorn.io
+          deletionPolicy: Delete
+          parameters:
+            type: bak

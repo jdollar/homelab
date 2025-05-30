@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "minor_version": 1,
+  "key": "person",
+  "data": {
+    "items": [
+      {
+        "id": "joel_dollarhide",
+        "name": "Joel Dollarhide",
+        "user_id": "29c128ce5a2f44ff831f27abbf7c043d",
+        "device_trackers": []
+      }
+    ]
+  }
+}

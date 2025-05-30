@@ -1,0 +1,60 @@
+config:
+  publicUri: "https://penpot.joeldollarhide.com"
+  flags: "enable-login-with-ldap"
+  existingSecret: "penpot-secret"
+  secretKeys:
+    apiSecretKey: apiSecretKey
+  postgresql:
+    host: "penpot-penpot-app-rw"
+    database: "app"
+    existingSecret: "penpot-penpot-app-app"
+    secretKeys:
+      usernameKey: "username"
+      passwordKey: "password"
+  redis:
+    host: redis-headless.default.svc.cluster.local
+  providers:
+    ldap:
+      enabled: true
+      host: "lldap.joeldollarhide.com"
+      port: 3890
+      ssl: false
+      startTLS: false
+      baseDN: "ou=people,dc=joeldollarhide,dc=com"
+      bindDN: "uid=admin,ou=people,dc=joeldollarhide,dc=com"
+      userQuery: "(&(|(uid=:username)(mail=:username))(memberOf=cn=penpot,ou=groups,dc=joeldollarhide,dc=com))"
+      attributesUsername: "uid"
+      attributesEmail: "mail"
+      attributesFullname: "displayName"
+      attributesPhoto: "jpegPhoto"
+    existingSecret: "lldap-secret"
+    secretKeys:
+      ldapBindPasswordKey: "userpass"
+
+exporter:
+  replicaCount: 0
+
+persistence:
+  assets:
+    enabled: true
+    storageClass: nfs
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: "Penpot"
+    gethomepage.dev/type: "penpot"
+    gethomepage.dev/description: "Design tool"
+    gethomepage.dev/group: "Application"
+    gethomepage.dev/icon: "penpot.png"
+    gethomepage.dev/weight: "1"
+  hosts:
+    - &ingressHost penpot.joeldollarhide.com
+  tls:
+    - secretName: penpot-tls
+      hosts:
+        - *ingressHost

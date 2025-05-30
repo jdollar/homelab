@@ -1,0 +1,9 @@
+---
+- name: Copy manifests to master
+  become: true
+  ansible.builtin.copy:
+    src: files/
+    dest: /var/lib/rancher/k3s/server/manifests/
+    owner: root
+    group: root
+    mode: 0644

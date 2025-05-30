@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+dig +short +time=1 @127.0.0.1 {{ dns_keepalived_check_dns_script_url }} > /dev/null
+exit $?

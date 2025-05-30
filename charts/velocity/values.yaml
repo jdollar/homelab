@@ -1,0 +1,132 @@
+hull:
+  config:
+    specific:
+      replicas: 0
+      minecraftPort: 25577
+
+  objects:
+    configmap:
+      app:
+        data:
+          voicechat-proxy.properties:
+            path: files/voicechat-proxy.properties
+          velocity.toml:
+            path: files/velocity.toml
+
+    deployment:
+      app:
+        replicas: _HT*hull.config.specific.replicas
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            velocity-pvc-config:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: velocity-pvc-config
+            app:
+              active: configMap
+              configMap:
+                name: app
+            forwardingsecret:
+              active: secret
+              secret:
+                staticName: true
+                secretName: velocity-secret
+          containers:
+            app:
+              image:
+                repository: itzg/mc-proxy
+                pullPolicy: Always
+                tag: _HT**Chart.appVersion
+              ports:
+                minecraft:
+                  containerPort: _HT*hull.config.specific.minecraftPort
+                  protocol: TCP
+              volumeMounts:
+                velocity-pvc-config:
+                  name: velocity-pvc-config
+                  mountPath: /config
+                velocity:
+                  name: app
+                  mountPath: /config/velocity.toml
+                  subPath: velocity.toml
+                  readOnly: true
+                forwardingsecret:
+                  name: forwardingsecret
+                  mountPath: /config/forwarding.secret
+                  subPath: forwarding.secret
+                  readOnly: true
+                voicechatproxy:
+                  name: app
+                  mountPath: /config/plugins/voicechat/voicechat-proxy.properties
+                  subPath: voicechat-proxy.properties
+                  readOnly: true
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              env:
+                TYPE:
+                  value: VELOCITY
+                PLUGINS:
+                  value: "https://cdn.modrinth.com/data/9eGKb6K1/versions/PiiCjCEr/voicechat-velocity-2.5.9.jar"
+              resources:
+                requests:
+                  cpu: 500m
+                  memory: 512Mi
+                limits:
+                  cpu: 500m
+                  memory: 768Mi
+              livenessProbe:
+                tcpSocket:
+                  port: _HT*hull.config.specific.minecraftPort
+                initialDelaySeconds: 30
+                periodSeconds: 5
+                failureThreshold: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              readinessProbe:
+                tcpSocket:
+                  port: _HT*hull.config.specific.minecraftPort
+                initialDelaySeconds: 30
+                periodSeconds: 5
+                failureThreshold: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          minecraft:
+            port: _HT*hull.config.specific.minecraftPort
+            targetPort: minecraft
+            protocol: TCP
+
+    customresource:
+      velocitytcp:
+        apiVersion: traefik.io/v1alpha1
+        kind: IngressRouteTCP
+        spec:
+          entryPoints:
+            - minecrafttcp
+          routes:
+            - match: HostSNI(`*`)
+              services:
+                - name: _HT^app
+                  port: _HT*hull.config.specific.minecraftPort
+
+    persistentvolumeclaim:
+      velocity-pvc-config:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: nfs
+        resources:
+          requests:
+            storage: 1Gi

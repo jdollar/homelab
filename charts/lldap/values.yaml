@@ -1,0 +1,162 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+
+hull:
+  config:
+    specific:
+      httpPort: 17170
+      udpPort: 3890
+      tcpPort: 3890
+      ingressHost: lldap.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data:
+          TZ: 
+            inline: "America/New_York"
+          LLDAP_LDAP_BASE_DN: 
+            inline: "dc=joeldollarhide,dc=com"
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            lldap-pvc-data:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: lldap-pvc-data
+          containers:
+            app:
+              image:
+                repository: lldap/lldap
+                pullPolicy: Always
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+                udp:
+                  containerPort: _HT*hull.config.specific.udpPort
+                  protocol: UDP
+                tcp:
+                  containerPort: _HT*hull.config.specific.tcpPort
+                  protocol: TCP
+              volumeMounts:
+                lldap-pvc-data:
+                  name: lldap-pvc-data
+                  mountPath: /data
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              env:
+                LLDAP_JWT_SECRET:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: lldap-secret
+                      key: jwtsecret
+                      optional: false
+                LLDAP_DATABASE_URL:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: lldap-secret
+                      key: dburl
+                      optional: false
+                LLDAP_LDAP_USER_PASS:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: lldap-secret
+                      key: userpass
+                      optional: false
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+          udp:
+            port: _HT*hull.config.specific.udpPort
+            targetPort: udp
+            protocol: UDP
+          tcp:
+            port: _HT*hull.config.specific.tcpPort
+            targetPort: tcp
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    customresource:
+      app:
+        apiVersion: traefik.io/v1alpha1
+        kind: IngressRouteUDP
+        spec:
+          entryPoints:
+            - lldapudp
+          routes:
+            - services:
+                - name: _HT^app
+                  port: _HT*hull.config.specific.udpPort
+
+      app-tcp:
+        apiVersion: traefik.io/v1alpha1
+        kind: IngressRouteTCP
+        spec:
+          entryPoints:
+            - lldaptcp
+          routes:
+            - match: HostSNI(`*`)
+              services:
+                - name: _HT^app
+                  port: _HT*hull.config.specific.tcpPort
+
+    persistentvolumeclaim:
+      lldap-pvc-data:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: nfs
+        resources:
+          requests:
+            storage: 5Gi
+

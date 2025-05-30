@@ -1,0 +1,104 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  chart: argo-cd
+  repo: https://argoproj.github.io/argo-helm/
+  version: 5.52.1
+  targetNamespace: argocd
+  valuesContent: |-
+    configs:
+      repositories:
+        bitnami-helm-repo:
+          enableOCI: "true"
+          url: registry-1.docker.io/bitnamicharts
+          name: bitnami-oci
+          type: helm
+        forgejo-helm-repo:
+          enableOCI: "true"
+          url: code.forgejo.org/forgejo-helm
+          name: forgejo-oci
+          type: helm
+        wrenix-helm-repo:
+          enableOCI: "true"
+          url: codeberg.org/wrenix/helm-charts
+          name: wrenix-oci
+          type: helm
+        nvidia-device-plugins-helm-repo:
+          url: https://nvidia.github.io/k8s-device-plugin
+          name: nvidia-device-plugins-helm-repo
+          type: helm
+        nvidia-helm-repo:
+          url: https://helm.ngc.nvidia.com/nvidia
+          name: nvidia-helm-repo
+          type: helm
+        cloudnative-pg-helm-repo:
+          url: https://cloudnative-pg.github.io/charts
+          name: cloudnative-pg-helm-repo
+          type: helm
+        hashicorp-helm-repo:
+          url: https://helm.releases.hashicorp.com
+          name: hashicorp-helm-repo 
+          type: helm
+        emberstack-helm-repo:
+          url: https://emberstack.github.io/helm-charts
+          name: emberstack-helm-repo 
+          type: helm
+
+      params:
+        # Needed for traefik ingress
+        server.insecure: "true"
+
+    server:
+      ingress:
+        # -- Enable an ingress resource for the Argo CD server
+        enabled: true
+        # -- Additional ingress annotations
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "ArgoCD"
+          gethomepage.dev/description: "CD Deployment for kubernetes"
+          gethomepage.dev/group: "Homelab"
+          gethomepage.dev/icon: "argocd"
+          gethomepage.dev/weight: "0"
+        # -- Additional ingress labels
+        labels: {}
+        # -- Defines which ingress controller will implement the resource
+        ingressClassName: ""
+
+        # -- List of ingress hosts
+        ## Argo Ingress.
+        ## Hostnames must be provided if Ingress is enabled.
+        ## Secrets must be manually created in the namespace
+        hosts:
+          - argocd.joeldollarhide.com
+
+        # -- List of ingress paths
+        paths:
+          - /
+        # -- Ingress path type. One of `Exact`, `Prefix` or `ImplementationSpecific`
+        pathType: Prefix
+        # -- Additional ingress paths
+        extraPaths: []
+          # - path: /*
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: ssl-redirect
+          #       port:
+          #         name: use-annotation
+
+        # -- Ingress TLS configuration
+        tls:
+          - secretName: argocd-tls
+            hosts:
+              - argocd.joeldollarhide.com
+
+        # -- Uses `server.service.servicePortHttps` instead `server.service.servicePortHttp`
+        https: false

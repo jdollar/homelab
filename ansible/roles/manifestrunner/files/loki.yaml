@@ -1,0 +1,81 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: loki
+  namespace: diagnostic
+spec:
+  chart: loki
+  repo: https://grafana.github.io/helm-charts
+  targetNamespace: diagnostic
+  valuesContent: |-
+    test:
+      enabled: false
+    lokiCanary:
+      enabled: false
+    backend:
+      extraArgs:
+        - -config.expand-env=true
+      extraEnvFrom:
+        - secretRef:
+            name: loki-minio-credentials
+    compactor:
+      extraArgs:
+        - -config.expand-env=true
+      extraEnvFrom:
+        - secretRef:
+            name: loki-minio-credentials
+    read:
+      extraArgs:
+        - -config.expand-env=true
+      extraEnvFrom:
+        - secretRef:
+            name: loki-minio-credentials
+    write:
+      extraArgs:
+        - -config.expand-env=true
+      extraEnvFrom:
+        - secretRef:
+            name: loki-minio-credentials
+    ingestor:
+      extraArgs:
+        - -config.expand-env=true
+      extraEnvFrom:
+        - secretRef:
+            name: loki-minio-credentials
+    querier:
+      extraArgs:
+        - -config.expand-env=true
+      extraEnvFrom:
+        - secretRef:
+            name: loki-minio-credentials
+
+    loki:
+      auth_enabled: false
+      extraArgs:
+        - -config.expand-env=true
+      extraEnvFrom:
+        - secretRef:
+            name: loki-minio-credentials
+      storage:
+        bucketNames:
+          chunks: chunks
+          ruler: ruler
+          admin: admin
+        type: s3
+        s3:
+          endpoint: "${AWS_ENDPOINT}"
+          region: "us-east-1"
+          secretAccessKey: "${AWS_SECRET_KEY}"
+          accessKeyId: "${AWS_ACCESS_KEY}"
+          s3ForcePathStyle: true
+          insecure: false
+      memberlist:
+        bind_addr:
+          - ${MY_POD_IP}
+    env:
+    - name: MY_POD_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+    extraArgs:
+      config.expand-env: true

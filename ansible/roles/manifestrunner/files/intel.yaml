@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: intel-system
+  name: intel-system
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: intel-device-plugins-operator
+  namespace: intel-system
+spec:
+  chart: intel-device-plugins-operator
+  repo: https://intel.github.io/helm-charts/
+  targetNamespace: intel-system
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: intel-gpu-device-plugin
+  namespace: intel-system
+spec:
+  chart: intel-device-plugins-gpu
+  repo: https://intel.github.io/helm-charts/
+  targetNamespace: intel-system

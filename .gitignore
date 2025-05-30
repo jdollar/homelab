@@ -1,0 +1,10 @@
+config.yml
+*.dec
+/app-of-apps/**/charts/
+/charts/**/charts/
+
+# pulumi
+infrastructure/dist/*
+!infrastructure/dist/.gitkeep
+node_modules
+

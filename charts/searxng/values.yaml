@@ -1,0 +1,103 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+
+hull:
+  config:
+    specific:
+      httpPort: 8080
+      ingressHost: searxng.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data:
+          SEARXNG_URL:
+            inline: _HT!{{ printf "https://%s" _HT*hull.config.specific.ingressHost }}
+          SEARXNG_REDIS_URL:
+            inline: "redis://redis-headless.default.svc.cluster.local"
+          SEARXNG_BIND_ADDRESS:
+            inline: "0.0.0.0"
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          containers:
+            app:
+              image:
+                repository: searxng/searxng
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              env:
+                SEARXNG_SECRET:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: searxng-secret
+                      key: SEARXNG_SECRET
+                      optional: false
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 512Mi
+                limits:
+                  cpu: 100m
+                  memory: 512Mi
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "SearxNG"
+          gethomepage.dev/type: "searxng"
+          gethomepage.dev/description: "Google alternative"
+          gethomepage.dev/group: "Applications"
+          gethomepage.dev/icon: "searxng.png"
+          gethomepage.dev/weight: "3"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]

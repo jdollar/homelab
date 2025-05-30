@@ -1,0 +1,33 @@
+{
+  "type": "datapacks",
+  "version": "1.20",
+  "packs": {
+      "survival": [
+          "afk display",
+          "armor statues",
+          "coordinates hud",
+          "durability ping",
+          "nether portal coords",
+          "track raw statistics",
+          "track statistics",
+          "multiplayer sleep",
+          "unlock all recipes"
+      ],
+      "hermitcraft": [
+          "wandering trades"
+      ],
+      "items": [
+        "player head drops"
+      ],
+      "mobs": [
+          "anti enderman grief",
+          "double shulker shells",
+          "more mob heads",
+          "silence mobs"
+      ],
+      "utilities": [
+          "spectator night vision"
+      ]
+  },
+  "result": "ok"
+}

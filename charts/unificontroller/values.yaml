@@ -1,0 +1,215 @@
+hull:
+  config:
+    specific:
+      httpPort: 8080
+      httpsPort: 8443
+      stunPort: 3478
+      discPort: 10001
+      discaPort: 1900
+      speedTestPort: 6789
+      syslogPort: 5514
+      ingressHost: unifi.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data:
+          TZ:
+            inline: "Etc/UTC"
+          PUID:
+            inline: "1000"
+          PGID:
+            inline: "1000"
+
+    deployment:
+      app:
+        replicas: 0
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            unificontroller-pvc-config-longhorn:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: unificontroller-pvc-config-longhorn
+          containers:
+            app:
+              image:
+                repository: lscr.io/linuxserver/unifi-controller
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+                https:
+                  containerPort: _HT*hull.config.specific.httpsPort
+                  protocol: TCP
+                unifistun:
+                  containerPort: _HT*hull.config.specific.stunPort
+                  protocol: UDP
+                unifidisc:
+                  containerPort: _HT*hull.config.specific.discPort
+                  protocol: UDP
+                unifidisca:
+                  containerPort: _HT*hull.config.specific.discaPort
+                  protocol: UDP
+                unifispeedtest:
+                  containerPort: _HT*hull.config.specific.speedTestPort
+                  protocol: TCP
+                unifisyslog:
+                  containerPort: _HT*hull.config.specific.syslogPort
+                  protocol: UDP
+              volumeMounts:
+                unificontroller-pvc-config-longhorn:
+                  name: unificontroller-pvc-config-longhorn
+                  mountPath: /config
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+      
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+          https:
+            port: _HT*hull.config.specific.httpsPort
+            targetPort: http
+            protocol: TCP
+          unifistun:
+            port: _HT*hull.config.specific.stunPort
+            targetPort: unifistun
+            protocol: UDP
+          unifidisc:
+            port: _HT*hull.config.specific.discPort
+            targetPort: unifidisc
+            protocol: UDP
+          unifidisca:
+            port: _HT*hull.config.specific.discaPort
+            targetPort: unifidisca
+            protocol: UDP
+          unifispeedtest:
+            port: _HT*hull.config.specific.speedTestPort
+            targetPort: unifispeedtest
+            protocol: TCP
+          unifisyslog:
+            port: _HT*hull.config.specific.syslogPort
+            targetPort: unifisyslog
+            protocol: UDP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Unifi Controller"
+          gethomepage.dev/description: "Management interface for Unifi devices"
+          gethomepage.dev/group: "Homelab"
+          gethomepage.dev/icon: "unifi"
+          gethomepage.dev/weight: "3"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    customresource:
+      udp:
+        apiVersion: traefik.io/v1alpha1
+        kind: IngressRouteUDP
+        spec:
+          entryPoints:
+            - unifistun
+            - unifidiscovery
+            - jellyfinsad
+            - unifisyslog
+          routes:
+            - services:
+                - name: _HT^app
+                  port: _HT*hull.config.specific.stunPort
+                - name: _HT^app
+                  port: _HT*hull.config.specific.discPort
+                - name: _HT^app
+                  port: _HT*hull.config.specific.discaPort
+                - name: _HT^app
+                  port: _HT*hull.config.specific.syslogPort
+
+      http:
+        apiVersion: traefik.io/v1alpha1
+        kind: IngressRouteTCP
+        spec:
+          entryPoints:
+            - altweb
+          routes:
+            - match: HostSNI(`*`)
+              services:
+                - name: _HT^app
+                  port: _HT*hull.config.specific.httpPort
+
+      speed:
+        apiVersion: traefik.io/v1alpha1
+        kind: IngressRouteTCP
+        spec:
+          entryPoints:
+            - unifispeedtest
+          routes:
+            - match: HostSNI(`*`)
+              services:
+                - name: _HT^app
+                  port: _HT*hull.config.specific.speedTestPort
+
+      https:
+        apiVersion: traefik.io/v1alpha1
+        kind: IngressRouteTCP
+        spec:
+          entryPoints:
+            - websecure
+          routes:
+            - match: HostSNI(`unifi.joeldollarhide.com`)
+              services:
+                - name: _HT^app
+                  port: _HT*hull.config.specific.httpsPort
+          tls:
+            certResolver: letsencrypt
+            passthrough: true
+
+    persistentvolumeclaim:
+      unificontroller-pvc-config-longhorn:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 5Gi
+

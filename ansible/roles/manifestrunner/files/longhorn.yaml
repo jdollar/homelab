@@ -1,0 +1,13 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: longhorn
+  namespace: longhorn-system
+spec:
+  chart: longhorn
+  repo: https://charts.longhorn.io
+  targetNamespace: longhorn-system
+  valuesContent: |-
+    defaultSettings:
+      backupTarget: "s3://longhorn-backup@us-east-1/"
+      backupTargetCredentialSecret: "minio-secret"

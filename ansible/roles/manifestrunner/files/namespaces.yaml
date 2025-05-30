@@ -1,0 +1,281 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: default
+    prometheus: metrics
+  name: default
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+# Argocd deployment namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: argocd
+    prometheus: metrics
+  name: argocd
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+# Certificate manager for tls cert generation
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: cert-manager
+    prometheus: metrics
+  name: cert-manager
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+# Longhorn namespace for storage driver
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: longhorn-system
+    prometheus: metrics
+  name: longhorn-system
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+# Github action runner namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: actions-runner-system
+    prometheus: metrics
+  name: actions-runner-system
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+# For loki and grafana
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: diagnostic
+    prometheus: metrics
+  name: diagnostic
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+# For blog resources
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: blog-system
+    prometheus: metrics
+  name: blog-system
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: metrics
+    prometheus: metrics
+  name: metrics
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: velero
+    prometheus: metrics
+  name: velero
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: gpu-operator
+    prometheus: metrics
+  name: gpu-operator
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: cnpg-system
+    prometheus: metrics
+  name: cnpg-system
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: tandoor
+    prometheus: metrics
+  name: tandoor
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: vault
+    prometheus: metrics
+  name: vault
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: forgejo
+    prometheus: metrics
+  name: forgejo
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: synapse
+    prometheus: metrics
+  name: synapse
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: nextcloud
+    prometheus: metrics
+  name: nextcloud
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: umami
+    prometheus: metrics
+  name: umami
+spec:
+  finalizers:
+    - kubernetes
+status:
+  phase: Active
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: linkwarden
+  name: linkwarden
+spec:
+  finalizers:
+    - kubernetes
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: calcom
+    prometheus: metrics
+  name: calcom
+spec:
+  finalizers:
+    - kubernetes
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: penpot
+    prometheus: metrics
+  name: penpot
+spec:
+  finalizers:
+    - kubernetes
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: openwebui
+    prometheus: metrics
+  name: openwebui
+spec:
+  finalizers:
+    - kubernetes
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: authentik
+    prometheus: metrics
+  name: authentik
+spec:
+  finalizers:
+    - kubernetes

@@ -1,0 +1,30 @@
+---
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: install k3s required packages
+  become: true
+  package:
+    name:
+      - curl
+      - nfs-common
+      - open-iscsi
+    state: latest
+
+- name: Download k3s installer
+  get_url:
+    url: https://get.k3s.io
+    dest: /tmp/k3s-installer.sh
+    mode: "u+rwx"
+  when: ansible_facts.services['k3s.service'] is not defined
+  register: download
+
+- name: Run the install script
+  become: true
+  shell: /tmp/k3s-installer.sh server --cluster-init
+  when: download.changed
+
+- name: Remove the k3s-installer.sh
+  file:
+    path: /tmp/k3s-installer.sh
+    state: absent

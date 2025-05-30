@@ -1,0 +1,547 @@
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+
+hull:
+  config:
+    general:
+      rbac: false
+      namespaceOverride: argocd
+
+    specific:
+      repoURL: "git@github.com:jdollar/misc-pi.git"
+      destinationServer: https://kubernetes.default.svc
+
+      components:
+        customresource:
+          audiobookshelf: &defaultComponent
+            destination:
+              namespace: default
+
+          authentik:
+            <<: *defaultComponent
+            destination:
+              namespace: authentik
+
+          audio-readarr: *defaultComponent
+
+          bazarr: *defaultComponent
+
+          calcom:
+            <<: *defaultComponent
+            destination:
+              namespace: calcom
+
+          calibre-web: *defaultComponent
+
+          castblock: *defaultComponent
+
+          cyberchef: *defaultComponent
+
+          ersatztv: *defaultComponent
+
+          flaresolverr: *defaultComponent
+
+          homeassistant: *defaultComponent
+
+          homepage: *defaultComponent
+
+          ittools: *defaultComponent
+
+          jellyfin: *defaultComponent
+
+          jellyseerr: *defaultComponent
+
+          jellystat: *defaultComponent
+
+          kube-prometheus-stack:
+            <<: *defaultComponent
+            destination:
+              namespace: metrics
+
+          lidarr: *defaultComponent
+
+          lldap: *defaultComponent
+
+          velocity: *defaultComponent
+
+          minecraft: *defaultComponent
+
+          mongodb: *defaultComponent
+
+          nextcloud:
+            <<: *defaultComponent
+            destination:
+              namespace: nextcloud
+
+          nzbget: *defaultComponent
+
+          pihole: *defaultComponent
+
+          prowlarr: *defaultComponent
+
+          qtorrent: *defaultComponent
+
+          radarr: *defaultComponent
+
+          readarr: *defaultComponent
+
+          recyclarr: *defaultComponent
+
+          reflector:
+            <<: *defaultComponent
+            destination:
+              namespace: kube-system
+
+          renovate: *defaultComponent
+
+          searxng: *defaultComponent
+
+          sonarr: *defaultComponent
+
+          syncthing: *defaultComponent
+
+          tandoor:
+            <<: *defaultComponent
+            destination:
+              namespace: tandoor
+
+          umami:
+            <<: *defaultComponent
+            destination:
+              namespace: umami
+
+          unificontroller: *defaultComponent
+
+          uptime-kuma: *defaultComponent
+
+          wallos: *defaultComponent
+
+          wizarr: *defaultComponent
+
+          # sources
+          redis: *defaultComponent
+
+          cloudnative-pg-operator:
+            <<: *defaultComponent
+            destination:
+              namespace: cnpg-system
+
+          coral: *defaultComponent
+
+          forgejo:
+            <<: *defaultComponent
+            destination:
+              namespace: forgejo
+
+          frigate: *defaultComponent
+
+          openwebui:
+            <<: *defaultComponent
+            destination:
+              namespace: openwebui
+
+          penpot:
+            <<: *defaultComponent
+            destination:
+              namespace: penpot
+
+          # application sets
+          jdollarblog: *defaultComponent
+
+  objects:
+    serviceaccount:
+      default:
+        enabled: false
+
+    customresource:
+      # single source
+      authentik: &defaultApplication
+        staticName: true
+        apiVersion: argoproj.io/v1alpha1
+        kind: Application
+        spec: &defaultApplicationSpec
+          project: default
+          destination:
+            namespace: _HT*hull.config.specific.components.§OBJECT_TYPE§.§OBJECT_INSTANCE_KEY§.destination.namespace
+            server: _HT*hull.config.specific.destinationServer
+          source: &defaultApplicationSource
+            path: _HT!{{ printf "charts/%s" (index . "OBJECT_INSTANCE_KEY") }}
+            repoURL: _HT*hull.config.specific.repoURL
+            targetRevision: HEAD
+            helm: &defaultApplicationSourceHelm
+              valueFiles:
+                - values.yaml
+          syncPolicy:
+            automated: {}
+
+      audio-readarr:
+        <<: *defaultApplication
+        spec:
+          <<: *defaultApplicationSpec
+          source:
+            <<: *defaultApplicationSource
+            path: charts/readarr
+            helm:
+              <<: *defaultApplicationSourceHelm
+              values: |
+                hull:
+                  config:
+                    specific:
+                      ingressHost: audioreadarr.joeldollarhide.com
+
+                  objects:
+                    deployment:
+                      app:
+                        pod:
+                          volumes:
+                            readarr-pvc-config-longhorn:
+                              persistentVolumeClaim:
+                                claimName: audio-readarr-pvc-config-longhorn
+                    
+                    ingress:
+                      app:
+                        annotations:
+                          gethomepage.dev/enabled: "true"
+                          gethomepage.dev/name: "AudioReadarr"
+                          gethomepage.dev/description: "Audio book monitoring"
+                          gethomepage.dev/group: "Books"
+                          gethomepage.dev/icon: "readarr"
+                          gethomepage.dev/weight: "21"
+
+                    persistentvolumeclaim:
+                      readarr-pvc-config-longhorn:
+                        metadataNameOverride: audio-readarr-pvc-config-longhorn
+
+      bazarr: *defaultApplication
+
+      calibre-web: *defaultApplication
+
+      castblock: *defaultApplication
+
+      cyberchef: *defaultApplication
+
+      ersatztv: *defaultApplication
+
+      flaresolverr: *defaultApplication
+
+      homeassistant: *defaultApplication
+
+      homepage: *defaultApplication
+
+      ittools: *defaultApplication
+
+      jellystat: *defaultApplication
+
+      lidarr: *defaultApplication
+
+      lldap: *defaultApplication
+
+      velocity:
+        <<: *defaultApplication
+        spec:
+          <<: *defaultApplicationSpec
+          source:
+            <<: *defaultApplicationSource
+            helm:
+              <<: *defaultApplicationSourceHelm
+              values: |
+                replicaCount: 0
+
+      mongodb: *defaultApplication
+
+      nextcloud: *defaultApplication
+
+      nzbget: *defaultApplication
+
+      pihole: *defaultApplication
+
+      prowlarr: *defaultApplication
+
+      qtorrent: *defaultApplication
+
+      radarr: *defaultApplication
+
+      readarr: *defaultApplication
+
+      recyclarr: *defaultApplication
+
+      reflector:
+        <<: *defaultApplication
+        spec:
+          <<: *defaultApplicationSpec
+          source:
+            repoURL: https://emberstack.github.io/helm-charts
+            targetRevision: 7.1.288
+            chart: reflector
+
+      renovate: *defaultApplication
+
+      searxng: *defaultApplication
+
+      sonarr: *defaultApplication
+
+      syncthing: *defaultApplication
+
+      unificontroller: *defaultApplication
+
+      uptime-kuma: *defaultApplication
+
+      wallos: *defaultApplication
+
+      # sources
+      redis: &defaultApplicationSources
+        staticName: true
+        apiVersion: argoproj.io/v1alpha1
+        kind: Application
+        spec: &defaultApplicationSourcesSpec
+          destination:
+            namespace: _HT*hull.config.specific.components.§OBJECT_TYPE§.§OBJECT_INSTANCE_KEY§.destination.namespace
+            server: _HT*hull.config.specific.destinationServer
+          project: default
+          sources:
+            - repoURL: registry-1.docker.io/bitnamicharts
+              chart: redis
+              targetRevision: 17.13.2
+              helm:
+                valueFiles:
+                  - $miscpi/charts/redis/values.yaml
+            - repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              ref: miscpi
+          syncPolicy:
+            automated: {}
+
+      cloudnative-pg-operator:
+        <<: *defaultApplicationSources
+        spec:
+          <<: *defaultApplicationSourcesSpec
+          sources:
+            - repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              ref: miscpi
+            - repoURL: https://cloudnative-pg.github.io/charts
+              targetRevision: 0.22.1
+              chart: cloudnative-pg
+              helm:
+                valueFiles:
+                  - $miscpi/app-of-apps/files/values-cloudnative-pg.yaml
+            - path: charts/cloudnative-pg
+              repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              helm:
+                valueFiles:
+                  - values.yaml
+          syncPolicy:
+            syncOptions:
+              - ServerSideApply=true
+
+      forgejo:
+        <<: *defaultApplicationSources
+        spec:
+          <<: *defaultApplicationSourcesSpec
+          sources:
+            - path: charts/forgejo
+              repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              helm:
+                valueFiles:
+                  - values.yaml
+            - repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              ref: miscpi
+            - repoURL: code.forgejo.org/forgejo-helm
+              targetRevision: 10.1.1
+              chart: forgejo
+              helm:
+                valueFiles:
+                  - $miscpi/app-of-apps/files/values-forgejo.yaml
+
+      frigate:
+        <<: *defaultApplicationSources
+        spec:
+          <<: *defaultApplicationSourcesSpec
+          sources:
+            - repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              ref: miscpi
+            - repoURL: https://blakeblackshear.github.io/blakeshome-charts/
+              targetRevision: 7.4.0
+              chart: frigate
+              helm:
+                valueFiles:
+                  - $miscpi/app-of-apps/files/values-frigate.yaml
+
+      kube-prometheus-stack:
+        <<: *defaultApplicationSources
+        spec:
+          <<: *defaultApplicationSourcesSpec
+          syncPolicy:
+            automated:
+              prune: true
+            syncOptions:
+              - ServerSideApply=true
+          sources:
+            - repoURL: https://prometheus-community.github.io/helm-charts
+              targetRevision: 55.x.x
+              chart: kube-prometheus-stack
+              helm:
+                valuesObject:
+                  grafana:
+                    enabled: false
+                  prometheus:
+                    prometheusSpec:
+                      podMonitorSelectorNilUsesHelmValues: false
+                      podMonitorNamespaceSelector:
+                        matchLabels:
+                          prometheus: metrics
+                  prometheusOperator:
+                    extraArgs:
+                      - --labels=cluster=homelab
+                  kubelet:
+                    serviceMonitor:
+                      targetLabels:
+                        - &clusterLabel cluster
+                  prometheus-node-exporter:
+                    prometheus:
+                      monitor:
+                        targetLabels:
+                          - *clusterLabel
+                    service:
+                      labels:
+                        jobLabel: node-exporter
+                        cluster: *clusterLabel
+                  kube-state-metrics:
+                    customLabels:
+                      cluster: *clusterLabel
+                    prometheus:
+                      monitor:
+                        targetLabels:
+                          - cluster
+
+      openwebui:
+        <<: *defaultApplicationSources
+        spec:
+          <<: *defaultApplicationSourcesSpec
+          sources:
+            - path: charts/openwebui
+              repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              helm:
+                valueFiles:
+                  - values.yaml
+            - repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              ref: miscpi
+            - repoURL: https://helm.openwebui.com/
+              targetRevision: 5.10.0
+              chart: open-webui
+              helm:
+                valueFiles:
+                  - $miscpi/app-of-apps/files/values-openwebui.yaml
+
+      penpot:
+        <<: *defaultApplicationSources
+        spec:
+          <<: *defaultApplicationSourcesSpec
+          sources:
+            - path: charts/penpot
+              repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              helm:
+                valueFiles:
+                  - values.yaml
+            - repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              ref: miscpi
+            - repoURL: https://helm.penpot.app
+              targetRevision: 0.21.0
+              chart: penpot
+              helm:
+                valueFiles:
+                  - $miscpi/app-of-apps/files/values-penpot.yaml
+
+      # single main source, but uses tailscale
+      audiobookshelf: &applicationSingleSourceTailscale
+        <<: *defaultApplicationSources
+        spec:
+          <<: *defaultApplicationSourcesSpec
+          sources:
+            - repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              ref: miscpi
+            - <<: *defaultApplicationSource
+              helm:
+                valueFiles:
+                  - values.yaml
+                  - $miscpi/charts/homelab/tailscale.yaml
+
+      calcom: *applicationSingleSourceTailscale
+
+      coral: *applicationSingleSourceTailscale
+
+      jellyfin: *applicationSingleSourceTailscale
+
+      jellyseerr: *applicationSingleSourceTailscale
+
+      minecraft:
+        <<: *applicationSingleSourceTailscale
+        spec:
+          <<: *defaultApplicationSourcesSpec
+          sources:
+            - repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              ref: miscpi
+            - <<: *defaultApplicationSource
+              helm:
+                valueFiles:
+                  - values.yaml
+                  - $miscpi/charts/homelab/tailscale.yaml
+                  - $miscpi/app-of-apps/files/values-minecraft.yaml
+
+      tandoor: *applicationSingleSourceTailscale
+
+      umami: *applicationSingleSourceTailscale
+
+      wizarr: *applicationSingleSourceTailscale
+
+      # Application Sets
+      #jdollarblog:
+      #  staticName: true
+      #  apiVersion: argoproj.io/v1alpha1
+      #  kind: ApplicationSet
+      #  spec:
+      #    goTemplate: true
+      #    goTemplateOptions: ["missingkey=error"]
+      #    generators:
+      #    - list:
+      #        elements:
+      #        - environment: staging
+      #          valueFiles:
+      #            - values.yaml
+      #            - values-staging.yaml
+      #        - environment: prod
+      #          valueFiles:
+      #            - values.yaml
+      #    template:
+      #      metadata:
+      #        name: 'jdollarblog-{{.environment}}'
+      #      spec:
+      #        project: default
+      #        source:
+      #          repoURL: _HT*hull.config.specific.repoURL
+      #          targetRevision: HEAD
+      #          path: charts/jdollarblog
+      #        destination:
+      #          namespace: _HT*hull.config.specific.components.§OBJECT_TYPE§.§OBJECT_INSTANCE_KEY§.destination.namespace
+      #          server: _HT*hull.config.specific.destinationServer
+      #        syncPolicy:
+      #          automated: {}
+      #    templatePatch: |
+      #      spec:
+      #        source:
+      #          helm:
+      #            valueFiles:
+      #            {{- range $valueFile := .valueFiles }}
+      #              - {{ $valueFile }}
+      #            {{- end }}

@@ -1,0 +1,6 @@
+dependencies:
+- name: pilibchart
+  repository: file://../pilibchart
+  version: 0.1.0
+digest: sha256:51779d93a75afbe91005399e286a31a19d88b8640b4597e2edd7ca66aa64fdb1
+generated: "2023-02-13T06:40:21.231488757-05:00"

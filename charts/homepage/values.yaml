@@ -1,0 +1,57 @@
+homepage:
+  enableRbac: true
+
+  serviceAccount:
+    create: true
+
+  ingress:
+    main:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: "traefik"
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+      hosts:
+        - host: homepage.joeldollarhide.com
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: homepage-tls
+          hosts:
+            - homepage.joeldollarhide.com
+      labels: {}
+      path: /
+      pathType: Prefix
+
+  config:
+    services: []
+    widgets:
+    - resources:
+        # change backend to 'kubernetes' to use Kubernetes integration. Requires RBAC.
+        backend: kubernetes
+        expanded: true
+        cpu: true
+        memory: true
+    - search:
+        provider: duckduckgo
+        target: _blank
+    - kubernetes:
+        cluster:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+          label: "cluster"
+        nodes:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+    - longhorn:
+        expanded: true
+        total: true
+        labels: true
+        nodes: true
+    kubernetes:
+      mode: cluster

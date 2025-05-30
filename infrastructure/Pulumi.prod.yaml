@@ -1,0 +1,83 @@
+config:
+  # Name of the node in proxmox where the VM template lives
+  infrastructure:template-node-name: baroque
+  # ID of the VM template in proxmox
+  infrastructure:template-vm-id: "9001"
+
+  # IP of the network gateway
+  infrastructure:gateway-ip: 10.0.0.1
+
+  # Password for the user provided by proxmoxve-username
+  # to sign in to the proxmox console
+  infrastructure:proxmoxve-password:
+    secure: AAABABoFXzibuW0mSHplzMkvcebVgIgltw2xnCKtjd6qaZiRTqMCdw==
+  # User used to sign into the proxmox console
+  infrastructure:proxmoxve-username:
+    secure: AAABANN4J8TxUw0DvhUVUisDw37JYoNfbRdu8qpMl6sqr8ucWdVNtA==
+
+  templates:
+    debian-12:
+      vm-id: 9001
+      node-name: baroque
+      datastore-id: local-lvm
+      operating-system-type: l26
+
+  vms:
+    daisy:
+      cpu-cores: 3
+      template: debian-12
+      ip: 10.0.0.7/24
+      node-name: antebellum
+      mac-address: "BA:3D:60:5F:BD:E4"
+      disk-size: 250
+      dedicated-memory: 8192
+      disk-datastore-id: "local-lvm"
+      machine: "pc"
+    tulip:
+      cpu-cores: 4
+      template: debian-12
+      ip: 10.0.0.92/24
+      node-name: baroque
+      mac-address: "56:94:8F:C6:0B:5E"
+      disk-size: 300
+      dedicated-memory: 20480
+      disk-datastore-id: "ssd"
+      machine: "pc"
+    sage:
+      cpu-cores: 3
+      template: debian-12
+      ip: 10.0.0.94/24
+      node-name: pve-gardenesque
+      mac-address: "2E:39:07:EF:C9:68"
+      disk-size: 250
+      dedicated-memory: 16384
+      disk-datastore-id: "local-lvm"
+      machine: "pc"
+      vga-type: "std"
+    violet:
+      cpu-cores: 6
+      template: debian-12
+      ip: 10.0.0.90/24
+      node-name: baroque
+      mac-address: "56:41:94:7B:8E:38"
+      disk-size: 250
+      dedicated-memory: 8192
+      disk-datastore-id: "ssd"
+      machine: "pc"
+      vga-type: "std"
+    lily:
+      cpu-cores: 3
+      template: debian-12
+      ip: 10.0.0.93/24
+      node-name: pve-gardenesque
+      mac-address: "4A:8A:75:94:90:2F"
+      disk-size: 150
+      dedicated-memory: 16384
+      disk-datastore-id: "local-lvm"
+      machine: "pc"
+
+  infrastructure:vm-user-name: jdollar
+  infrastructure:vm-user-password:
+    secure: AAABAGSkQ2e3BIXpjTaYhrut0NV2UQsnSs/SLuA3RsccgPPrb7qMBQ==
+  proxmoxve:endpoint: https://10.0.0.87:8006
+  proxmoxve:insecure: "true"

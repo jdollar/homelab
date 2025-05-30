@@ -1,0 +1,135 @@
+# yaml-language-server: $schema=https://goauthentik.io/blueprints/schema.json
+version: 1
+entries:
+- attrs:
+    additional_group_dn: ou=groups
+    additional_user_dn: ou=people
+    base_dn: dc=joeldollarhide,dc=com
+    bind_cn: uid=admin,ou=people,dc=joeldollarhide,dc=com
+    enabled: true
+    group_membership_field: member
+    group_object_filter: (objectClass=groupOfUniqueNames)
+    group_property_mappings:
+    - c2e0a119-ed73-4741-848f-e3d26e5c7f90
+    name: lldap
+    object_uniqueness_field: uid
+    policy_engine_mode: any
+    server_uri: ldap://lldap.joeldollarhide.com:3890
+    slug: lldap
+    sync_groups: true
+    sync_users: true
+    sync_users_password: true
+    user_matching_mode: identifier
+    user_object_filter: (objectClass=person)
+    user_path_template: LDAP/users
+    user_property_mappings:
+    - f02a50d1-0321-42ff-b21e-5dfe9cb8816c
+    - dc90eda4-2938-464e-99be-8732eaab4986
+    - e8bfe0bb-6528-4f2c-9bcf-b6474c4f9008
+    - c2e0a119-ed73-4741-848f-e3d26e5c7f90
+    - 29d166a2-0316-48a2-b988-35b083a8d40f
+    - 4309e2a0-d0ff-47c5-95a9-20718de49c00
+  conditions: []
+  identifiers:
+    pk: db9a4c9b-fed7-446e-b7a6-42df0efa2c3c
+  model: authentik_sources_ldap.ldapsource
+  permissions: []
+  state: present
+- attrs:
+    expression: "path_elements = []\nfor pair in dn.split(\",\"):\n    attr, _, value\
+      \ = pair.partition(\"=\")\n    # Ignore elements from the Root DSE and the canonical\
+      \ name of the object\n    if attr.lower() in [\"cn\", \"dc\"]:\n        continue\n\
+      \    path_elements.append(value)\npath_elements.reverse()\n\npath = source.get_user_path()\n\
+      if len(path_elements) > 0:\n    path = f\"{path}/{'/'.join(path_elements)}\"\
+      \nreturn {\n    \"path\": path\n}"
+    managed: goauthentik.io/sources/ldap/default-dn-path
+    name: 'authentik default LDAP Mapping: DN to User Path'
+  conditions: []
+  identifiers:
+    pk: 204ead44-783c-4306-a570-c2f417a23d47
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "return {\n    \"name\": ldap.get(\"name\"),\n}"
+    managed: goauthentik.io/sources/ldap/default-name
+    name: 'authentik default LDAP Mapping: Name'
+  conditions: []
+  identifiers:
+    pk: 29d166a2-0316-48a2-b988-35b083a8d40f
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "return {\n    \"email\": ldap.get(\"mail\"),\n}"
+    managed: goauthentik.io/sources/ldap/default-mail
+    name: 'authentik default LDAP Mapping: mail'
+  conditions: []
+  identifiers:
+    pk: 4309e2a0-d0ff-47c5-95a9-20718de49c00
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "return {\n    \"username\": ldap.get(\"sAMAccountName\"),\n}"
+    managed: goauthentik.io/sources/ldap/ms-samaccountname
+    name: 'authentik default Active Directory Mapping: sAMAccountName'
+  conditions: []
+  identifiers:
+    pk: a24c9afe-2032-4ee3-9c24-521ffc033c04
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "return {\n    \"attributes\": {\n        \"upn\": list_flatten(ldap.get(\"\
+      userPrincipalName\")),\n    },\n}"
+    managed: goauthentik.io/sources/ldap/ms-userprincipalname
+    name: 'authentik default Active Directory Mapping: userPrincipalName'
+  conditions: []
+  identifiers:
+    pk: 916bb4ac-fea7-43d9-9c63-93a97c123b1b
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "return {\n    \"attributes\": {\n        \"givenName\": list_flatten(ldap.get(\"\
+      givenName\")),\n    },\n}"
+    managed: goauthentik.io/sources/ldap/ms-givenName
+    name: 'authentik default Active Directory Mapping: givenName'
+  conditions: []
+  identifiers:
+    pk: f02a50d1-0321-42ff-b21e-5dfe9cb8816c
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "return {\n    \"attributes\": {\n        \"sn\": list_flatten(ldap.get(\"\
+      sn\")),\n    },\n}"
+    managed: goauthentik.io/sources/ldap/ms-sn
+    name: 'authentik default Active Directory Mapping: sn'
+  conditions: []
+  identifiers:
+    pk: dc90eda4-2938-464e-99be-8732eaab4986
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "return {\n    \"username\": ldap.get(\"uid\"),\n}"
+    managed: goauthentik.io/sources/ldap/openldap-uid
+    name: 'authentik default OpenLDAP Mapping: uid'
+  conditions: []
+  identifiers:
+    pk: e8bfe0bb-6528-4f2c-9bcf-b6474c4f9008
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present
+- attrs:
+    expression: "return {\n    \"name\": ldap.get(\"cn\"),\n}"
+    managed: goauthentik.io/sources/ldap/openldap-cn
+    name: 'authentik default OpenLDAP Mapping: cn'
+  conditions: []
+  identifiers:
+    pk: c2e0a119-ed73-4741-848f-e3d26e5c7f90
+  model: authentik_sources_ldap.ldapsourcepropertymapping
+  permissions: []
+  state: present

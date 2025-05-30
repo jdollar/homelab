@@ -1,0 +1,193 @@
+hull:
+  config:
+    specific:
+      httpPort: 8080
+      torrentPort: 6881
+      ingressHost: qtorrent.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data:
+          VPN_ENABLED: 
+            inline: "yes"
+          VPN_PROV:  
+            inline: custom
+          VPN_CLIENT:  
+            inline: openvpn
+          STRICT_PORT_FORWARD:  
+            inline: "yes"
+          LAN_NETWORK:  
+            inline: "10.0.0.0/24"
+          UMASK:  
+            inline: "000"
+          PUID:  
+            inline: "0"
+          PGID:  
+            inline: "0"
+          WEBUI_PORT:  
+            inline: _HT*toString|hull.config.specific.httpPort
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            jellyfin-pvc-media:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: jellyfin-pvc-media
+            qtorrent-pvc-config:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: qtorrent-pvc-config
+          containers:
+            app:
+              securityContext:
+                privileged: true
+                capabilities:
+                  add:
+                    - NET_ADMIN
+              image:
+                repository: binhex/arch-qbittorrentvpn
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+                torrenttcp:
+                  containerPort: _HT*hull.config.specific.torrentPort
+                  protocol: TCP
+                torrentudp:
+                  containerPort: _HT*hull.config.specific.torrentPort
+                  protocol: UDP
+              volumeMounts:
+                qtorrent-pvc-config:
+                  name: qtorrent-pvc-config
+                  mountPath: /config
+                jellyfin-pvc-media:
+                  name: jellyfin-pvc-media
+                  mountPath: /data
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              env:
+                VPN_USER:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: qtorrent
+                      key: VPN_USER
+                      optional: false
+                VPN_PASS:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: qtorrent
+                      key: VPN_PASS
+                      optional: false
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 2Gi
+                limits:
+                  cpu: 100m
+                  memory: 2Gi
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+          torrenttcp:
+            port: _HT*hull.config.specific.torrentPort
+            targetPort: torrenttcp
+            protocol: TCP
+          torrentudp:
+            port: _HT*hull.config.specific.torrentPort
+            targetPort: torrentudp
+            protocol: UDP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "QBittorrent"
+          gethomepage.dev/description: "Torrent Downloader"
+          gethomepage.dev/group: "Streaming"
+          gethomepage.dev/icon: "qbittorrent"
+          gethomepage.dev/weight: "11"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    customresource:
+      ingressudp:
+        apiVersion: traefik.io/v1alpha1
+        kind: IngressRouteUDP
+        spec:
+          entryPoints:
+            - udptorrent
+          routes:
+            - services:
+                - name: _HT^app
+                  port: _HT*hull.config.specific.torrentPort
+
+      ingresstcp:
+        apiVersion: traefik.io/v1alpha1
+        kind: IngressRouteTCP
+        spec:
+          entryPoints:
+            - tcptorrent
+          routes:
+            - match: HostSNI(`*`)
+              services:
+                - name: _HT^app
+                  port: _HT*hull.config.specific.torrentPort
+
+    persistentvolumeclaim:
+      qtorrent-pvc-config:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: nfs
+        resources:
+          requests:
+            storage: 1Gi
+

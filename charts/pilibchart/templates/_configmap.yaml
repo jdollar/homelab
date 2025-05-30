@@ -1,0 +1,13 @@
+{{- define "pilibchart.configmap.tpl" -}}
+{{- $fullName := include "helper.fullname" . -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "helper.labels" . | nindent 4 }}
+data: {}
+{{- end }}
+{{- define "pilibchart.configmap" -}}
+{{- include "pilibchart.util.merge" (append . "pilibchart.configmap.tpl") -}}
+{{- end -}}

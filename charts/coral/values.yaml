@@ -1,0 +1,97 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+
+hull:
+  config:
+    specific:
+      httpPort: 5000
+      ingressHost: coral.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data: {}
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          containers:
+            app:
+              image:
+                repository: coralproject/talk
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              env:
+                MONGODB_URI:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: coral-secret
+                      key: MONGODB_URI
+                      optional: false
+                REDIS_URI:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: coral-secret
+                      key: REDIS_URI
+                      optional: false
+                SIGNING_SECRET:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: coral-secret
+                      key: SIGNING_SECRET
+                      optional: false
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]

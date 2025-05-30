@@ -1,0 +1,40 @@
+---
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: Download headscale
+  get_url:
+    url: https://github.com/juanfont/headscale/releases/download/v0.26.0/headscale_0.26.0_linux_amd64.deb
+    dest: /tmp/headscale.deb
+  when: ansible_facts.services['headscale.service'] is not defined
+  register: download
+
+- name: Install deb
+  apt:
+    deb: /tmp/headscale.deb
+  become: true
+  when: download.changed
+
+- name: Populate service facts
+  ansible.builtin.service_facts:
+  when: download.changed
+
+- name: Copy config file
+  become: true
+  copy:
+    src: files/headscale-config.yaml
+    dest: "/etc/headscale/config.yaml"
+    mode: 0644
+
+- name: Enable headscale service
+  become: true
+  ansible.builtin.systemd_service:
+    name: headscale
+    enabled: true
+  when: ansible_facts.services['headscale.service']['status'] != "enabled"
+
+- name: verify headscale service started
+  become: true
+  ansible.builtin.systemd_service:
+    name: headscale
+    state: restarted

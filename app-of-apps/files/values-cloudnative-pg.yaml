@@ -1,0 +1,11 @@
+rbac:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+commonAnnotations:
+  argocd.argoproj.io/sync-wave: "2"
+config:
+  create: true
+  data:
+    INHERITED_ANNOTATIONS: "prometheus.io/*"
+monitoring:
+  podMonitorEnabled: true

@@ -1,0 +1,61 @@
+ollama:
+  enabled: false
+
+websocket:
+  enabled: true
+  url: redis://redis-headless.default.svc.cluster.local:6379
+  redis:
+    enabled: false
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: "OpenWebUI"
+    gethomepage.dev/type: "openwebui"
+    gethomepage.dev/description: "Chat AI"
+    gethomepage.dev/group: "Application"
+    gethomepage.dev/icon: "openwebui.png"
+    gethomepage.dev/weight: "1"
+  host: openwebui.joeldollarhide.com
+  tls: true
+
+persistence:
+  storageClass: nfs
+
+extraEnvVars:
+  - name: WEBUI_URL
+    value: https://openwebui.joeldollarhide.com
+  - name: ENABLE_SIGNUP
+    value: "False"
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: openwebui-openwebui-app-app
+        key: uri
+        optional: false
+  - name: ENABLE_LDAP
+    value: "True"
+  - name: LDAP_APP_DN
+    value: "uid=admin,ou=people,dc=joeldollarhide,dc=com"
+  - name: LDAP_APP_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: openwebui-secret
+        key: lldap_password
+        optional: false
+  - name: LDAP_ATTRIBUTE_FOR_USERNAME
+    value: "uid"
+  - name: LDAP_SEARCH_BASE
+    value: "ou=people,dc=joeldollarhide,dc=com"
+  - name: LDAP_SEARCH_FILTERS
+    value: "(&(memberof=cn=openwebui_user,ou=groups,dc=joeldollarhide,dc=com)(|(uid=%[1]s)(mail=%[1]s))"
+  - name: LDAP_SERVER_HOST
+    value: 'lldap.joeldollarhide.com'
+  - name: LDAP_SERVER_PORT
+    value: '3890'
+  - name: LDAP_USE_TLS
+    value: "False"

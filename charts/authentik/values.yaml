@@ -1,0 +1,162 @@
+hull:
+  config:
+    specific:
+      tsSecretName: ts-authentik
+
+  objects:
+    rolebinding:
+      default:
+        enabled: false
+      tailscale:
+        subjects:
+          - kind: ServiceAccount
+            name: authentik
+        roleRef:
+          kind: Role
+          name: _HT!{{ printf "%s-tailscale" (include "hull.metadata.fullname" .) }}
+          apiGroup: rbac.authorization.k8s.io
+    role:
+      default:
+        enabled: false
+
+      tailscale:
+        rules:
+          - apiGroups: [""] # "" indicates the core API group
+            resources: ["secrets"]
+            # Create can not be restricted to a resource name.
+            verbs: ["create"]
+          - apiGroups: [""] # "" indicates the core API group
+            resourceNames:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.tsSecretName }}
+                ]
+            resources: ["secrets"]
+            verbs: ["get", "update", "patch"]
+
+    serviceaccount:
+      default:
+        enabled: false
+
+    configmap:
+      blueprints:
+        data:
+          ldap-source.yaml:
+            path: files/ldap-source.yaml
+
+
+    customresource:
+      app:
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Cluster
+        spec:
+          instances: 1
+          monitoring:
+            enablePodMonitor: true
+          managed:
+            services:
+              disabledDefaultServices: ["ro", "r"]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+            limits:
+              cpu: 100m
+              memory: 1Gi
+          storage:
+            storageClass: nfs
+            size: 5Gi
+
+authentik:
+  global:
+    env:
+      - name: AUTHENTIK_SECRET_KEY
+        valueFrom:
+          secretKeyRef:
+            name: authentik-secret
+            key: secretkey
+            optional: false
+      - name: AUTHENTIK_POSTGRESQL__HOST
+        valueFrom:
+          secretKeyRef:
+            name: authentik-authentik-app-app
+            key: host
+            optional: false
+      - name: AUTHENTIK_POSTGRESQL__PORT
+        valueFrom:
+          secretKeyRef:
+            name: authentik-authentik-app-app
+            key: port
+            optional: false
+      - name: AUTHENTIK_POSTGRESQL__NAME
+        valueFrom:
+          secretKeyRef:
+            name: authentik-authentik-app-app
+            key: dbname
+            optional: false
+      - name: AUTHENTIK_POSTGRESQL__USER
+        valueFrom:
+          secretKeyRef:
+            name: authentik-authentik-app-app
+            key: username
+            optional: false
+      - name: AUTHENTIK_POSTGRESQL__PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: authentik-authentik-app-app
+            key: password
+            optional: false
+
+  postgresql:
+    enabled: false
+
+  redis:
+    host: redis-headless.default.svc.cluster.local
+
+  blueprints:
+    configMaps:
+      - authentik-authentik-blueprints
+
+  server:
+    serviceAccountName: authentik
+
+    extraContainers:
+      - name: tailscale
+        image: ghcr.io/tailscale/tailscale:v1.82.0
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+              - NET_ADMIN
+        env:
+          - name: TS_EXTRA_ARGS
+            value: --hostname=authentik
+          - name: TS_KUBE_SECRET
+            value: ts-authentik
+          - name: TS_USERSPACE
+            value: "false"
+          - name: TS_AUTHKEY
+            valueFrom:
+              secretKeyRef:
+                name: tailscale-auth-secret
+                key: TS_AUTHKEY
+                optional: true
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: "traefik"
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/name: "Authentik"
+        gethomepage.dev/type: "authentik"
+        gethomepage.dev/description: "Authentication service"
+        gethomepage.dev/group: "Applications"
+        gethomepage.dev/icon: "authentik.png"
+        gethomepage.dev/weight: "10"
+      hosts:
+        - &host authentik.joeldollarhide.com
+      tls:
+        - secretName: authentik-tls
+          hosts:
+            - *host

@@ -1,0 +1,81 @@
+redis-cluster:
+  enabled: false
+redis:
+  enabled: false
+postgresql:
+  enabled: false
+postgresql-ha:
+  enabled: false
+
+persistence:
+  enabled: true
+  storageClass: nfs
+
+strategy:
+  type: Recreate
+
+gitea:
+  additionalConfigFromEnvs:
+  - name: FORGEJO__DATABASE__NAME
+    valueFrom:
+      secretKeyRef:
+        name: &dbSecret cloudnative-pg-operator-cloudnative-pg-forgejo-app
+        key: dbname
+  - name: FORGEJO__DATABASE__HOST
+    valueFrom:
+      secretKeyRef:
+        name: *dbSecret
+        key: host
+  - name: FORGEJO__DATABASE__USER
+    valueFrom:
+      secretKeyRef:
+        name: *dbSecret
+        key: username
+  - name: FORGEJO__DATABASE__PASSWD
+    valueFrom:
+      secretKeyRef:
+        name: *dbSecret
+        key: password
+  ldap:
+    - name: MyAwesomeGiteaLdap
+      securityProtocol: unencrypted
+      host: 'lldap.joeldollarhide.com'
+      port: '3890'
+      userSearchBase: ou=people,dc=joeldollarhide,dc=com
+      userFilter: (&(memberof=cn=git_user,ou=groups,dc=joeldollarhide,dc=com)(|(uid=%[1]s)(mail=%[1]s)))
+      adminFilter: (memberof=cn=lldap_admin,ou=groups,dc=joeldollarhide,dc=com)
+      emailAttribute: mail
+      firstnameAttribute: givenName
+      surnameAttribute: sn
+      avatarAttribute: jpegPhoto
+      existingSecret: forgejo-secret
+      usernameAttribute: uid
+      publicSSHKeyAttribute: publicSSHKey
+  config:
+    database:
+      DB_TYPE: postgres
+    indexer:
+      ISSUE_INDEXER_TYPE: bleve
+      REPO_INDEXER_ENABLED: true
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/name: "Gitea"
+    gethomepage.dev/type: "gitea"
+    gethomepage.dev/description: "Selfhosted Git"
+    gethomepage.dev/group: "Application"
+    gethomepage.dev/icon: "gitea.png"
+    gethomepage.dev/weight: "1"
+  hosts:
+    - host: forgejo.joeldollarhide.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - secretName: forgejo-tls
+      hosts:
+        - forgejo.joeldollarhide.com

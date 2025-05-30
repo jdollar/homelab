@@ -1,0 +1,55 @@
+---
+- name: Install pre-reqs
+  become: true
+  ansible.builtin.package:
+    name:
+      - debian-keyring 
+      - debian-archive-keyring 
+      - apt-transport-https
+    state: latest
+
+- name: setup headscale
+  import_tasks: headscale.yml
+
+# install instructions: https://caddyserver.com/docs/install#debian-ubuntu-raspbian
+- name: Add caddy repo
+  block:
+    - name: download caddy gpg key
+      become: true
+      ansible.builtin.get_url:
+        url: https://dl.cloudsmith.io/public/caddy/stable/gpg.key
+        dest: /etc/apt/keyrings/caddy-stable-archive-keyring.asc
+
+    - name: setup stable repo
+      become: true
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/caddy-stable-archive-keyring.asc] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main"
+        state: present
+        update-cache: true
+
+    - name: setup source repo
+      become: true
+      ansible.builtin.apt_repository:
+        repo: "deb-src [signed-by=/etc/apt/keyrings/caddy-stable-archive-keyring.asc] https://dl.cloudsmith.io/public/caddy/stable/deb/debian any-version main"
+        state: present
+        update-cache: true
+
+- name: Install Caddy
+  become: true
+  ansible.builtin.package:
+    name:
+      - caddy
+    state: latest
+
+- name: Set up Caddyfile
+  become: true
+  ansible.builtin.template:
+    src: templates/Caddyfile.j2
+    dest: "/etc/caddy/Caddyfile"
+    mode: 0644
+
+- name: reload Caddyfile
+  become: true
+  ansible.builtin.systemd_service:
+    name: caddy
+    state: reloaded
