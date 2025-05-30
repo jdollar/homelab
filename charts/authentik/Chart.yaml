@@ -28,5 +28,5 @@ dependencies:
     version: 2025.4.1
     repository: https://charts.goauthentik.io
   - name: hull
-    version: 1.32.3
+    version: 1.33.0
     repository: https://vidispine.github.io/hull
