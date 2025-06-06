@@ -68,17 +68,17 @@ hull:
                   memory: 512Mi
               livenessProbe:
                 httpGet:
-                  path: /ping
+                  path: /sonarr/ping
                   port: _HT*hull.config.specific.httpPort
                 periodSeconds: 3
               readinessProbe:
                 httpGet:
-                  path: /ping
+                  path: /sonarr/ping
                   port: _HT*hull.config.specific.httpPort
                 periodSeconds: 3
               startupProbe:
                 httpGet:
-                  path: /ping
+                  path: /sonarr/ping
                   port: _HT*hull.config.specific.httpPort
                 failureThreshold: 30
                 periodSeconds: 10
@@ -138,4 +138,3 @@ hull:
         resources:
           requests:
             storage: 1Gi
-
