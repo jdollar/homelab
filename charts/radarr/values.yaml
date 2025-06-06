@@ -53,7 +53,7 @@ hull:
               volumeMounts:
                 radarr-pvc-config-longhorn:
                   name: radarr-pvc-config-longhorn
-                  mountPath: /cache
+                  mountPath: /config
                 jellyfin-pvc-media:
                   name: jellyfin-pvc-media
                   mountPath: /data
