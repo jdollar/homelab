@@ -66,42 +66,42 @@ hull:
                   secretRef:
                     staticName: true
                     name: radarr-secret
-              env:
-                RADARR__POSTGRES__HOST:
-                  valueFrom:
-                    secretKeyRef:
-                      staticName: true
-                      name: radarr-radarr-app-app
-                      key: host
-                      optional: false
-                RADARR__POSTGRES__USER:
-                  valueFrom:
-                    secretKeyRef:
-                      staticName: true
-                      name: radarr-radarr-app-app
-                      key: username
-                      optional: false
-                RADARR__POSTGRES__PASSWORD:
-                  valueFrom:
-                    secretKeyRef:
-                      staticName: true
-                      name: radarr-radarr-app-app
-                      key: password
-                      optional: false
-                RADARR__POSTGRES__MAINDB:
-                  valueFrom:
-                    secretKeyRef:
-                      staticName: true
-                      name: radarr-radarr-app-app
-                      key: dbname
-                      optional: false
-                RADARR__POSTGRES__LOGDB:
-                  valueFrom:
-                    secretKeyRef:
-                      staticName: true
-                      name: radarr-radarr-app-app
-                      key: dbname
-                      optional: false
+              #env:
+              #  RADARR__POSTGRES__HOST:
+              #    valueFrom:
+              #      secretKeyRef:
+              #        staticName: true
+              #        name: radarr-radarr-app-app
+              #        key: host
+              #        optional: false
+              #  RADARR__POSTGRES__USER:
+              #    valueFrom:
+              #      secretKeyRef:
+              #        staticName: true
+              #        name: radarr-radarr-app-app
+              #        key: username
+              #        optional: false
+              #  RADARR__POSTGRES__PASSWORD:
+              #    valueFrom:
+              #      secretKeyRef:
+              #        staticName: true
+              #        name: radarr-radarr-app-app
+              #        key: password
+              #        optional: false
+              #  RADARR__POSTGRES__MAINDB:
+              #    valueFrom:
+              #      secretKeyRef:
+              #        staticName: true
+              #        name: radarr-radarr-app-app
+              #        key: dbname
+              #        optional: false
+              #  RADARR__POSTGRES__LOGDB:
+              #    valueFrom:
+              #      secretKeyRef:
+              #        staticName: true
+              #        name: radarr-radarr-app-app
+              #        key: dbname
+              #        optional: false
 
               resources:
                 requests:
