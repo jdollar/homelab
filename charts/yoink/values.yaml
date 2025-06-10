@@ -32,6 +32,10 @@ hull:
                 pullPolicy: IfNotPresent
                 tag: _HT**Chart.appVersion
               envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
                 sealed:
                   secretRef:
                     staticName: true
