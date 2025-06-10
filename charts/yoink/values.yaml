@@ -12,37 +12,37 @@ hull:
           config.yaml:
             path: files/config.yaml
 
-    deployment:
+    cronjob:
       app:
-        replicas: 1
-        strategy:
-          type: Recreate
-        templateLabels:
-          app.kubernetes.io/type: app
-        pod:
-          volumes:
-            configs:
-              active: configMap
-              configMap:
-                name: configs
-          containers:
-            app:
-              image:
-                repository: ghcr.io/mrmarble/yoink
-                pullPolicy: IfNotPresent
-                tag: _HT**Chart.appVersion
-              envFrom:
-                app:
-                  configMapRef:
-                    name: app
-                    optional: false
-                sealed:
-                  secretRef:
-                    staticName: true
-                    name: yoink-secret
-              volumeMounts:
-                configs:
+        concurrencyPolicy: Forbid
+        failedJobsHistoryLimit: 5
+        schedule: 0 */1 * * *
+        successfulJobsHistoryLimit: 1
+        job:
+          pod:
+            volumes:
+              configs:
+                active: configMap
+                configMap:
                   name: configs
-                  mountPath: /config.yaml
-                  subPath: config.yaml
-                  readOnly: true
+            containers:
+              app:
+                image:
+                  repository: ghcr.io/mrmarble/yoink
+                  pullPolicy: IfNotPresent
+                  tag: _HT**Chart.appVersion
+                envFrom:
+                  app:
+                    configMapRef:
+                      name: app
+                      optional: false
+                  sealed:
+                    secretRef:
+                      staticName: true
+                      name: yoink-secret
+                volumeMounts:
+                  configs:
+                    name: configs
+                    mountPath: /config.yaml
+                    subPath: config.yaml
+                    readOnly: true
