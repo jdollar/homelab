@@ -20,6 +20,7 @@ hull:
         successfulJobsHistoryLimit: 1
         job:
           pod:
+            restartPolicy: OnFailure
             volumes:
               configs:
                 active: configMap
