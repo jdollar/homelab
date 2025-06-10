@@ -44,7 +44,6 @@ hull:
           ldap-source.yaml:
             path: files/ldap-source.yaml
 
-
     customresource:
       app:
         apiVersion: postgresql.cnpg.io/v1
@@ -107,11 +106,12 @@ authentik:
             key: password
             optional: false
 
-  postgresql:
-    enabled: false
+  authentik:
+    postgresql:
+      enabled: false
 
-  redis:
-    host: redis-headless.default.svc.cluster.local
+    redis:
+      host: redis-headless.default.svc.cluster.local
 
   blueprints:
     configMaps:
