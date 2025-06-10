@@ -22,7 +22,7 @@ version: 0.1.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # renovate: image=fallenbagel/jellyseerr
-appVersion: "2.5.2"
+appVersion: "2.6.0"
 
 dependencies:
 - name: hull
