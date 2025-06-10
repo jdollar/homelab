@@ -1,0 +1,29 @@
+hull:
+  objects:
+    configmap:
+      app:
+        data:
+          QBIT_HOST:
+            inline: "https://qtorrent.joeldollarhide.com"
+          PROWLARR_HOST:
+            inline: "https://prowlarr.joeldollarhide.com"
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          containers:
+            app:
+              image:
+                repository: ghcr.io/mrmarble/yoink
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              envFrom:
+                sealed:
+                  secretRef:
+                    staticName: true
+                    name: yoink-secret
