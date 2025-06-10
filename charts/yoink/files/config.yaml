@@ -1,0 +1,2 @@
+total_freeleech_size: "200GB" # Max space to use for downloads. If 0, no limit is applied
+category: "FreeLeech" # Category to use for downloads.

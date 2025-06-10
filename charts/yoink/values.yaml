@@ -7,6 +7,10 @@ hull:
             inline: "https://qtorrent.joeldollarhide.com"
           PROWLARR_HOST:
             inline: "https://prowlarr.joeldollarhide.com"
+      configs:
+        data:
+          config.yaml:
+            path: files/config.yaml
 
     deployment:
       app:
@@ -16,6 +20,11 @@ hull:
         templateLabels:
           app.kubernetes.io/type: app
         pod:
+          volumes:
+            configs:
+              active: configMap
+              configMap:
+                name: configs
           containers:
             app:
               image:
@@ -27,3 +36,9 @@ hull:
                   secretRef:
                     staticName: true
                     name: yoink-secret
+              volumeMounts:
+                configs:
+                  name: configs
+                  mountPath: /config.yaml
+                  subPath: config.yaml
+                  readOnly: true
