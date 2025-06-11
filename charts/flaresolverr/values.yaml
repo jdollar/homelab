@@ -4,6 +4,7 @@ hull:
   config:
     specific:
       httpPort: 8191
+      ingressHost: flaresolverr.joeldollarhide.com
 
   objects:
     configmap:
@@ -48,3 +49,33 @@ hull:
             port: _HT*hull.config.specific.httpPort
             targetPort: _HT*hull.config.specific.httpPort
             protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
