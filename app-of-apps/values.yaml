@@ -48,6 +48,8 @@ hull:
 
           ittools: *defaultComponent
 
+          jackett: *defaultComponent
+
           jellyfin: *defaultComponent
 
           jellyseerr: *defaultComponent
@@ -237,6 +239,8 @@ hull:
       homepage: *defaultApplication
 
       ittools: *defaultApplication
+
+      jackett: *defaultApplication
 
       jellystat: *defaultApplication
 
