@@ -1,5 +1,6 @@
 total_freeleech_size: "200GB" # Max space to use for downloads. If 0, no limit is applied
 category: "Movies" # Category to use for downloads.
+paused: false
 indexers: # List of indexers to use. Filters out any indexers not in this list
   - id: 14 # Upscale Vault RSS
     max_seeders: 10 # Maximum number of seeders to allow. 0 = no limit
