@@ -22,7 +22,7 @@ version: 0.1.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # renovate: image=coralproject/talk
-appVersion: "9.9.5"
+appVersion: "9.9.6"
 
 dependencies:
   - name: hull
