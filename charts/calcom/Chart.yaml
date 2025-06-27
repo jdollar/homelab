@@ -22,7 +22,7 @@ version: 0.1.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # renovate: image=calcom/cal.com
-appVersion: "v5.4.8"
+appVersion: "v5.4.9"
 
 dependencies:
   - name: hull
