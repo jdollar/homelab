@@ -28,3 +28,12 @@
   file:
     path: /tmp/k3s-installer.sh
     state: absent
+
+- name: setup sysctls
+  become: true
+  ansible.builtin.copy:
+    src: files/
+    dest: /var/lib/rancher/k3s/agent/etc/kubelet.conf.d
+    owner: root
+    group: root
+    mode: 0644
