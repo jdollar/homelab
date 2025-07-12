@@ -9,23 +9,23 @@ hull:
     configmap:
       app:
         data:
-          VPN_ENABLED: 
+          VPN_ENABLED:
             inline: "yes"
-          VPN_PROV:  
-            inline: custom
-          VPN_CLIENT:  
-            inline: openvpn
-          STRICT_PORT_FORWARD:  
+          VPN_PROV:
+            inline: "protonvpn"
+          VPN_CLIENT:
+            inline: "wireguard"
+          STRICT_PORT_FORWARD:
             inline: "yes"
-          LAN_NETWORK:  
+          LAN_NETWORK:
             inline: "10.0.0.0/24"
-          UMASK:  
+          UMASK:
             inline: "000"
-          PUID:  
+          PUID:
             inline: "0"
-          PGID:  
+          PGID:
             inline: "0"
-          WEBUI_PORT:  
+          WEBUI_PORT:
             inline: _HT*toString|hull.config.specific.httpPort
 
     deployment:
@@ -51,6 +51,9 @@ hull:
             app:
               securityContext:
                 privileged: true
+                sysctls:
+                  - name: net.ipv4.conf.all.src_valid_mark
+                    value: "1"
                 capabilities:
                   add:
                     - NET_ADMIN
@@ -190,4 +193,3 @@ hull:
         resources:
           requests:
             storage: 1Gi
-
