@@ -14,7 +14,7 @@ hull:
           VPN_PROV:
             inline: "protonvpn"
           VPN_CLIENT:
-            inline: "openvpn"
+            inline: "wireguard"
           STRICT_PORT_FORWARD:
             inline: "yes"
           LAN_NETWORK:
