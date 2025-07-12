@@ -47,13 +47,14 @@ hull:
               persistentVolumeClaim:
                 staticName: true
                 claimName: qtorrent-pvc-config
+          securityContext:
+            sysctls:
+              - name: net.ipv4.conf.all.src_valid_mark
+                value: "1"
           containers:
             app:
               securityContext:
                 privileged: true
-                sysctls:
-                  - name: net.ipv4.conf.all.src_valid_mark
-                    value: "1"
                 capabilities:
                   add:
                     - NET_ADMIN
