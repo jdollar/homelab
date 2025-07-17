@@ -5,6 +5,7 @@ hull:
     specific:
       httpPort: 9117
       ingressHost: jackett.joeldollarhide.com
+      freeleechIngessHost: jackett-freeleech.joeldollarhide.com
 
   objects:
     configmap:
@@ -55,15 +56,50 @@ hull:
                   memory: 2Gi
                 limits:
                   memory: 2Gi
+      freeleech:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            jackett-freeleech-pvc-config-longhorn:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: jackett-freeleech-pvc-config-longhorn
+          containers:
+            app:
+              image:
+                repository: lscr.io/linuxserver/jackett
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              volumeMounts:
+                jackett-freeleech-pvc-config-longhorn:
+                  name: jackett-freeleech-pvc-config-longhorn
+                  mountPath: /config
+              resources:
+                requests:
+                  cpu: 400m
+                  memory: 2Gi
+                limits:
+                  memory: 2Gi
 
     service:
-      app:
+      app: &svc
         type: ClusterIP
         ports:
           http:
             port: _HT*hull.config.specific.httpPort
             targetPort: _HT*hull.config.specific.httpPort
             protocol: TCP
+
+      freeleech: *svc
 
     ingress:
       app:
@@ -101,9 +137,52 @@ hull:
                 [
                 {{ (index . "$").Values.hull.config.specific.ingressHost }}
                 ]
+      freeleech:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Jackett (Freeleech)"
+          gethomepage.dev/description: "Indexer"
+          gethomepage.dev/group: "Applications"
+          gethomepage.dev/icon: "jackett"
+          gethomepage.dev/weight: "25"
+        rules:
+          app:
+            host: _HT*hull.config.specific.freeleechIngessHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: freeleech
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
 
     persistentvolumeclaim:
       jackett-pvc-config-longhorn:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 5Gi
+      jackett-freeleech-pvc-config-longhorn:
         staticName: true
         accessModes:
           - ReadWriteOnce
