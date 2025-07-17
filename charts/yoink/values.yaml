@@ -11,6 +11,10 @@ hull:
         data:
           config.yaml:
             path: files/config.yaml
+      tv-configs:
+        data:
+          config.yaml:
+            path: files/tv-config.yaml
 
     cronjob:
       app:
@@ -44,6 +48,40 @@ hull:
                 volumeMounts:
                   configs:
                     name: configs
+                    mountPath: /config.yaml
+                    subPath: config.yaml
+                    readOnly: true
+      app-tv:
+        concurrencyPolicy: Forbid
+        failedJobsHistoryLimit: 5
+        schedule: 0 */1 * * *
+        successfulJobsHistoryLimit: 1
+        job:
+          pod:
+            restartPolicy: OnFailure
+            volumes:
+              tv-configs:
+                active: configMap
+                configMap:
+                  name: tv-configs
+            containers:
+              app:
+                image:
+                  repository: ghcr.io/mrmarble/yoink
+                  pullPolicy: IfNotPresent
+                  tag: _HT**Chart.appVersion
+                envFrom:
+                  app:
+                    configMapRef:
+                      name: app
+                      optional: false
+                  sealed:
+                    secretRef:
+                      staticName: true
+                      name: yoink-secret
+                volumeMounts:
+                  tv-configs:
+                    name: tv-configs
                     mountPath: /config.yaml
                     subPath: config.yaml
                     readOnly: true
