@@ -166,7 +166,7 @@ hull:
         tls:
           freeleech:
             enabled: true
-            secretName: tls
+            secretName: freeleach-tls
             hosts:
               - _HT!
                 [
