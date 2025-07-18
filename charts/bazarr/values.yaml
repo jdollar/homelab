@@ -4,7 +4,6 @@ hull:
       httpPort: 6767
       ingressHost: bazarr.joeldollarhide.com
 
-
   objects:
     configmap:
       app:
@@ -40,7 +39,7 @@ hull:
           containers:
             app:
               image:
-                repository: hotio/bazarr
+                repository: ghcr.io/hotio/bazarr
                 pullPolicy: IfNotPresent
                 tag: _HT**Chart.appVersion
               ports:

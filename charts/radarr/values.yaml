@@ -43,7 +43,7 @@ hull:
           containers:
             app:
               image:
-                repository: hotio/radarr
+                repository: ghcr.io/hotio/radarr
                 pullPolicy: IfNotPresent
                 tag: _HT**Chart.appVersion
               ports:

@@ -41,7 +41,7 @@ hull:
           containers:
             readarr:
               image:
-                repository: hotio/readarr
+                repository: ghcr.io/hotio/readarr
                 pullPolicy: IfNotPresent
                 tag: _HT**Chart.appVersion
               ports:

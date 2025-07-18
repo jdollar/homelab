@@ -40,7 +40,7 @@ hull:
           containers:
             app:
               image:
-                repository: hotio/lidarr
+                repository: ghcr.io/hotio/lidarr
                 pullPolicy: IfNotPresent
                 tag: _HT**Chart.appVersion
               ports:

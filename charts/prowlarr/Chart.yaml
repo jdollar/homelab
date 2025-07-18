@@ -21,7 +21,7 @@ version: 0.1.0
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-# renovate: image=hotio/prowlarr
+# renovate: image=ghcr.io/hotio/prowlarr
 appVersion: "release-1.37.0.5076"
 
 dependencies:

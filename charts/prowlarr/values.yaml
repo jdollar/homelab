@@ -41,7 +41,7 @@ hull:
           containers:
             prowlarr:
               image:
-                repository: hotio/prowlarr
+                repository: ghcr.io/hotio/prowlarr
                 pullPolicy: IfNotPresent
                 tag: _HT**Chart.appVersion
               ports:

@@ -39,7 +39,7 @@ hull:
           containers:
             app:
               image:
-                repository: hotio/nzbget
+                repository: ghcr.io/hotio/nzbget
                 pullPolicy: IfNotPresent
                 tag: _HT**Chart.appVersion
               ports:
