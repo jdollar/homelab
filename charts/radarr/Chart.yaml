@@ -22,7 +22,7 @@ version: 0.1.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # renovate: image=hotio/radarr
-appVersion: "release-5.2.6.8376"
+appVersion: "release-5.26.2.10099"
 
 dependencies:
   - name: hull

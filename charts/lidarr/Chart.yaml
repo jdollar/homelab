@@ -22,9 +22,9 @@ version: 0.1.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # renovate: image=ghcr.io/hotio/lidarr
-appVersion: "release-2.0.7.3849"
+appVersion: "release-2.12.4.4658"
 
 dependencies:
-- name: hull
-  version: 1.33.0
-  repository: https://vidispine.github.io/hull
+  - name: hull
+    version: 1.33.0
+    repository: https://vidispine.github.io/hull
