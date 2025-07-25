@@ -22,7 +22,7 @@ version: 0.1.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 # renovate: image=binhex/arch-qbittorrentvpn
-appVersion: "5.1.2-1-04"
+appVersion: "5.1.2-1-05"
 
 dependencies:
   - name: hull
