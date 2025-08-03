@@ -50,6 +50,10 @@ hull:
         kind: Cluster
         spec:
           instances: 1
+          postgresql:
+            parameters:
+              max_connections: 100
+              max_replication_slots: 50
           monitoring:
             enablePodMonitor: true
           managed:
