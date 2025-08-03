@@ -52,8 +52,8 @@ hull:
           instances: 1
           postgresql:
             parameters:
-              max_connections: 100
-              max_replication_slots: 50
+              max_connections: "100"
+              max_replication_slots: "50"
           monitoring:
             enablePodMonitor: true
           managed:
