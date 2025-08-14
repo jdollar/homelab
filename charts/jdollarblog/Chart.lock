@@ -1,9 +1,9 @@
 dependencies:
 - name: nginx
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 21.1.5
+  version: 21.1.7
 - name: hull
   repository: https://vidispine.github.io/hull
   version: 1.33.0
-digest: sha256:a8c92b5b56f901c073ddf6c6cdd01350cb122c746b622e525454431b972a18d1
-generated: "2025-08-13T23:19:13.211270215Z"
+digest: sha256:25eaaf703be249b94f274f396caec1ead32465cfa390efe5b1139717dc689ef3
+generated: "2025-08-14T20:02:17.456680796Z"
