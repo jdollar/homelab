@@ -8,7 +8,7 @@ require (
 	github.com/muhlba91/pulumi-proxmoxve/sdk/v6 v6.18.1
 	github.com/muhlba91/pulumi-proxmoxve/sdk/v7 v7.3.0
 	github.com/pulumi/pulumi-tls/sdk/v5 v5.2.1
-	github.com/pulumi/pulumi/sdk/v3 v3.189.0
+	github.com/pulumi/pulumi/sdk/v3 v3.190.0
 )
 
 require (
@@ -91,8 +91,8 @@ require (
 	golang.org/x/term v0.32.0 // indirect
 	golang.org/x/text v0.26.0 // indirect
 	golang.org/x/tools v0.33.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240814211410-ddb44dafa142 // indirect
-	google.golang.org/grpc v1.67.1 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250115164207-1a7da9e5054f // indirect
+	google.golang.org/grpc v1.71.1 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
