@@ -25,7 +25,7 @@ appVersion: "1.16.0"
 
 dependencies:
   - name: nginx
-    version: 21.1.21
+    version: 21.1.23
     repository: oci://registry-1.docker.io/bitnamicharts
   - name: hull
     version: 1.33.0
