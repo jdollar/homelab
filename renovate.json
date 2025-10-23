@@ -17,6 +17,18 @@
         "#\\s?renovate: image=(?<depName>.*?)\\s?appVersion:\\s?\\\"?(?<currentValue>[\\w+\\.\\-]*)"
       ],
       "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "(^|/)app-of-apps/values\\.yaml$"
+      ],
+      "matchStrings": [
+        "repoURL: (?<registryUrl>https:\/\/.*)",
+        "targetRevision: (?<currentValue>.*)",
+        "chart: (?<depName>.*)"
+      ],
+      "datasourceTemplate": "helm"
     }
   ],
   "lockFileMaintenance": {
