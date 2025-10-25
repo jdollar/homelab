@@ -285,6 +285,7 @@ hull:
           <<: *defaultApplicationSpec
           source:
             repoURL: https://emberstack.github.io/helm-charts
+            # renovate: datasource=helm registryUrl=https://emberstack.github.io/helm-charts depName=reflector
             targetRevision: 7.1.288
             chart: reflector
 
