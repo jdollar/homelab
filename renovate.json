@@ -24,9 +24,9 @@
         "app-of-apps/values\\.yaml$"
       ],
       "matchStrings": [
-        "# renovate: datasource=(?<datasource>.*?)(registryUrl=(?<registryURL>.*?))? depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\s+targetRevision: (?<currentValue>\\S+)"
+        "repoURL: (?<registryURL>.*?)\\s+chart: (?<depName>.*?)\\s+targetRevision: (?<currentValue>\\S+)"
       ],
-      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}"
+      "datasourceTemplate": "helm"
     }
   ],
   "lockFileMaintenance": {

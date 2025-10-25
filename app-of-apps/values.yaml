@@ -285,9 +285,8 @@ hull:
           <<: *defaultApplicationSpec
           source:
             repoURL: https://emberstack.github.io/helm-charts
-            # renovate: datasource=helm registryUrl=https://emberstack.github.io/helm-charts depName=reflector
-            targetRevision: 7.1.288
             chart: reflector
+            targetRevision: 7.1.288
 
       renovate: *defaultApplication
 
@@ -337,8 +336,8 @@ hull:
               targetRevision: HEAD
               ref: miscpi
             - repoURL: https://cloudnative-pg.github.io/charts
-              targetRevision: 0.22.1
               chart: cloudnative-pg
+              targetRevision: 0.22.1
               helm:
                 valueFiles:
                   - $miscpi/app-of-apps/files/values-cloudnative-pg.yaml
@@ -367,8 +366,8 @@ hull:
               targetRevision: HEAD
               ref: miscpi
             - repoURL: https://code.forgejo.org/forgejo-helm
-              targetRevision: 10.1.1
               chart: forgejo
+              targetRevision: 10.1.1
               helm:
                 valueFiles:
                   - $miscpi/app-of-apps/files/values-forgejo.yaml
@@ -382,8 +381,8 @@ hull:
               targetRevision: HEAD
               ref: miscpi
             - repoURL: https://blakeblackshear.github.io/blakeshome-charts/
-              targetRevision: 7.4.0
               chart: frigate
+              targetRevision: 7.4.0
               helm:
                 valueFiles:
                   - $miscpi/app-of-apps/files/values-frigate.yaml
@@ -399,8 +398,8 @@ hull:
               - ServerSideApply=true
           sources:
             - repoURL: https://prometheus-community.github.io/helm-charts
-              targetRevision: 55.x.x
               chart: kube-prometheus-stack
+              targetRevision: 55.x.x
               helm:
                 valuesObject:
                   grafana:
@@ -450,8 +449,8 @@ hull:
               targetRevision: HEAD
               ref: miscpi
             - repoURL: https://helm.openwebui.com/
-              targetRevision: 5.10.0
               chart: open-webui
+              targetRevision: 5.10.0
               helm:
                 valueFiles:
                   - $miscpi/app-of-apps/files/values-openwebui.yaml
@@ -471,8 +470,8 @@ hull:
               targetRevision: HEAD
               ref: miscpi
             - repoURL: https://helm.penpot.app
-              targetRevision: 0.21.0
               chart: penpot
+              targetRevision: 0.21.0
               helm:
                 valueFiles:
                   - $miscpi/app-of-apps/files/values-penpot.yaml
