@@ -382,7 +382,7 @@ hull:
               ref: miscpi
             - repoURL: https://blakeblackshear.github.io/blakeshome-charts/
               chart: frigate
-              targetRevision: 7.4.0
+              targetRevision: 7.8.0
               helm:
                 valueFiles:
                   - $miscpi/app-of-apps/files/values-frigate.yaml
