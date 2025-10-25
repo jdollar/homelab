@@ -24,7 +24,7 @@
         "/^app-of-apps/values\\.yaml$/"
       ],
       "matchStrings": [
-        "repoURL: (?<registryURL>.*?)\\s+chart: (?<depName>.*?)\\s+targetRevision: (?<currentValue>\\S+)"
+        "repoURL: (?<registryUrl>.*?)\\s+chart: (?<depName>.*?)\\s+targetRevision: (?<currentValue>\\S+)"
       ],
       "datasourceTemplate": "helm"
     }
