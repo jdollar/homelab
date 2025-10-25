@@ -315,7 +315,7 @@ hull:
             server: _HT*hull.config.specific.destinationServer
           project: default
           sources:
-            - repoURL: https://registry-1.docker.io/bitnamicharts
+            - repoURL: oci://registry-1.docker.io/bitnamicharts
               chart: redis
               targetRevision: 23.1.1
               helm:
@@ -365,7 +365,7 @@ hull:
             - repoURL: _HT*hull.config.specific.repoURL
               targetRevision: HEAD
               ref: miscpi
-            - repoURL: https://code.forgejo.org/forgejo-helm
+            - repoURL: oci://code.forgejo.org/forgejo-helm/forgejo
               chart: forgejo
               targetRevision: 10.1.1
               helm:
