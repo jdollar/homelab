@@ -450,7 +450,7 @@ hull:
               ref: miscpi
             - repoURL: https://helm.openwebui.com/
               chart: open-webui
-              targetRevision: 5.10.0
+              targetRevision: 5.26.0
               helm:
                 valueFiles:
                   - $miscpi/app-of-apps/files/values-openwebui.yaml
