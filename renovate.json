@@ -21,7 +21,7 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "app-of-apps/values\\.yaml$"
+        "/^app-of-apps/values\\.yaml$/"
       ],
       "matchStrings": [
         "repoURL: (?<registryURL>.*?)\\s+chart: (?<depName>.*?)\\s+targetRevision: (?<currentValue>\\S+)"
