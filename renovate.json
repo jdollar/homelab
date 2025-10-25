@@ -24,9 +24,19 @@
         "/^app-of-apps/values\\.yaml$/"
       ],
       "matchStrings": [
-        "repoURL: (?<registryUrl>.*?)\\s+chart: (?<depName>.*?)\\s+targetRevision: (?<currentValue>\\S+)"
+        "repoURL: (?<registryURL>https?.*?)\\s+chart: (?<depName>.*?)\\s+targetRevision: (?<currentValue>\\S+)"
       ],
       "datasourceTemplate": "helm"
+    },
+    {
+      "fileMatch": [
+        "/^app-of-apps/values\\.yaml$/"
+      ],
+      "matchStrings": [
+        "repoURL: oci:\/\/(?<namespace>.*?)\\s+chart: (?<package>.*?)\\s+targetRevision: (?<currentValue>\\S+)"
+      ],
+      "datasourceTemplate": "docker",
+      "packageNameTemplate": "{{namespace}}/{{product}}"
     }
   ],
   "lockFileMaintenance": {
