@@ -23,9 +23,10 @@
       "datasourceTemplate": "helm"
     },
     {
+      "customType": "regex",
       "fileMatch": ["/^app-of-apps/values\\.yaml$/"],
       "matchStrings": [
-        "repoURL: oci://(?<namespace>.*?)\\s+chart: (?<package>.*?)\\s+targetRevision: (?<currentValue>\\S+)"
+        "repoURL: oci:\\/\\/(?<namespace>.*?)\\s+chart: (?<package>.*?)\\s+targetRevision: (?<currentValue>\\S+)"
       ],
       "datasourceTemplate": "docker",
       "packageNameTemplate": "{{namespace}}/{{product}}"
