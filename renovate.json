@@ -1,6 +1,8 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
+  "extends": [
+    "config:recommended"
+  ],
   "prHourlyLimit": 0,
   "prConcurrentLimit": 0,
   "internalChecksAsSuccess": true,
@@ -8,7 +10,9 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["(^|/)Chart\\.yaml$"],
+      "managerFilePatterns": [
+        "/(^|/)Chart\\.yaml$/"
+      ],
       "matchStrings": [
         "#\\s?renovate: image=(?<depName>.*?)\\s?appVersion:\\s?\\\"?(?<currentValue>[\\w+\\.\\-]*)"
       ],
@@ -16,7 +20,9 @@
     },
     {
       "customType": "regex",
-      "managerFilePatterns": ["/^app-of-apps/values\\.yaml$/"],
+      "managerFilePatterns": [
+        "/^app-of-apps/values\\.yaml$/"
+      ],
       "matchStrings": [
         "repoURL: (?<registryURL>https?.*?)\\s+chart: (?<depName>.*?)\\s+targetRevision: (?<currentValue>\\S+)"
       ],
@@ -24,7 +30,9 @@
     },
     {
       "customType": "regex",
-      "fileMatch": ["/^app-of-apps/values\\.yaml$/"],
+      "managerFilePatterns": [
+        "//^app-of-apps/values\\.yaml$//"
+      ],
       "matchStrings": [
         "repoURL: oci:\\/\\/(?<namespace>.*?)\\s+chart: (?<package>.*?)\\s+targetRevision: (?<currentValue>\\S+)"
       ],
@@ -37,11 +45,18 @@
     "automerge": true
   },
   "argocd": {
-    "managerFilePatterns": ["app-of-apps/values.yaml"]
+    "managerFilePatterns": [
+      "app-of-apps/values.yaml"
+    ]
   },
   "packageRules": [
     {
-      "matchUpdateTypes": ["minor", "patch", "pin", "pinDigest"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "pinDigest"
+      ],
       "matchCurrentVersion": "!/^0/",
       "automerge": true,
       "automergeType": "branch"
