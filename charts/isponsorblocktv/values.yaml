@@ -6,8 +6,9 @@ hull:
       app:
         data: {}
       configuration-files:
-        config.json:
-          path: files/config.json
+        data:
+          config.json:
+            path: files/config.json
 
     deployment:
       app:
