@@ -28,6 +28,20 @@ hull:
               active: configMap
               configMap:
                 name: configuration-files
+          initContainers:
+            01-config-copy:
+              image:
+                repository: busybox
+                pullPolicy: IfNotPresent
+                tag: "1.37"
+              command: ["/bin/sh", "-c", "cp -n /tmp/config/* /app/data"]
+              volumeMounts:
+                configFiles:
+                  name: configuration-files
+                  mountPath: /tmp/config
+                isponsorblocktv-pvc-data:
+                  name: isponsorblocktv-pvc-data
+                  mountPath: /app/data
           containers:
             app:
               image:
@@ -38,10 +52,6 @@ hull:
                 isponsorblocktv-pvc-data:
                   name: isponsorblocktv-pvc-data
                   mountPath: /app/data
-                configuration-files:
-                  name: configuration-files
-                  mountPath: /app/data/config.json
-                  subPath: config.json
               envFrom:
                 app:
                   configMapRef:
