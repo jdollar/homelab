@@ -38,10 +38,10 @@ hull:
 
           cyberchef: *defaultComponent
 
-          dispatcharr:
-            <<: *defaultComponent
-            destination:
-              namespace: dispatcharr
+          #dispatcharr:
+          #  <<: *defaultComponent
+          #  destination:
+          #    namespace: dispatcharr
 
           ersatztv: *defaultComponent
 
@@ -50,6 +50,8 @@ hull:
           homeassistant: *defaultComponent
 
           homepage: *defaultComponent
+
+          isponsorblocktv: *defaultComponent
 
           ittools: *defaultComponent
 
@@ -235,7 +237,7 @@ hull:
 
       cyberchef: *defaultApplication
 
-      dispatcharr: *defaultApplication
+      #dispatcharr: *defaultApplication
 
       ersatztv: *defaultApplication
 
@@ -246,6 +248,8 @@ hull:
       homepage: *defaultApplication
 
       ittools: *defaultApplication
+
+      isponsorblocktv: *defaultApplication
 
       jackett: *defaultApplication
 
