@@ -10,6 +10,9 @@ hull:
     configmap:
       app:
         data:
+          DISPATCHARR_ENV:
+            # change when they fix their modular deployment
+            inline: "aio"
           REDIS_HOST:
             inline: "redis-headless.default.svc.cluster.local"
           CELERY_BROKER:
