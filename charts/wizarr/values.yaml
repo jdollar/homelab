@@ -22,7 +22,7 @@ hull:
           containers:
             app:
               image:
-                repository: ghcr.io/wizarr/wizarr
+                repository: ghcr.io/wizarrrr/wizarr
                 pullPolicy: IfNotPresent
                 tag: _HT**Chart.appVersion
               ports:
