@@ -5,6 +5,9 @@ hull:
     configmap:
       app:
         data: {}
+      configuration-files:
+        config.json:
+          path: files/config.json
 
     deployment:
       app:
@@ -21,6 +24,10 @@ hull:
               persistentVolumeClaim:
                 staticName: true
                 claimName: isponsorblocktv-pvc-data
+            configuration-files:
+              active: configMap
+              configMap:
+                name: configuration-files
           containers:
             app:
               image:
@@ -31,6 +38,10 @@ hull:
                 isponsorblocktv-pvc-data:
                   name: isponsorblocktv-pvc-data
                   mountPath: /app/data
+                configuration-files:
+                  name: configuration-files
+                  mountPath: /app/data/config.json
+                  subPath: config.json
               envFrom:
                 app:
                   configMapRef:
