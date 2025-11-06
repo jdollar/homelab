@@ -38,6 +38,11 @@ hull:
 
           cyberchef: *defaultComponent
 
+          dispatcharr:
+            <<: *defaultComponent
+            destination:
+              namespace: dispatcharr
+
           ersatztv: *defaultComponent
 
           flaresolverr: *defaultComponent
@@ -229,6 +234,8 @@ hull:
       castblock: *defaultApplication
 
       cyberchef: *defaultApplication
+
+      dispatcharr: *defaultApplication
 
       ersatztv: *defaultApplication
 

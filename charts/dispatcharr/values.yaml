@@ -1,0 +1,170 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+
+hull:
+  config:
+    specific:
+      httpPort: 9191
+      ingressHost: dispatcharr.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data:
+          REDIS_HOST:
+            inline: "redis-headless.default.svc.cluster.local"
+          CELERY_BROKER:
+            inline: "redis://redis-headless.default.svc.cluster.local:6379/0"
+          DISPATCHARR_LOG_LEVEL:
+            inline: "info"
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            dispatcharr-pvc-data:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: dispatcharr-pvc-data
+          containers:
+            app:
+              image:
+                repository: ghcr.io/dispatcharr/dispatcharr
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              volumeMounts:
+                dispatcharr-pvc-data:
+                  name: dispatcharr-pvc-data
+                  mountPath: /data
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              env:
+                POSTGRES_USER:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: dispatcharr-dispatcharr-app-app
+                      key: username
+                      optional: false
+                POSTGRES_PASSWORD:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: dispatcharr-dispatcharr-app-app
+                      key: password
+                      optional: false
+                POSTGRES_HOST:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: dispatcharr-dispatcharr-app-app
+                      key: host
+                      optional: false
+                POSTGRES_DB:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: dispatcharr-dispatcharr-app-app
+                      key: dbname
+                      optional: false
+              resources:
+                requests:
+                  cpu: 200m
+                  memory: 1000Mi
+                limits:
+                  cpu: 1
+                  memory: 1000Mi
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Dispatcharr"
+          gethomepage.dev/type: "dispatcharr"
+          gethomepage.dev/description: "IPTV Media Manager"
+          gethomepage.dev/group: "Streaming"
+          gethomepage.dev/icon: "dispatcharr.png"
+          gethomepage.dev/weight: "0"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    customresource:
+      app:
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Cluster
+        spec:
+          instances: 1
+
+          monitoring:
+            enablePodMonitor: true
+
+          managed:
+            services:
+              disabledDefaultServices: ["ro", "r"]
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+            limits:
+              cpu: 100m
+              memory: 1Gi
+
+          storage:
+            storageClass: nfs
+            size: 5Gi
+
+    persistentvolumeclaim:
+      dispatcharr-pvc-data:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: nfs
+        resources:
+          requests:
+            storage: 5Gi

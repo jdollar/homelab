@@ -290,3 +290,14 @@ metadata:
 spec:
   finalizers:
     - kubernetes
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: dispatcharr
+    prometheus: metrics
+  name: dispatcharr
+spec:
+  finalizers:
+    - kubernetes
