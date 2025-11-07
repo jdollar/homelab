@@ -46,6 +46,11 @@ spec:
           url: https://emberstack.github.io/helm-charts
           name: emberstack-helm-repo 
           type: helm
+        immich-helm-repo:
+          enableOCI: "true"
+          url: ghcr.io/immich-app/immich-charts
+          name: immich-oci
+          type: helm
 
       params:
         # Needed for traefik ingress
