@@ -119,48 +119,49 @@ immich:
         storageClass: nfs
 
 hull:
-  customresource:
-    app:
-      apiVersion: postgresql.cnpg.io/v1
-      kind: Cluster
-      spec:
-        instances: 1
-        imageName: ghcr.io/tensorchord/cloudnative-vectorchord:17.6
+  objects:
+    customresource:
+      app:
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Cluster
+        spec:
+          instances: 1
+          imageName: ghcr.io/tensorchord/cloudnative-vectorchord:17.6
 
-        postgresql:
-          shared_preload_libraries:
-            - "vchord.so"
+          postgresql:
+            shared_preload_libraries:
+              - "vchord.so"
 
-        bootstrap:
-          initdb:
-            postInitSQL:
-              - CREATE EXTENSION IF NOT EXISTS vchord CASCADE;
+          bootstrap:
+            initdb:
+              postInitSQL:
+                - CREATE EXTENSION IF NOT EXISTS vchord CASCADE;
 
-        monitoring:
-          enablePodMonitor: true
+          monitoring:
+            enablePodMonitor: true
 
-        managed:
-          services:
-            disabledDefaultServices: ["ro", "r"]
+          managed:
+            services:
+              disabledDefaultServices: ["ro", "r"]
 
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+            limits:
+              cpu: 100m
+              memory: 1Gi
+
+          storage:
+            storageClass: nfs
+            size: 5Gi
+
+    persistentvolumeclaim:
+      immich-pvc-data:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: nfs
         resources:
           requests:
-            cpu: 100m
-            memory: 1Gi
-          limits:
-            cpu: 100m
-            memory: 1Gi
-
-        storage:
-          storageClass: nfs
-          size: 5Gi
-
-  persistentvolumeclaim:
-    immich-pvc-data:
-      staticName: true
-      accessModes:
-        - ReadWriteOnce
-      storageClassName: nfs
-      resources:
-        requests:
-          storage: 30Gi
+            storage: 30Gi
