@@ -51,6 +51,11 @@ hull:
 
           homepage: *defaultComponent
 
+          immich:
+            <<: *defaultComponent
+            destination:
+              namespace: immich
+
           isponsorblocktv: *defaultComponent
 
           ittools: *defaultComponent
@@ -246,6 +251,8 @@ hull:
       homeassistant: *defaultApplication
 
       homepage: *defaultApplication
+
+      immich: *defaultApplication
 
       ittools: *defaultApplication
 

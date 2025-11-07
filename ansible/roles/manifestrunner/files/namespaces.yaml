@@ -301,3 +301,14 @@ metadata:
 spec:
   finalizers:
     - kubernetes
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: immich
+    prometheus: metrics
+  name: immich
+spec:
+  finalizers:
+    - kubernetes
