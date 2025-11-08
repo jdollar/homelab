@@ -322,6 +322,7 @@ hull:
       tailscale-operator:
         <<: *defaultApplication
         spec:
+          <<: *defaultApplicationSpec
           source:
             repoURL: https://pkgs.tailscale.com/helmcharts
             chart: tailscale
