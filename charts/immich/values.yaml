@@ -100,12 +100,26 @@ immich:
           cert-manager.io/cluster-issuer: letsencrypt-prod
           traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
           gethomepage.dev/enabled: "true"
-          gethomepage.dev/name: "Penpot"
-          gethomepage.dev/type: "penpot"
-          gethomepage.dev/description: "Design tool"
-          gethomepage.dev/group: "Application"
-          gethomepage.dev/icon: "penpot.png"
+          gethomepage.dev/name: "Immich"
+          gethomepage.dev/type: "immich"
+          gethomepage.dev/description: "Photo manager"
+          gethomepage.dev/group: "Media"
+          gethomepage.dev/icon: "immich.png"
           gethomepage.dev/weight: "1"
+        hosts:
+          - host: &ingressHost immich.joeldollarhide.com
+            paths:
+              - path: "/"
+                service:
+                  identifier: main
+        tls:
+          - secretName: immich-tls
+            hosts:
+              - *ingressHost
+      tailscale:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "tailscale"
         hosts:
           - host: &ingressHost immich.joeldollarhide.com
             paths:
