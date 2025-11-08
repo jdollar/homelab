@@ -357,12 +357,16 @@ hull:
         spec:
           <<: *defaultApplicationSpec
           source:
-            repoURL: https://intel.github.io/helm-charts/
-            chart: intel-device-plugins-gpu
-            targetRevision: 0.34.0
-            helm:
-              valueFiles:
-                - $miscpi/app-of-apps/files/values-intel-device-plugins-gpu.yaml
+          sources:
+            - repoURL: https://intel.github.io/helm-charts/
+              chart: intel-device-plugins-gpu
+              targetRevision: 0.34.0
+              helm:
+                valueFiles:
+                  - $miscpi/app-of-apps/files/values-intel-device-plugins-gpu.yaml
+            - repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              ref: miscpi
 
       intel-device-plugins-operator:
         <<: *defaultApplication
