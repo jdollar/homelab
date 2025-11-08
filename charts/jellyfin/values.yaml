@@ -38,6 +38,8 @@ hull:
               persistentVolumeClaim:
                 staticName: true
                 claimName: jellyfin-pvc-media
+          nodeSelector:
+            intel.feature.node.kubernetes.io/gpu: "true"
           containers:
             app:
               image:
@@ -72,8 +74,6 @@ hull:
                   configMapRef:
                     name: app
                     optional: false
-              nodeSelector:
-                intel.feature.node.kubernetes.io/gpu: "true"
               resources:
                 requests:
                   cpu: 400m
