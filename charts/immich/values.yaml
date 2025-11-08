@@ -142,7 +142,7 @@ immich:
 hull:
   config:
     specific:
-      tsSecretName: _HT!{{ printf "ts-%s" (include "hull.metadata.fullname" .) }}
+      tsSecretName: _HT!{{ printf "ts-%s" "immich" }}
 
   objects:
     rolebinding:
@@ -154,7 +154,7 @@ hull:
             name: default
         roleRef:
           kind: Role
-          name: _HT!{{ printf "%s-tailscale" (include "hull.metadata.fullname" .) }}
+          name: _HT!{{ printf "%s-tailscale" "immich" }}
           apiGroup: rbac.authorization.k8s.io
     role:
       default:
