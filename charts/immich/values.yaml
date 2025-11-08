@@ -39,6 +39,25 @@ immich:
                 secretKeyRef:
                   name: immich-immich-app-app
                   key: dbname
+        tailscale:
+          image:
+            repository: ghcr.io/tailscale/tailscale
+            tag: v1.90.6
+          securityContext:
+            privileged: true
+            capabilities:
+              add:
+                - NET_ADMIN
+          env:
+            TS_EXTRA_ARGS: --hostname=immich
+            TS_KUBE_SECRET: ts-immich
+            TS_USERSPACE: "false"
+            TS_AUTHKEY:
+              valueFrom:
+                secretKeyRef:
+                  name: tailscale-auth-secret
+                  key: TS_AUTHKEY
+                  optional: true
 
   immich:
     metrics:
@@ -122,6 +141,39 @@ immich:
 
 hull:
   objects:
+    rolebinding:
+      default:
+        enabled: false
+      tailscale:
+        subjects:
+          - kind: ServiceAccount
+            name: authentik
+        roleRef:
+          kind: Role
+          name: _HT!{{ printf "%s-tailscale" (include "hull.metadata.fullname" .) }}
+          apiGroup: rbac.authorization.k8s.io
+    role:
+      default:
+        enabled: false
+
+      tailscale:
+        rules:
+          - apiGroups: [""] # "" indicates the core API group
+            resources: ["secrets"]
+            # Create can not be restricted to a resource name.
+            verbs: ["create"]
+          - apiGroups: [""] # "" indicates the core API group
+            resourceNames:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.tsSecretName }}
+                ]
+            resources: ["secrets"]
+            verbs: ["get", "update", "patch"]
+    serviceaccount:
+      default:
+        enabled: false
+
     customresource:
       app:
         apiVersion: postgresql.cnpg.io/v1
