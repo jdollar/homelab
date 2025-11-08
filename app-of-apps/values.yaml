@@ -167,6 +167,11 @@ hull:
             destination:
               namespace: penpot
 
+          tailscale-operator:
+            <<: *defaultComponent
+            destination:
+              namespace: tailscale
+
           # application sets
           jdollarblog: *defaultComponent
 
@@ -313,6 +318,13 @@ hull:
       sonarr: *defaultApplication
 
       syncthing: *defaultApplication
+
+      tailscale-operator:
+        <<: *defaultApplication
+        source:
+          repoURL: https://pkgs.tailscale.com/helmcharts
+          chart: tailscale
+          targetRevision: 1.90.5
 
       unificontroller: *defaultApplication
 

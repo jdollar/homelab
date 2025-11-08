@@ -51,6 +51,10 @@ spec:
           url: ghcr.io/immich-app/immich-charts
           name: immich-oci
           type: helm
+        tailscale-helm-repo:
+          url: https://pkgs.tailscale.com/helmcharts
+          name: tailscale-helm-repo
+          type: helm
 
       params:
         # Needed for traefik ingress
