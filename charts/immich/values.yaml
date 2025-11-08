@@ -137,7 +137,9 @@ hull:
           bootstrap:
             initdb:
               postInitSQL:
+                - ALTER DATABASE app OWNER TO app;
                 - CREATE EXTENSION IF NOT EXISTS vchord CASCADE;
+                - CREATE EXTENSION earthdistance CASCADE;
 
           monitoring:
             enablePodMonitor: true
