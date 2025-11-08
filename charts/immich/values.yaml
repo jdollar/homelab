@@ -140,6 +140,10 @@ immich:
         storageClass: nfs
 
 hull:
+  config:
+    specific:
+      tsSecretName: _HT!{{ printf "ts-%s" (include "hull.metadata.fullname" .) }}
+
   objects:
     rolebinding:
       default:
@@ -147,7 +151,7 @@ hull:
       tailscale:
         subjects:
           - kind: ServiceAccount
-            name: authentik
+            name: _HT!{{ printf "%s-default" (include "hull.metadata.fullname" .) }}
         roleRef:
           kind: Role
           name: _HT!{{ printf "%s-tailscale" (include "hull.metadata.fullname" .) }}
