@@ -103,8 +103,7 @@ immich:
           kubernetes.io/ingress.class: "tailscale"
         className: tailscale
         hosts:
-          - host: &ingressHost immich.joeldollarhide.com
-            paths:
+          - paths:
               - path: "/"
                 service:
                   identifier: main
