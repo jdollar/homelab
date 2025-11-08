@@ -73,25 +73,6 @@ immich:
             image:
               repository: ghcr.io/immich-app/immich-server
               pullPolicy: IfNotPresent
-          tailscale:
-            image:
-              repository: ghcr.io/tailscale/tailscale
-              tag: v1.90.6
-            securityContext:
-              privileged: true
-              capabilities:
-                add:
-                  - NET_ADMIN
-            env:
-              TS_EXTRA_ARGS: --hostname=immich
-              TS_KUBE_SECRET: ts-immich
-              TS_USERSPACE: "false"
-              TS_AUTHKEY:
-                valueFrom:
-                  secretKeyRef:
-                    name: tailscale-auth-secret
-                    key: TS_AUTHKEY
-                    optional: true
     ingress:
       main:
         enabled: true
@@ -163,32 +144,10 @@ hull:
     rolebinding:
       default:
         enabled: false
-      tailscale:
-        subjects:
-          - kind: ServiceAccount
-            name: default
-        roleRef:
-          kind: Role
-          name: _HT!{{ printf "%s-tailscale" "immich-immich" }}
-          apiGroup: rbac.authorization.k8s.io
     role:
       default:
         enabled: false
 
-      tailscale:
-        rules:
-          - apiGroups: [""] # "" indicates the core API group
-            resources: ["secrets"]
-            # Create can not be restricted to a resource name.
-            verbs: ["create"]
-          - apiGroups: [""] # "" indicates the core API group
-            resourceNames:
-              - _HT!
-                [
-                {{ (index . "$").Values.hull.config.specific.tsSecretName }}
-                ]
-            resources: ["secrets"]
-            verbs: ["get", "update", "patch"]
     serviceaccount:
       default:
         enabled: false
