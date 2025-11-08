@@ -72,15 +72,17 @@ hull:
                   configMapRef:
                     name: app
                     optional: false
+              nodeSelector:
+                intel.feature.node.kubernetes.io/gpu: "true"
               resources:
                 requests:
                   cpu: 400m
                   memory: 2500Mi
-                  #gpu.intel.com/i915: "1"
+                  gpu.intel.com/device-id.0300-3e92: "1"
                 limits:
                   cpu: 2
                   memory: 2500Mi
-                  #gpu.intel.com/i915: "1"
+                  gpu.intel.com/device-id.0300-3e92: "1"
 
     service:
       app:
