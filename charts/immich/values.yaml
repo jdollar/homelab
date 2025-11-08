@@ -97,19 +97,6 @@ immich:
           - secretName: immich-tls
             hosts:
               - *ingressHost
-      tailscale:
-        enabled: true
-        annotations:
-          kubernetes.io/ingress.class: "tailscale"
-        className: tailscale
-        hosts:
-          - paths:
-              - path: "/"
-                service:
-                  identifier: main
-        tls:
-          - hosts:
-              - immich
 
   machine-learning:
     enabled: true
@@ -151,6 +138,23 @@ hull:
         enabled: false
 
     customresource:
+      tailscale-ingress:
+        apiVersion: networking.k8s.io/v1
+        kind: Ingress
+        metadata:
+          name: ingress
+        spec:
+          ingressClassName: tailscale
+          rules:
+            - http:
+                paths:
+                  - path: /
+                    pathType: Prefix
+                    backend:
+                      service:
+                        name: immich-server
+                        port:
+                          number: 2283
       app:
         apiVersion: postgresql.cnpg.io/v1
         kind: Cluster
