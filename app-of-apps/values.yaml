@@ -325,7 +325,7 @@ hull:
           <<: *defaultApplicationSpec
           source:
             repoURL: https://pkgs.tailscale.com/helmcharts
-            chart: tailscale
+            chart: tailscale-operator
             targetRevision: 1.90.5
 
       unificontroller: *defaultApplication
