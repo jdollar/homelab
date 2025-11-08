@@ -151,7 +151,7 @@ hull:
       tailscale:
         subjects:
           - kind: ServiceAccount
-            name: _HT!{{ printf "%s-default" (include "hull.metadata.fullname" .) }}
+            name: default
         roleRef:
           kind: Role
           name: _HT!{{ printf "%s-tailscale" (include "hull.metadata.fullname" .) }}
