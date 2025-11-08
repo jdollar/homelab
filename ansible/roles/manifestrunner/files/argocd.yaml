@@ -55,6 +55,14 @@ spec:
           url: https://pkgs.tailscale.com/helmcharts
           name: tailscale-helm-repo
           type: helm
+        node-feature-discovery-repo:
+          url: https://kubernetes-sigs.github.io/node-feature-discovery/charts
+          name: node-feature-discovery-repo
+          type: helm
+        intel-device-plugin-repo:
+          url: https://intel.github.io/helm-charts/
+          name: intel-device-plugin-repo
+          type: helm
 
       params:
         # Needed for traefik ingress

@@ -1,26 +1,26 @@
 
 # Access to jellyfin
 jellyfin.joeldollarhide.com {
-    reverse_proxy jellyfin:8096
+    reverse_proxy https://default-jellyfin-jellyfin-tailscale-ingress.tail0f9d9.ts.net
 }
 
 authentik.joeldollarhide.com {
-    reverse_proxy authentik:9000
+    reverse_proxy https://authentik-authentik-authentik-tailscale-ingress.tail0f9d9.ts.net
 }
 
 # Access to jellyseerr
 jellyseerr.joeldollarhide.com {
-    reverse_proxy jellyseerr:5055
+    reverse_proxy https://default-jellyseerr-jellyseer-tailscale-ingress.tail0f9d9.ts.net
 }
 
 # Access to coral comments for blog
 coral.joeldollarhide.com {
-    reverse_proxy coral:5000
+    reverse_proxy https://default-coral-coral-tailscale-ingress.tail0f9d9.ts.net
 }
 
 # Access to umami analytics
 umami.joeldollarhide.com {
-    reverse_proxy umami:3000
+    reverse_proxy https://umami-umami-umami-tailscale-ingress.tail0f9d9.ts.net
 }
 
 # UI access to matrix
@@ -36,15 +36,16 @@ joeldollarhide.com:8448 {
 
 # Recipe Manager UI access
 tandoor.joeldollarhide.com {
-    reverse_proxy tandoor:8080
+    reverse_proxy https://tandoor-tandoor-tandoor-tailscale-ingress.tail0f9d9.ts.net
 }
 
 # Cal.com UI access
 schedule.joeldollarhide.com {
-    reverse_proxy calcom:3000
+    reverse_proxy https://calcom-calcom-calcom-tailscale-ingress.tail0f9d9.ts.net
 }
 
 # Immich
 immich.joeldollarhide.com {
     reverse_proxy https://immich-immich-ingress.tail0f9d9.ts.net
 }
+

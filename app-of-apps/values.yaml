@@ -172,6 +172,21 @@ hull:
             destination:
               namespace: tailscale
 
+          node-discovery-feature:
+            <<: *defaultComponent
+            destination:
+              namespace: inteldevice
+
+          intel-device-plugins-gpu:
+            <<: *defaultComponent
+            destination:
+              namespace: inteldevice
+
+          intel-device-plugins-operator:
+            <<: *defaultComponent
+            destination:
+              namespace: inteldevice
+
           # application sets
           jdollarblog: *defaultComponent
 
@@ -327,6 +342,36 @@ hull:
             repoURL: https://pkgs.tailscale.com/helmcharts
             chart: tailscale-operator
             targetRevision: 1.90.5
+
+      node-discovery-feature:
+        <<: *defaultApplication
+        spec:
+          <<: *defaultApplicationSpec
+          source:
+            repoURL: https://kubernetes-sigs.github.io/node-feature-discovery/charts
+            chart: node-feature-discovery
+            targetRevision: 0.14.3
+
+      intel-device-plugins-gpu:
+        <<: *defaultApplication
+        spec:
+          <<: *defaultApplicationSpec
+          source:
+            repoURL: https://intel.github.io/helm-charts/
+            chart: intel/intel-device-plugins-gpu
+            targetRevision: 0.34.0
+            helm:
+              valueFiles:
+                - $miscpi/app-of-apps/files/values-intel-device-plugins-gpu.yaml
+
+      intel-device-plugins-operator:
+        <<: *defaultApplication
+        spec:
+          <<: *defaultApplicationSpec
+          source:
+            repoURL: https://intel.github.io/helm-charts/
+            chart: intel/intel-device-plugins-operator
+            targetRevision: 0.34.0
 
       unificontroller: *defaultApplication
 
