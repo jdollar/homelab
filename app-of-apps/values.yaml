@@ -97,6 +97,11 @@ hull:
 
           pihole: *defaultComponent
 
+          pinepods:
+            <<: *defaultComponent
+            destination:
+              namespace: pinepods
+
           prowlarr: *defaultComponent
 
           qtorrent: *defaultComponent
@@ -467,6 +472,27 @@ hull:
               helm:
                 valueFiles:
                   - $miscpi/app-of-apps/files/values-frigate.yaml
+
+      pinepods:
+        <<: *defaultApplicationSources
+        spec:
+          <<: *defaultApplicationSourcesSpec
+          sources:
+            - repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              ref: miscpi
+            - repoURL: http://helm.pinepods.online
+              chart: pinepods
+              targetRevision: 0.8.2
+              helm:
+                valueFiles:
+                  - $miscpi/app-of-apps/files/values-pinepods.yaml
+            - path: charts/pinepods
+              repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              helm:
+                valueFiles:
+                  - values.yaml
 
       kube-prometheus-stack:
         <<: *defaultApplicationSources

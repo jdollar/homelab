@@ -334,3 +334,14 @@ metadata:
 spec:
   finalizers:
     - kubernetes
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: pinepods
+    prometheus: metrics
+  name: pinepods
+spec:
+  finalizers:
+    - kubernetes

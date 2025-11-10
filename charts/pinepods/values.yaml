@@ -1,0 +1,54 @@
+hull:
+  objects:
+    rolebinding:
+      default:
+        enabled: false
+    role:
+      default:
+        enabled: false
+
+    serviceaccount:
+      default:
+        enabled: false
+
+    customresource:
+      #immich:
+      #  staticName: true
+      #  apiVersion: networking.k8s.io/v1
+      #  kind: Ingress
+      #  spec:
+      #    ingressClassName: tailscale
+      #    rules:
+      #      - http:
+      #          paths:
+      #            - path: /
+      #              pathType: Prefix
+      #              backend:
+      #                service:
+      #                  name: immich-server
+      #                  port:
+      #                    number: 2283
+      app:
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Cluster
+        spec:
+          instances: 1
+
+          monitoring:
+            enablePodMonitor: true
+
+          managed:
+            services:
+              disabledDefaultServices: ["ro", "r"]
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+            limits:
+              cpu: 100m
+              memory: 1Gi
+
+          storage:
+            storageClass: nfs
+            size: 5Gi
