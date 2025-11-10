@@ -9,6 +9,7 @@ ingress:
   className: "traefik"
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
   hosts:
     - host: &ingressHost pinepods.joeldollarhide.com
