@@ -63,10 +63,6 @@ spec:
           url: https://intel.github.io/helm-charts/
           name: intel-device-plugin-repo
           type: helm
-        pine-pods-repo:
-          url: http://helm.pinepods.online
-          name: pine-pods-repo
-          type: helm
 
       params:
         # Needed for traefik ingress

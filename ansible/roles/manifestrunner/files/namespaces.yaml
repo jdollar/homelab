@@ -339,9 +339,9 @@ apiVersion: v1
 kind: Namespace
 metadata:
   labels:
-    kubernetes.io/metadata.name: pinepods
+    kubernetes.io/metadata.name: opodsync
     prometheus: metrics
-  name: pinepods
+  name: opodsync
 spec:
   finalizers:
     - kubernetes

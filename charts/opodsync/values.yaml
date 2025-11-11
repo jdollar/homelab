@@ -1,0 +1,115 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+
+hull:
+  config:
+    specific:
+      httpPort: 8080
+      ingressHost: opodsync.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data: {}
+      config:
+        data:
+          config.local.php:
+            path: files/config.local.php
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            opodsync-pvc-data-longhorn:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: opodsync-pvc-data-longhorn
+            config:
+              active: configMap
+              configMap:
+                name: config
+          containers:
+            app:
+              image:
+                repository: ganeshlab/opodsync
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              volumeMounts:
+                opodsync-pvc-data-longhorn:
+                  name: opodsync-pvc-data-longhorn
+                  mountPath: /var/www/server/data
+                config-local:
+                  name: app
+                  mountPath: /var/www/server/data/config.local.php
+                  subPath: config.local.php
+                  readOnly: true
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "OpodSync"
+          gethomepage.dev/type: "opodsync"
+          gethomepage.dev/description: "Podcast sync"
+          gethomepage.dev/group: "Streaming"
+          gethomepage.dev/icon: "opodsync.png"
+          gethomepage.dev/weight: "0"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    persistentvolumeclaim:
+      opodsync-pvc-data-longhorn:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 5Gi
