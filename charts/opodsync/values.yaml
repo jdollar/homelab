@@ -48,7 +48,7 @@ hull:
                   name: opodsync-pvc-data-longhorn
                   mountPath: /var/www/server/data
                 config-local:
-                  name: app
+                  name: config
                   mountPath: /var/www/server/data/config.local.php
                   subPath: config.local.php
                   readOnly: true
