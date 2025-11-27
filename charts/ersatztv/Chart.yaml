@@ -26,5 +26,5 @@ appVersion: "60b3bc92f4aa5a2be3b602f304891a110704eaa8"
 
 dependencies:
 - name: hull
-  version: 1.34.1
+  version: 1.34.2
   repository: https://vidispine.github.io/hull
