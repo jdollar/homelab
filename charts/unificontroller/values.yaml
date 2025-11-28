@@ -151,7 +151,6 @@ hull:
           entryPoints:
             - unifistun
             - unifidiscovery
-            - jellyfinsad
             - unifisyslog
           routes:
             - services:
@@ -159,8 +158,6 @@ hull:
                   port: _HT*hull.config.specific.stunPort
                 - name: _HT^app
                   port: _HT*hull.config.specific.discPort
-                - name: _HT^app
-                  port: _HT*hull.config.specific.discaPort
                 - name: _HT^app
                   port: _HT*hull.config.specific.syslogPort
 
