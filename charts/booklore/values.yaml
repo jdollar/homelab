@@ -13,11 +13,11 @@ hull:
           TZ:
             inline: "America/New_York"
           USER_ID:
-            inline: "1000"
+            inline: "0"
           GROUP_ID:
-            inline: "1000"
+            inline: "0"
           DATABASE_URL:
-            inline: "jdbc:mariadb://booklore-booklore-app-internal.booklore.svc.cluster.local:3306"
+            inline: "jdbc:mariadb://booklore-booklore-app-internal.booklore.svc.cluster.local:3306/booklore"
           DATABASE_USERNAME:
             inline: booklore
           BOOKLORE_PORT:
