@@ -27,6 +27,11 @@ hull:
 
           bazarr: *defaultComponent
 
+          booklore:
+            <<: *defaultComponent
+            destination:
+              namespace: booklore
+
           calcom:
             <<: *defaultComponent
             destination:
@@ -265,6 +270,8 @@ hull:
       #                  metadataNameOverride: audio-readarr-pvc-config-longhorn
 
       bazarr: *defaultApplication
+
+      booklore: *defaultApplication
 
       calibre-web: *defaultApplication
 

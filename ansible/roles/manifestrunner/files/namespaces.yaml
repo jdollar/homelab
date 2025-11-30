@@ -345,3 +345,14 @@ metadata:
 spec:
   finalizers:
     - kubernetes
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: booklore
+    prometheus: metrics
+  name: booklore
+spec:
+  finalizers:
+    - kubernetes
