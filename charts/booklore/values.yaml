@@ -120,10 +120,6 @@ hull:
         apiVersion: k8s.mariadb.com/v1alpha1
         kind: MariaDB
         spec:
-          rootPasswordSecretKeyRef:
-            name: mariadb
-            key: password
-
           username: booklore
           passwordSecretKeyRef:
             name: mariadb-password
