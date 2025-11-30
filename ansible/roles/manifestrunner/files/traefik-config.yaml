@@ -142,6 +142,7 @@ spec:
         protocol: TCP
     dashboard:
       enabled: true
+      insecure: true
     env:
       - name: CF_DNS_API_TOKEN
         valueFrom:

@@ -66,6 +66,10 @@ spec:
           url: https://intel.github.io/helm-charts/
           name: intel-device-plugin-repo
           type: helm
+        mariadb-operator-repo:
+          url: https://helm.mariadb.com/mariadb-operator
+          name: mariadb-operator-repo
+          type: helm
 
       params:
         # Needed for traefik ingress

@@ -192,6 +192,11 @@ hull:
             destination:
               namespace: inteldevice
 
+          mariadb-operator:
+            <<: *defaultComponent
+            destination:
+              namespace: kube-system
+
           # application sets
           jdollarblog: *defaultComponent
 
@@ -436,6 +441,19 @@ hull:
           syncPolicy:
             syncOptions:
               - ServerSideApply=true
+
+      mariadb-operator:
+        <<: *defaultApplicationSources
+        spec:
+          <<: *defaultApplicationSourcesSpec
+          sources:
+            - repoURL: https://helm.mariadb.com/mariadb-operator
+              chart: mariadb-operator-crds
+              targetRevision: 25.10.2
+            - repoURL: https://helm.mariadb.com/mariadb-operator
+              chart: mariadb-operator
+              targetRevision: 25.10.2
+
 
       forgejo:
         <<: *defaultApplicationSources
