@@ -16,6 +16,10 @@ hull:
             inline: "1000"
           GROUP_ID:
             inline: "1000"
+          DATABASE_URL:
+            inline: "jdbc:mariadb://booklore-booklore-app-internal.booklore.svc.cluster.local:3306"
+          DATABASE_USERNAME:
+            inline: booklore
           BOOKLORE_PORT:
             inline: _HT*hull.config.specific.httpPort
 
@@ -68,10 +72,20 @@ hull:
                   configMapRef:
                     name: app
                     optional: false
+              env:
+                DATABASE_PASSWORD:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: mariadb-password
+                      key: password
+                      optional: false
 
     service:
       app:
         type: ClusterIP
+        selector:
+          app.kubernetes.io/type: app
         ports:
           http:
             port: _HT*hull.config.specific.httpPort
