@@ -600,19 +600,7 @@ hull:
                   - values.yaml
                   - $miscpi/charts/homelab/tailscale.yaml
 
-      booklore:
-        <<: *defaultApplicationSources
-        spec:
-          <<: *defaultApplicationSourcesSpec
-          sources:
-            - repoURL: _HT*hull.config.specific.repoURL
-              targetRevision: HEAD
-              ref: miscpi
-            - <<: *defaultApplicationSource
-              helm:
-                valueFiles:
-                  - values.yaml
-                  - $miscpi/charts/homelab/tailscale.yaml
+      booklore: *applicationSingleSourceTailscale
 
       calcom: *applicationSingleSourceTailscale
 
