@@ -146,6 +146,7 @@ github.com/muhlba91/pulumi-proxmoxve/sdk/v7 v7.6.0/go.mod h1:8Q54WUjyBb0Pd5M7Zlc
 github.com/muhlba91/pulumi-proxmoxve/sdk/v7 v7.6.1/go.mod h1:8Q54WUjyBb0Pd5M7ZlcLYA6NZTLdbyBjD/q28Vs332o=
 github.com/muhlba91/pulumi-proxmoxve/sdk/v7 v7.7.0/go.mod h1:8Q54WUjyBb0Pd5M7ZlcLYA6NZTLdbyBjD/q28Vs332o=
 github.com/muhlba91/pulumi-proxmoxve/sdk/v7 v7.8.1/go.mod h1:xl9cNIY576OQE5HxvSJLnsrEKM4JqvBsFZtq3xKd7WM=
+github.com/muhlba91/pulumi-proxmoxve/sdk/v7 v7.9.0/go.mod h1:MoclU24zQxXH+ZAXBO8vRn6L5oG+L4OWn3+PF8LDAdM=
 github.com/onsi/gomega v1.34.1 h1:EUMJIKUjM8sKjYbtxQI9A4z2o+rruxnzNvpknOXie6k=
 github.com/onsi/gomega v1.34.1/go.mod h1:kU1QgUvBDLXBJq618Xvm2LUX6rSAfRaFRTcdOeDLwwY=
 github.com/opentracing/basictracer-go v1.1.0 h1:Oa1fTSBvAl8pa3U+IJYqrKm0NALwH9OsgwOqDv4xJW0=
