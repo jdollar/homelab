@@ -181,7 +181,7 @@ hull:
       booklore-pvc-books:
         staticName: true
         accessModes:
-          - ReadWriteOnce
+          - ReadWriteMany
         storageClassName: nfs
         resources:
           requests:

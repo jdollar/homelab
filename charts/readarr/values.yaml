@@ -33,15 +33,15 @@ hull:
               persistentVolumeClaim:
                 staticName: true
                 claimName: readarr-pvc-config-longhorn
-            jellyfin-pvc-media:
+            booklore-pvc-books:
               active: persistentVolumeClaim
               persistentVolumeClaim:
                 staticName: true
-                claimName: jellyfin-pvc-media
+                claimName: booklore-pvc-books
           containers:
             readarr:
               image:
-                repository: ghcr.io/hotio/readarr
+                repository: ghcr.io/pennydreadful/bookshelf
                 pullPolicy: IfNotPresent
                 tag: _HT**Chart.appVersion
               ports:
@@ -52,8 +52,8 @@ hull:
                 readarr-pvc-config-longhorn:
                   name: readarr-pvc-config-longhorn
                   mountPath: /config
-                jellyfin-pvc-media:
-                  name: jellyfin-pvc-media
+                booklore-pvc-books:
+                  name: booklore-pvc-books
                   mountPath: /data
               envFrom:
                 readarr:
