@@ -11,7 +11,7 @@ hull:
       app:
         data:
           LISTENARR_PUBLIC_URL:
-            inline: _HT!{{ printf "%s-default" (include "hull.config.specific.ingressHost" .) }}
+            inline: _HT!{{ printf "https://%s" (index . "$").Values.hull.config.specific.ingressHost }}
 
     deployment:
       app:
