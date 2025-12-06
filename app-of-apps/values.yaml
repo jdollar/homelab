@@ -115,10 +115,10 @@ hull:
 
           radarr: *defaultComponent
 
-          readarr:
-            <<: *defaultComponent
-            destination:
-              namespace: booklore
+          #readarr:
+          #  <<: *defaultComponent
+          #  destination:
+          #    namespace: booklore
 
           recyclarr: *defaultComponent
 
@@ -335,7 +335,7 @@ hull:
 
       radarr: *defaultApplication
 
-      readarr: *defaultApplication
+      #readarr: *defaultApplication
 
       recyclarr: *defaultApplication
 
