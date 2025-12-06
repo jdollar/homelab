@@ -80,6 +80,8 @@ hull:
 
           lidarr: *defaultComponent
 
+          listenarr: *defaultComponent
+
           lldap: *defaultComponent
 
           velocity: *defaultComponent
@@ -298,6 +300,8 @@ hull:
       jellystat: *defaultApplication
 
       lidarr: *defaultApplication
+
+      listenarr: *defaultApplication
 
       lldap: *defaultApplication
 
