@@ -85,7 +85,7 @@ hull:
       app:
         type: ClusterIP
         selector:
-          app.kubernetes.io/type: app
+          _HT&app
         ports:
           http:
             port: _HT*hull.config.specific.httpPort
