@@ -35,8 +35,8 @@ hull:
           containers:
             app:
               securityContext:
-                runAsUser: 1001
-                runAsGroup: 1001
+                runAsUser: 1000
+                runAsGroup: 1000
               image:
                 repository: ghcr.io/therobbiedavis/listenarr
                 pullPolicy: IfNotPresent
