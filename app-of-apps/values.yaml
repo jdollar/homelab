@@ -52,6 +52,11 @@ hull:
 
           flaresolverr: *defaultComponent
 
+          garage:
+            <<: *defaultComponent
+            destination:
+              namespace: garage
+
           homeassistant: *defaultComponent
 
           homepage: *defaultComponent
@@ -502,6 +507,22 @@ hull:
               helm:
                 valueFiles:
                   - $miscpi/app-of-apps/files/values-frigate.yaml
+
+      garage:
+        <<: *defaultApplicationSources
+        spec:
+          <<: *defaultApplicationSourcesSpec
+          sources:
+            - repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              ref: miscpi
+            - path: script/helm/garage
+              repoURL: https://git.deuxfleurs.fr/Deuxfleurs/garage
+              targetRevision: HEAD
+              helm:
+                valueFiles:
+                  - values.yaml
+                  - $mispi/app-of-apps/files/values-garage.yaml
 
       kube-prometheus-stack:
         <<: *defaultApplicationSources

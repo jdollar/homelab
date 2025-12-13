@@ -356,3 +356,14 @@ metadata:
 spec:
   finalizers:
     - kubernetes
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: garage
+    prometheus: metrics
+  name: garage
+spec:
+  finalizers:
+    - kubernetes
