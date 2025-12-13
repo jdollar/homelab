@@ -1,6 +1,11 @@
 ---
 garage:
   replicationFactor: 2
+  s3:
+    web:
+      rootDomain: &rootDomain ".joeldollarhide.com"
+    api:
+      rootDomain: *rootDomain
 
 deployment:
   replicaCount: 4
@@ -12,6 +17,12 @@ persistence:
   data:
     storageClass: nfs
     size: 10Gi
+
+monitoring:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
 
 ingress:
   s3:
