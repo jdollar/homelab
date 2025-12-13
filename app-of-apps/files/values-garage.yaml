@@ -8,7 +8,7 @@ garage:
       rootDomain: *rootDomain
 
 deployment:
-  replicaCount: 4
+  replicaCount: 2
 
 persistence:
   meta:
