@@ -55,6 +55,8 @@ hull:
     service:
       app:
         type: ClusterIP
+        selector:
+          app.kubernetes.io/type: app
         ports:
           http:
             port: _HT*hull.config.specific.httpPort
@@ -63,7 +65,7 @@ hull:
       admin:
         type: ClusterIP
         selector:
-          app.kubernetes.io/type: app-admin
+          app.kubernetes.io/name: garagehq
         ports:
           http:
             port: 3903

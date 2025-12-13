@@ -1,4 +1,6 @@
 ---
+nameOverride: garagehq
+
 garage:
   replicationFactor: 2
   s3:
