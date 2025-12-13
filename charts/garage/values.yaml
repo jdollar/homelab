@@ -68,8 +68,8 @@ hull:
           app.kubernetes.io/name: garagehq
         ports:
           http:
-            port: 3903
-            targetPort: 3903
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
             protocol: TCP
 
     ingress:
