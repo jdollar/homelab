@@ -5,7 +5,7 @@ hull:
     specific:
       httpPort: 3909
       ingressHost: garage-ui.joeldollarhide.com
-      adminIngressHost: garage-admin.joeldollarhide.com
+      adminIngressHost: s3-admin.joeldollarhide.com
 
   objects:
     configmap:
