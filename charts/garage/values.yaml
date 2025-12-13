@@ -70,5 +70,5 @@ hull:
         ports:
           http:
             port: _HT*hull.config.specific.adminHttpPort
-            targetPort: http
+            targetPort: _HT*hull.config.specific.adminHttpPort
             protocol: TCP
