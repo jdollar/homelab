@@ -23,3 +23,8 @@ version: 0.1.0
 # It is recommended to use it with quotes.
 # khairul169/garage-webui
 appVersion: "1.1.0"
+
+dependencies:
+  - name: hull
+    version: 1.34.2
+    repository: https://vidispine.github.io/hull
