@@ -26,6 +26,7 @@ hull:
         pod:
           volumes:
             config:
+              staticName: true
               active: configMap
               configMap:
                 name: garage-config
@@ -48,6 +49,7 @@ hull:
               envFrom:
                 app:
                   configMapRef:
+                    staticName: true
                     name: app
                     optional: false
 
