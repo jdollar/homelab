@@ -513,6 +513,12 @@ hull:
         spec:
           <<: *defaultApplicationSourcesSpec
           sources:
+            - path: charts/garage
+              repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              helm:
+                valueFiles:
+                  - values.yaml
             - repoURL: _HT*hull.config.specific.repoURL
               targetRevision: HEAD
               ref: miscpi

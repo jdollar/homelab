@@ -1,0 +1,129 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+
+hull:
+  config:
+    specific:
+      httpPort: 3909
+      ingressHost: garage-ui.joeldollarhide.com
+      adminIngressHost: garage-admin.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data:
+          API_BASE_URL:
+            inline: https://s3-admin.joeldollarhide.com
+          S3_ENDPOINT_URL:
+            inline: https://s3-api.joeldollarhide.com
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            config:
+              active: configMap
+              configMap:
+                name: garage-config
+          containers:
+            app:
+              image:
+                repository: khairul169/garage-webui
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              volumeMounts:
+                config-local:
+                  name: config
+                  mountPath: /etc/garage.toml
+                  subPath: garage.toml
+                  readOnly: true
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+      admin:
+        type: ClusterIP
+        selector:
+          app.kubernetes.io/type: app-admin
+        ports:
+          http:
+            port: 3903
+            targetPort: 3903
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+      admin:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+        rules:
+          app:
+            host: _HT*hull.config.specific.adminIngressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: admin
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.adminIngressHost }}
+                ]
