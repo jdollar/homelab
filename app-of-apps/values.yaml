@@ -522,7 +522,7 @@ hull:
               helm:
                 valueFiles:
                   - values.yaml
-                  - $mispi/app-of-apps/files/values-garage.yaml
+                  - $miscpi/app-of-apps/files/values-garage.yaml
 
       kube-prometheus-stack:
         <<: *defaultApplicationSources
