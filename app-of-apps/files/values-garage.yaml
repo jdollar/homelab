@@ -31,3 +31,27 @@ ingress:
         - secretName: s3-api-tls
           hosts:
             - *ingressHost
+    web:
+      enabled: true
+      className: traefik
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+        traefik.ingress.kubernetes.io/preserve-host: "true"
+        
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/name: "Garage"
+        gethomepage.dev/type: "garage"
+        gethomepage.dev/description: "S3 Api"
+        gethomepage.dev/group: "homelab"
+        gethomepage.dev/icon: "garage.png"
+        gethomepage.dev/weight: "0"
+      hosts:
+        - host: &ingressHost s3-web.joeldollarhide.com
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - secretName: s3-web-tls
+          hosts:
+            - *ingressHost
