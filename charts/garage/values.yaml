@@ -29,7 +29,7 @@ hull:
               active: configMap
               configMap:
                 staticName: true
-                name: garage-config
+                name: garagehq-config
           containers:
             app:
               image:
