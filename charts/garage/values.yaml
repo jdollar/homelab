@@ -4,6 +4,7 @@ hull:
   config:
     specific:
       httpPort: 3909
+      adminHttpPort: 3903
       ingressHost: garage-ui.joeldollarhide.com
       adminIngressHost: s3-admin.joeldollarhide.com
 
@@ -68,7 +69,7 @@ hull:
           app.kubernetes.io/name: garagehq
         ports:
           http:
-            port: _HT*hull.config.specific.httpPort
+            port: _HT*hull.config.specific.adminHttpPort
             targetPort: http
             protocol: TCP
 
