@@ -13,7 +13,7 @@ hull:
       app:
         data:
           API_BASE_URL:
-            inline: https://s3-admin.joeldollarhide.com
+            inline: http://garage-garage-admin.garage.svc.cluster.local:3903
           S3_ENDPOINT_URL:
             inline: https://s3-api.joeldollarhide.com
 
@@ -72,62 +72,3 @@ hull:
             port: _HT*hull.config.specific.adminHttpPort
             targetPort: http
             protocol: TCP
-
-    ingress:
-      app:
-        enabled: true
-        annotations:
-          kubernetes.io/ingress.class: "traefik"
-          cert-manager.io/cluster-issuer: letsencrypt-prod
-          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
-        rules:
-          app:
-            host: _HT*hull.config.specific.ingressHost
-            http:
-              paths:
-                root:
-                  path: /
-                  pathType: ImplementationSpecific
-                  backend:
-                    service:
-                      name: app
-                      port:
-                        name: http
-        tls:
-          app:
-            enabled: true
-            secretName: tls
-            hosts:
-              - _HT!
-                [
-                {{ (index . "$").Values.hull.config.specific.ingressHost }}
-                ]
-
-      admin:
-        enabled: true
-        annotations:
-          kubernetes.io/ingress.class: "traefik"
-          cert-manager.io/cluster-issuer: letsencrypt-prod
-          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
-        rules:
-          admin:
-            host: _HT*hull.config.specific.adminIngressHost
-            http:
-              paths:
-                root:
-                  path: /
-                  pathType: ImplementationSpecific
-                  backend:
-                    service:
-                      name: admin
-                      port:
-                        name: http
-        tls:
-          admin:
-            enabled: true
-            secretName: admin-tls
-            hosts:
-              - _HT!
-                [
-                {{ (index . "$").Values.hull.config.specific.adminIngressHost }}
-                ]
