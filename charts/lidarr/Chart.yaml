@@ -21,8 +21,8 @@ version: 0.1.0
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-# renovate: image=ghcr.io/hotio/lidarr
-appVersion: "release-2.12.4.4658"
+# renovate: image=blampe/lidarr
+appVersion: "lidarr-plugins-3.1.1.4884"
 
 dependencies:
   - name: hull
