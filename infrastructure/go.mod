@@ -5,10 +5,10 @@ go 1.25.0
 toolchain go1.25.5
 
 require (
-	github.com/muhlba91/pulumi-proxmoxve/sdk/v7 v7.9.0
-	github.com/muhlba91/pulumi-proxmoxve/sdk/v7 v7.9.0
+	github.com/muhlba91/pulumi-proxmoxve/sdk/v6 v6.18.1
+	github.com/muhlba91/pulumi-proxmoxve/sdk/v7 v7.11.0
 	github.com/pulumi/pulumi-tls/sdk/v5 v5.2.3
-	github.com/pulumi/pulumi/sdk/v3 v3.210.0
+	github.com/pulumi/pulumi/sdk/v3 v3.212.0
 )
 
 require (
@@ -74,7 +74,7 @@ require (
 	github.com/skeema/knownhosts v1.3.0 // indirect
 	github.com/spf13/cast v1.7.0 // indirect
 	github.com/spf13/cobra v1.8.1 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/texttheater/golang-levenshtein v1.0.1 // indirect
 	github.com/uber/jaeger-client-go v2.30.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
