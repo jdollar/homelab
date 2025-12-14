@@ -150,6 +150,45 @@ hull:
                 - name: _HT^app
                   port: _HT*hull.config.specific.tcpPort
 
+      db:
+        apiVersion: k8s.mariadb.com/v1alpha1
+        kind: MariaDB
+        spec:
+          username: lldap
+          passwordSecretKeyRef:
+            name: lldap-secret
+            key: dbpass
+            generate: false
+          database: lldap
+
+          port: 3306
+
+          storage:
+            size: 1Gi
+            storageClassName: nfs
+
+          myCnf: |
+            [mariadb]
+            bind-address=*
+            default_storage_engine=InnoDB
+            binlog_format=row
+            innodb_autoinc_lock_mode=2
+            innodb_buffer_pool_size=1600M
+            max_allowed_packet=256M
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 1Gi
+
+          metrics:
+            enabled: true
+
+          tls:
+            enabled: false
+
     persistentvolumeclaim:
       lldap-pvc-data:
         staticName: true
