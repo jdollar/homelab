@@ -140,9 +140,9 @@ hull:
               resources:
                 requests:
                   cpu: 200m
-                  memory: 700Mi
+                  memory: 1500Mi
                 limits:
-                  memory: 700Mi
+                  memory: 1500Mi
 
     service:
       app:
