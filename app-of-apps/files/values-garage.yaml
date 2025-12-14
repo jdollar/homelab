@@ -2,14 +2,12 @@
 nameOverride: garagehq
 
 garage:
-  replicationFactor: 2
+  replicationMode: 2
   s3:
     web:
       rootDomain: &rootDomain ".joeldollarhide.com"
     api:
       rootDomain: *rootDomain
-  selectorLabels:
-    app.kubernetes.io/type: app-admin
 
 deployment:
   replicaCount: 2
