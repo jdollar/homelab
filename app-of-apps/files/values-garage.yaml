@@ -2,7 +2,7 @@
 nameOverride: garagehq
 
 garage:
-  replicationMode: 2
+  replicationMode: 3
   s3:
     web:
       rootDomain: &rootDomain ".joeldollarhide.com"
@@ -10,7 +10,7 @@ garage:
       rootDomain: *rootDomain
 
 deployment:
-  replicaCount: 2
+  replicaCount: 3
 
 persistence:
   meta:
