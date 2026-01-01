@@ -1,0 +1,115 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+
+hull:
+  config:
+    specific:
+      httpPort: 8000
+      ingressHost: yamtrack.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data:
+          REDIS_URL:
+            inline: redis://redis-headless.default.svc.cluster.local:6379
+          TZ:
+            inline: "Etc/UTC"
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            yamtrack-pvc-db:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: yamtrack-pvc-db
+          containers:
+            app:
+              image:
+                repository: ghcr.io/fuzzygrim/yamtrack
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              volumeMounts:
+                yamtrack-pvc-db:
+                  name: yamtrack-pvc-db
+                  mountPath: /yamtrack/db
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              env:
+                SECRET:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: yamtrack-secret
+                      key: SECRET
+                      optional: false
+              resources: {}
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "YamTrack"
+          gethomepage.dev/type: "yamtrack"
+          gethomepage.dev/description: "Tracking streams"
+          gethomepage.dev/group: "Streaming"
+          gethomepage.dev/icon: "yamtrack.png"
+          gethomepage.dev/weight: "0"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    persistentvolumeclaim:
+      yamtrack-pvc-db:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 5Gi

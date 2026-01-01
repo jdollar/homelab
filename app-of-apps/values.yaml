@@ -158,6 +158,8 @@ hull:
 
           wizarr: *defaultComponent
 
+          yamtrack: *defaultComponent
+
           yoink: *defaultComponent
 
           # sources
@@ -409,6 +411,8 @@ hull:
       uptime-kuma: *defaultApplication
 
       wallos: *defaultApplication
+
+      yamtrack: *defaultApplication
 
       yoink: *defaultApplication
 
