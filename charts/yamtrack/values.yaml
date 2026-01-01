@@ -22,8 +22,6 @@ hull:
             inline: 'True'
           REDIRECT_LOGIN_TO_SSO:
             inline: 'True'
-          REGISTRATION:
-            inline: 'False'
 
     deployment:
       app:
