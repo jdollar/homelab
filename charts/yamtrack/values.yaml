@@ -14,6 +14,16 @@ hull:
             inline: redis://redis-headless.default.svc.cluster.local:6379
           TZ:
             inline: "Etc/UTC"
+          URLS:
+            inline: _HT!{{ printf "https://%s" _HT*hull.config.specific.ingressHost }}
+          SOCIAL_PROVIDERS:
+            inline: allauth.socialaccount.providers.openid_connect
+          SOCIALACCOUNT_ONLY:
+            inline: True
+          REDIRECT_LOGIN_TO_SSO:
+            inline: True
+          REGISTRATION:
+            inline: False
 
     deployment:
       app:
@@ -49,12 +59,54 @@ hull:
                     name: app
                     optional: false
               env:
+                DB_NAME:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: yamtrack-yamtrack-app-app
+                      key: dbname
+                      optional: false
+                DB_HOST:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: yamtrack-yamtrack-app-app
+                      key: host
+                      optional: false
+                DB_PORT:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: yamtrack-yamtrack-app-app
+                      key: port
+                      optional: false
+                DB_USER:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: yamtrack-yamtrack-app-app
+                      key: username
+                      optional: false
+                DB_PASSWORD:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: yamtrack-yamtrack-app-app
+                      key: password
+                      optional: false
                 SECRET:
                   valueFrom:
                     secretKeyRef:
                       staticName: true
                       name: yamtrack-secret
                       key: SECRET
+                      optional: false
+                SOCIALACCOUNT_PROVIDERS:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: yamtrack-secret
+                      key: SOCIALACCOUNT_PROVIDERS
                       optional: false
               resources: {}
 
@@ -103,6 +155,32 @@ hull:
                 [
                 {{ (index . "$").Values.hull.config.specific.ingressHost }}
                 ]
+
+    customresource:
+      app:
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Cluster
+        spec:
+          instances: 1
+
+          monitoring:
+            enablePodMonitor: true
+
+          managed:
+            services:
+              disabledDefaultServices: ["ro", "r"]
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+            limits:
+              cpu: 100m
+              memory: 1Gi
+
+          storage:
+            storageClass: nfs
+            size: 5Gi
 
     persistentvolumeclaim:
       yamtrack-pvc-db:
