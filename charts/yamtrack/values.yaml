@@ -19,11 +19,11 @@ hull:
           SOCIAL_PROVIDERS:
             inline: allauth.socialaccount.providers.openid_connect
           SOCIALACCOUNT_ONLY:
-            inline: True
+            inline: 'True'
           REDIRECT_LOGIN_TO_SSO:
-            inline: True
+            inline: 'True'
           REGISTRATION:
-            inline: False
+            inline: 'False'
 
     deployment:
       app:
@@ -107,6 +107,20 @@ hull:
                       staticName: true
                       name: yamtrack-secret
                       key: SOCIALACCOUNT_PROVIDERS
+                      optional: false
+                TRAKT_API:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: yamtrack-secret
+                      key: TRAKT_API
+                      optional: false
+                TRAKT_API_SECRET:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: yamtrack-secret
+                      key: TRAKT_API_SECRET
                       optional: false
               resources: {}
 
