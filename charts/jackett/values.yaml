@@ -39,7 +39,7 @@ hull:
           containers:
             app:
               image:
-                repository: lscr.io/linuxserver/jackett
+                repository: linuxserver/jackett
                 pullPolicy: IfNotPresent
                 tag: _HT**Chart.appVersion
               ports:
