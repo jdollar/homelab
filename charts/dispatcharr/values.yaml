@@ -1,4 +1,15 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+redis:
+  enabled: true
+  auth:
+    enabled: false
+  disableCommands:
+    - FLUSHALL
+  master:
+    persistence:
+      storageClass: nfs
+  replica:
+    replicaCount: 0
 
 hull:
   config:
@@ -14,9 +25,9 @@ hull:
             # change when they fix their modular deployment
             inline: "aio"
           REDIS_HOST:
-            inline: "redis-headless.default.svc.cluster.local"
+            inline: "redis-headless.dispatcharr.svc.cluster.local"
           CELERY_BROKER:
-            inline: "redis://redis-headless.default.svc.cluster.local:6379"
+            inline: "redis://redis-headless.dispatcharr.svc.cluster.local:6379"
           DISPATCHARR_LOG_LEVEL:
             inline: "info"
 
