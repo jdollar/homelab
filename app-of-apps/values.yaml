@@ -43,10 +43,10 @@ hull:
 
           cyberchef: *defaultComponent
 
-          #dispatcharr:
-          #  <<: *defaultComponent
-          #  destination:
-          #    namespace: dispatcharr
+          dispatcharr:
+            <<: *defaultComponent
+            destination:
+              namespace: dispatcharr
 
           ersatztv: *defaultComponent
 
@@ -289,7 +289,7 @@ hull:
 
       cyberchef: *defaultApplication
 
-      #dispatcharr: *defaultApplication
+      dispatcharr: *defaultApplication
 
       ersatztv: *defaultApplication
 
