@@ -96,10 +96,10 @@ hull:
               resources:
                 requests:
                   cpu: 200m
-                  memory: 1000Mi
+                  memory: 2000Mi
                 limits:
                   cpu: 1
-                  memory: 1000Mi
+                  memory: 2000Mi
 
     service:
       app:
