@@ -3,9 +3,9 @@ redis:
   enabled: true
   auth:
     enabled: false
-  disableCommands:
-    - FLUSHALL
   master:
+    disableCommands:
+      - FLUSHALL
     persistence:
       storageClass: nfs
   replica:
