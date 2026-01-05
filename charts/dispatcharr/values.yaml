@@ -25,9 +25,9 @@ hull:
             # change when they fix their modular deployment
             inline: "aio"
           REDIS_HOST:
-            inline: "redis-headless.dispatcharr.svc.cluster.local"
+            inline: "dispatcharr-redis-headless.dispatcharr.svc.cluster.local"
           CELERY_BROKER:
-            inline: "redis://redis-headless.dispatcharr.svc.cluster.local:6379"
+            inline: "redis://dispatcharr-redis-headless.dispatcharr.svc.cluster.local:6379"
           DISPATCHARR_LOG_LEVEL:
             inline: "info"
 
