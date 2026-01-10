@@ -7,6 +7,8 @@ import (
 	"log"
 	"os"
 
+	"infrastructure/hertzner"
+
 	"github.com/muhlba91/pulumi-proxmoxve/sdk/v6/go/proxmoxve"
 	"github.com/muhlba91/pulumi-proxmoxve/sdk/v6/go/proxmoxve/storage"
 	"github.com/muhlba91/pulumi-proxmoxve/sdk/v6/go/proxmoxve/vm"
@@ -79,6 +81,20 @@ type VM struct {
 }
 
 func run(ctx *pulumi.Context) error {
+	for _, setup := range []func(*pulumi.Context) error{
+		setupProxmox,
+		hertzner.Run,
+	} {
+		err := setup(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func setupProxmox(ctx *pulumi.Context) error {
 	conf := config.New(ctx, "")
 	infraConf := config.New(ctx, configNamespaceInfrastructure)
 	proxmoxConf := config.New(ctx, configNamespaceProxmoxve)
