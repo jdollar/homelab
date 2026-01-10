@@ -173,6 +173,17 @@ hull:
                         staticName: true
                         key: RESTIC_REPOSITORY
                         name: restic-secret
+                volumeMounts:
+                  sshConfig: &sshConfig
+                    name: config
+                    subPath: ssh-config
+                    mountPath: /root/.ssh/config
+                    readOnly: true
+                  sshKey: &sshKey
+                    name: config
+                    subPath: id_ed25519
+                    mountPath: /root/.ssh/id_ed25519
+                    readOnly: true
             containers:
               backup:
                 image:
@@ -188,16 +199,8 @@ hull:
                 env: *resticEnv
                 resources: {}
                 volumeMounts:
-                  sshConfig:
-                    name: config
-                    subPath: ssh-config
-                    mountPath: /root/.ssh/config
-                    readOnly: true
-                  sshKey:
-                    name: config
-                    subPath: id_ed25519
-                    mountPath: /root/.ssh/id_ed25519
-                    readOnly: true
+                  sshConfig: *sshConfig
+                  sshKey: *sshKey
                   data:
                     name: data
                     mountPath: /home/data
