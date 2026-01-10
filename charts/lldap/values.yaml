@@ -155,7 +155,7 @@ hull:
         kind: PhysicalBackup
         spec:
           mariaDbRef:
-            name: lldap-lldap-db
+            name: lldap
           schedule:
             cron: "0 0 * * *"
             suspend: false
