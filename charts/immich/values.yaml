@@ -136,6 +136,85 @@ hull:
       default:
         enabled: false
 
+    cronjob:
+      backup:
+        concurrencyPolicy: Forbid
+        failedJobsHistoryLimit: 1
+        schedule: 0 3 * * *
+        successfulJobsHistoryLimit: 3
+        suspend: false
+        job:
+          pod:
+            volumes:
+              config:
+                active: secret
+                secret:
+                  staticName: true
+                  secretName: restic-secret
+                  defaultMode: 256
+              data:
+                active: persistentVolumeClaim
+                persistentVolumeClaim:
+                  staticName: true
+                  claimName: immich-pvc-data
+            restartPolicy: OnFailure
+            securityContext: {}
+            initContainers:
+              01-prune-old:
+                image:
+                  repository: restic/restic
+                  pullPolicy: Always
+                args:
+                - forget
+                - --tag
+                - k8s,immich-data
+                - --keep-hourly
+                - '168'
+                env: &resticEnv
+                  RESTIC_PASSWORD:
+                    valueFrom:                 
+                      secretKeyRef:
+                        staticName: true
+                        key: RESTIC_PASSWORD
+                        name: restic-secret
+                  RESTIC_REPOSITORY:
+                    valueFrom:                 
+                      secretKeyRef:
+                        staticName: true
+                        key: RESTIC_REPOSITORY
+                        name: restic-secret
+                volumeMounts:
+                  sshConfig: &sshConfig
+                    name: config
+                    subPath: ssh-config
+                    mountPath: /root/.ssh/config
+                    readOnly: true
+                  sshKey: &sshKey
+                    name: config
+                    subPath: id_ed25519
+                    mountPath: /root/.ssh/id_ed25519
+                    readOnly: true
+            containers:
+              backup:
+                image:
+                  repository: restic/restic
+                  pullPolicy: Always
+                args:
+                - backup
+                - --host
+                - immich-backup-pod
+                - --tag=k8s
+                - --tag=immich-data
+                - /data
+                env: *resticEnv
+                resources: {}
+                volumeMounts:
+                  sshConfig: *sshConfig
+                  sshKey: *sshKey
+                  data:
+                    name: data
+                    mountPath: /data
+
     customresource:
       immich:
         staticName: true
