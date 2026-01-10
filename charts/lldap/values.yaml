@@ -135,6 +135,17 @@ hull:
         suspend: false
         job:
           pod:
+            volumes:
+              config:
+                active: secret
+                secret:
+                  staticName: true
+                  secretName: restic-secret
+              data:
+                active: persistentVolumeClaim
+                persistentVolumeClaim:
+                  staticName: true
+                  claimName: lldap-lldap-db-backup
             containers:
               backup:
                 image:
@@ -177,18 +188,6 @@ hull:
                     mountPath: /home/data
               restartPolicy: OnFailure
               securityContext: {}
-              terminationGracePeriodSeconds: 30
-              volumes:
-                config:
-                  active: secret
-                  secret:
-                    staticName: true
-                    secretName: restic-secret
-                data:
-                  active: persistentVolumeClaim
-                  persistentVolumeClaim:
-                    staticName: true
-                    claimName: lldap-lldap-db-backup
 
     customresource:
       app:
