@@ -149,19 +149,16 @@ hull:
                   claimName: lldap-lldap-db-backup
             restartPolicy: OnFailure
             securityContext: {}
-            containers:
-              backup:
+            initContainers:
+              01-prune-old:
                 image:
                   repository: restic/restic
                   pullPolicy: Always
                 args:
-                - backup
-                - --host
-                - lldap-backup-pod
-                - --tag=k8s
-                - --tag=lldap
-                - /home/data
-                env:
+                - forget
+                - --tag=k8s,lldap
+                - --keep-hourly 168
+                env: &resticEnv
                   RESTIC_PASSWORD:
                     valueFrom:                 
                       secretKeyRef:
@@ -174,6 +171,19 @@ hull:
                         staticName: true
                         key: RESTIC_REPOSITORY
                         name: restic-secret
+            containers:
+              backup:
+                image:
+                  repository: restic/restic
+                  pullPolicy: Always
+                args:
+                - backup
+                - --host
+                - lldap-backup-pod
+                - --tag=k8s
+                - --tag=lldap
+                - /home/data
+                env: *resticEnv
                 resources: {}
                 volumeMounts:
                   sshConfig:

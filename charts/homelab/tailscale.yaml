@@ -1,35 +1,5 @@
 hull:
-  #config:
-  #  specific:
-  #    tsSecretName: _HT!{{ printf "ts-%s" (include "hull.metadata.fullname" .) }}
-
   objects:
-    #rolebinding:
-    #  tailscale:
-    #    subjects:
-    #      - kind: ServiceAccount
-    #        name: _HT!{{ printf "%s-default" (include "hull.metadata.fullname" .) }}
-    #    roleRef:
-    #      kind: Role
-    #      name: _HT!{{ printf "%s-tailscale" (include "hull.metadata.fullname" .) }}
-    #      apiGroup: rbac.authorization.k8s.io
-
-    #role:
-    #  tailscale:
-    #    rules:
-    #      - apiGroups: [""] # "" indicates the core API group
-    #        resources: ["secrets"]
-    #        # Create can not be restricted to a resource name.
-    #        verbs: ["create"]
-    #      - apiGroups: [""] # "" indicates the core API group
-    #        resourceNames:
-    #          - _HT!
-    #            [
-    #            {{ (index . "$").Values.hull.objects.specific.tsSecretName }}
-    #            ]
-    #        resources: ["secrets"]
-    #        verbs: ["get", "update", "patch"]
-
     customresource:
       tailscale:
         apiVersion: networking.k8s.io/v1
@@ -46,36 +16,3 @@ hull:
                         name: _HT^app
                         port:
                           number: _HT*hull.config.specific.httpPort
-
-    #deployment:
-    #  app:
-    #    replicas: 1
-    #    strategy:
-    #      type: Recreate
-    #    templateLabels:
-    #      app.kubernetes.io/type: app
-    #    pod:
-    #      containers:
-    #        ts-sidecar:
-    #          image:
-    #            repository: ghcr.io/tailscale/tailscale
-    #            tag: v1.90.6
-    #          securityContext:
-    #            privileged: true
-    #            capabilities:
-    #              add:
-    #                - NET_ADMIN
-    #          env:
-    #            TS_EXTRA_ARGS:
-    #              value: _HT!{{ printf "--hostname=%s" (default "" (index . "PARENT_CONTEXT").Release.Name) }}
-    #            TS_KUBE_SECRET:
-    #              value: _HT*hull.config.specific.tsSecretName
-    #            TS_USERSPACE:
-    #              value: "false"
-    #            TS_AUTHKEY:
-    #              valueFrom:
-    #                secretKeyRef:
-    #                  staticName: true
-    #                  name: tailscale-auth-secret
-    #                  key: TS_AUTHKEY
-    #                  optional: true
