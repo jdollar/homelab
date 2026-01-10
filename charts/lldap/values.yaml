@@ -126,6 +126,70 @@ hull:
                 {{ (index . "$").Values.hull.config.specific.ingressHost }}
                 ]
 
+    cronjob:
+      db-backup:
+        concurrencyPolicy: Forbid
+        failedJobsHistoryLimit: 1
+        schedule: 0 2 * * *
+        successfulJobsHistoryLimit: 3
+        suspend: false
+        job:
+          pod:
+            containers:
+              backup:
+                image:
+                  repository: restic/restic
+                  pullPolicy: Always
+                args:
+                - backup
+                - --host
+                - lldap-backup-pod
+                - --tag=k8s
+                - --tag=lldap
+                - /home/data
+                env:
+                  RESTIC_PASSWORD:
+                    valueFrom:                 
+                      secretKeyRef:
+                        staticName: true
+                        key: RESTIC_PASSWORD
+                        name: restic-secret
+                  RESTIC_REPOSITORY:
+                    valueFrom:                 
+                      secretKeyRef:
+                        staticName: true
+                        key: RESTIC_REPOSITORY
+                        name: restic-secret
+                resources: {}
+                volumeMounts:
+                  sshConfig:
+                    name: config
+                    subPath: ssh-config
+                    mountPath: /root/.ssh/config
+                    readOnly: true
+                  sshKey:
+                    name: config
+                    subPath: id_ed25519
+                    mountPath: /root/.ssh/id_ed25519
+                    readOnly: true
+                  data:
+                    name: data
+                    mountPath: /home/data
+              restartPolicy: OnFailure
+              securityContext: {}
+              terminationGracePeriodSeconds: 30
+              volumes:
+                config:
+                  active: secret
+                  secret:
+                    staticName: true
+                    secretName: restic-secret
+                data:
+                  active: persistentVolumeClaim
+                  persistentVolumeClaim:
+                    staticName: true
+                    claimName: lldap-lldap-db-backup
+
     customresource:
       app:
         apiVersion: traefik.io/v1alpha1
