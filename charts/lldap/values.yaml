@@ -141,6 +141,7 @@ hull:
                 secret:
                   staticName: true
                   secretName: restic-secret
+                  defaultMode: 256
               data:
                 active: persistentVolumeClaim
                 persistentVolumeClaim:
