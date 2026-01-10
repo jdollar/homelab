@@ -153,8 +153,6 @@ hull:
       db-backup:
         apiVersion: k8s.mariadb.com/v1alpha1
         kind: PhysicalBackup
-        metadata:
-          name: physicalbackup
         spec:
           mariaDbRef:
             name: lldap-lldap-db-0
