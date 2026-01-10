@@ -156,8 +156,10 @@ hull:
                   pullPolicy: Always
                 args:
                 - forget
-                - --tag=k8s,lldap
-                - --keep-hourly 168
+                - --tag
+                - k8s,lldap
+                - --keep-hourly
+                - '168'
                 env: &resticEnv
                   RESTIC_PASSWORD:
                     valueFrom:                 
