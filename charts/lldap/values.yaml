@@ -170,14 +170,6 @@ hull:
                   storage: 5Gi
               accessModes:
                 - ReadWriteMany
-          stagingStorage:
-            persistentVolumeClaim:
-              accessModes:
-                - ReadWriteOnce
-              storageClassName: nfs
-              resources:
-                requests:
-                  storage: 1Gi
 
       db:
         apiVersion: k8s.mariadb.com/v1alpha1
