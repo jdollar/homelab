@@ -6,6 +6,15 @@ metadata:
   namespace: kube-system
 spec:
   valuesContent: |-
+    service:
+      annotations:
+        svccontroller.k3s.cattle.io/tolerations: |
+          - key: "actor"
+            operator: "Exists"
+            effect: "NoSchedule"
+          - key: "node-role.kubernetes.io/master"
+            operator: "Exists"
+            effect: "NoSchedule"
     ports:
       traefik:
         port: 9000
@@ -167,14 +176,14 @@ spec:
               - 8.8.8.8
           storage: /data/acme.json
     tolerations:
-    - key: "actor"
-      operator: "Exists"
-      effect: "NoSchedule"
-    - key: "CriticalAddonsOnly"
-      operator: "Exists"
-    - key: "node-role.kubernetes.io/control-plane"
-      operator: "Exists"
-      effect: "NoSchedule"
-    - key: "node-role.kubernetes.io/master"
-      operator: "Exists"
-      effect: "NoSchedule"
+      - key: "actor"
+        operator: "Exists"
+        effect: "NoSchedule"
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Exists"
+        effect: "NoSchedule"
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
