@@ -146,6 +146,8 @@ hull:
                 persistentVolumeClaim:
                   staticName: true
                   claimName: lldap-lldap-db-backup
+            restartPolicy: OnFailure
+            securityContext: {}
             containers:
               backup:
                 image:
@@ -186,8 +188,6 @@ hull:
                   data:
                     name: data
                     mountPath: /home/data
-              restartPolicy: OnFailure
-              securityContext: {}
 
     customresource:
       app:
