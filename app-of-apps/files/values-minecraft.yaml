@@ -44,4 +44,5 @@ hull:
                   value: hermitcraft
                 MODRINTH_PROJECTS:
                   value: |-
+                    fabric-api
                     fabricproxy-lite
