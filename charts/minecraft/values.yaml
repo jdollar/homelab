@@ -108,7 +108,8 @@ hull:
             targetPort: voicechatudp
             protocol: UDP
       tailscale-svc:
-        type: tailscale
+        type: LoadBalancer
+        loadBalancerClass: traefik
         ports:
           minecraft:
             port: _HT*hull.config.specific.minecraftPort
