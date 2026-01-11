@@ -662,7 +662,6 @@ hull:
               helm:
                 valueFiles:
                   - values.yaml
-                  - $miscpi/charts/homelab/tailscale.yaml
                   - $miscpi/app-of-apps/files/values-minecraft.yaml
 
       tandoor: *applicationSingleSourceTailscale
