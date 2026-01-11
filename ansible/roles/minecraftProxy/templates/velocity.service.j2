@@ -6,7 +6,7 @@ After=syslog.target network.target
 SuccessExitStatus=143
 Type=simple
 WorkingDirectory=/opt/velocity
-ExecStart=java -Xms1G -Xmx1G -XX:+UseG1GC -XX:G1HeapRegionSize=4M -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch -XX:MaxInlineLevel=15 -jar velocity-3.3.0-SNAPSHOT-371.jar &
+ExecStart=java -Xms1G -Xmx1G -XX:+UseG1GC -XX:G1HeapRegionSize=4M -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch -XX:MaxInlineLevel=15 -jar velocity-3.4.0-SNAPSHOT-561.jar &
 ExecStop=/bin/kill -15 $MAINPID
 User=velocity
 Group=velocity

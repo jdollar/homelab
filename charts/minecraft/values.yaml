@@ -107,6 +107,21 @@ hull:
             port: _HT*hull.config.specific.voicechatUdpPort
             targetPort: voicechatudp
             protocol: UDP
+      tailscale-svc:
+        type: tailscale
+        ports:
+          minecraft:
+            port: _HT*hull.config.specific.minecraftPort
+            targetPort: minecraft
+            protocol: TCP
+          minecraftudp:
+            port: _HT*hull.config.specific.minecraftUdpPort
+            targetPort: minecraftudp
+            protocol: UDP
+          voicechatudp:
+            port: _HT*hull.config.specific.voicechatUdpPort
+            targetPort: voicechatudp
+            protocol: UDP
 
     customresource:
       app:
