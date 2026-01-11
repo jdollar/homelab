@@ -3,7 +3,7 @@ hull:
   objects:
     deployment:
       app:
-        replicas: 0
+        replicas: 1
         pod:
           containers:
             app:
@@ -19,7 +19,7 @@ hull:
                 USE_AIKAR_FLAGS:
                   value: "true"
                 VERSION:
-                  value: "1.20.4"
+                  value: "1.21.11"
                 DIFFICULTY:
                   value: "hard"
                 VIEW_DISTANCE:
@@ -40,19 +40,8 @@ hull:
                   value: "true"
                 VANILLATWEAKS_FILE:
                   value: "/config/vanillatweaks-datapacks.json,/config/vanillatweaks-craftingtweaks.json,"
+                MODRINTH_MODPACK:
+                  value: hermitcraft
                 MODRINTH_PROJECTS:
                   value: |-
-                    lithium
-                    view-distance-fix:beta
-                    simple-voice-chat:beta
-                    status:beta
-                    audioplayer
-                    armor-poser:beta
-                    fabric-api
-                    carpet
-                    fabricexporter
-                    enhanced-groups:alpha
-                    shulker+:4WoxRZtH
-                    spark
-                    cloth-config
                     fabricproxy-lite

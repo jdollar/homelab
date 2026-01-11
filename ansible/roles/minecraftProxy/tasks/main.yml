@@ -79,14 +79,14 @@
 - name: download velocity
   become: true
   ansible.builtin.get_url:
-    url: https://api.papermc.io/v2/projects/velocity/versions/3.3.0-SNAPSHOT/builds/371/downloads/velocity-3.3.0-SNAPSHOT-371.jar
-    dest: /opt/velocity/velocity-3.3.0-SNAPSHOT-371.jar
+    url: https://fill-data.papermc.io/v1/objects/3ed5b6ffba88cd9758f6220d230e812721ba64a381c0e95465a57d0ce0aaf252/velocity-3.4.0-SNAPSHOT-561.jar
+    dest: /opt/velocity/velocity-3.4.0-SNAPSHOT-561.jar
 
 - name: download velocity mods
   become: true
   ansible.builtin.get_url:
-    url: https://cdn.modrinth.com/data/9eGKb6K1/versions/PiiCjCEr/voicechat-velocity-2.5.9.jar
-    dest: /opt/velocity/plugins/voicechat-velocity-2.5.9.jar
+    url: https://cdn.modrinth.com/data/9eGKb6K1/versions/jMopHMDQ/voicechat-velocity-2.6.4.jar
+    dest: /opt/velocity/plugins/voicechat-velocity-2.6.4.jar
 
 - name: Copy config files
   become: true

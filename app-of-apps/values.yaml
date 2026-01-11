@@ -324,7 +324,7 @@ hull:
             helm:
               <<: *defaultApplicationSourceHelm
               values: |
-                replicaCount: 0
+                replicaCount: 1
 
       mongodb: *defaultApplication
 
