@@ -48,7 +48,7 @@ config:
   infrastructure:vms:
     daisy:
       cpu-cores: 3
-      dedicated-memory: 8192
+      dedicated-memory: 12288
       disk-datastore-id: local-lvm
       disk-size: 250
       ip: 10.0.0.7/24
