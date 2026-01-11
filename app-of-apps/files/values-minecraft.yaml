@@ -43,7 +43,7 @@ hull:
                 MODPACK_PLATFORM:
                   value: MODRINTH
                 MODRINTH_MODPACK:
-                  value: hermitcraft
+                  value: hermitcraft:beta
                 MODRINTH_PROJECTS:
                   value: |-
                     fabric-api
