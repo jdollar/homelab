@@ -40,7 +40,11 @@ hull:
                   value: "true"
                 VANILLATWEAKS_FILE:
                   value: "/config/vanillatweaks-datapacks.json,/config/vanillatweaks-craftingtweaks.json,"
+                MODPACK_PLATFORM:
+                  value: MODRINTH
+                MODRINTH_MODPACK:
+                  value: hermitcraft
                 MODRINTH_PROJECTS:
                   value: |-
-                    hermitcraft
+                    fabric-api
                     fabricproxy-lite
