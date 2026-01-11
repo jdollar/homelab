@@ -108,8 +108,7 @@ hull:
             targetPort: voicechatudp
             protocol: UDP
       tailscale-svc:
-        component-name:
-          labels: _HT/labels/hull.metadata.labels:COMPONENT:"app"
+        labels: _HT/labels/hull.metadata.labels:COMPONENT:"app"
         type: LoadBalancer
         loadBalancerClass: tailscale
         ports:
