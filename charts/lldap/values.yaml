@@ -195,7 +195,7 @@ hull:
                 - lldap-backup-pod
                 - --tag=k8s
                 - --tag=lldap
-                - /home/data
+                - /data
                 env: *resticEnv
                 resources: {}
                 volumeMounts:
@@ -203,7 +203,7 @@ hull:
                   sshKey: *sshKey
                   data:
                     name: data
-                    mountPath: /home/data
+                    mountPath: /data
 
     customresource:
       app:
