@@ -85,10 +85,10 @@ hull:
                     optional: false
               resources:
                 requests:
-                  memory: 5Gi
+                  memory: 3Gi
                   cpu: 1
                 limits:
-                  memory: 5Gi
+                  memory: 3Gi
                   cpu: 3
 
     service:
