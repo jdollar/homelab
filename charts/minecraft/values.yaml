@@ -109,7 +109,7 @@ hull:
             protocol: UDP
       tailscale-svc:
         type: LoadBalancer
-        loadBalancerClass: traefik
+        loadBalancerClass: tailscale
         ports:
           minecraft:
             port: _HT*hull.config.specific.minecraftPort
