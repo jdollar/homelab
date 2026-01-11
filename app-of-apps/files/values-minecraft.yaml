@@ -13,7 +13,7 @@ hull:
                 EULA:
                   value: "TRUE"
                 MEMORY:
-                  value: "4G"
+                  value: "3G"
                 TZ:
                   value: "America/New_York"
                 USE_AIKAR_FLAGS:
