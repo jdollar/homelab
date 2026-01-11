@@ -109,6 +109,7 @@ hull:
             protocol: UDP
       tailscale-svc:
         labels: _HT/labels/hull.metadata.labels:COMPONENT:"app"
+        selectors: _HT/labels/hull.metadata.selectors:COMPONENT:"app"
         type: LoadBalancer
         loadBalancerClass: tailscale
         ports:
