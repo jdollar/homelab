@@ -1,7 +1,7 @@
 hull:
   config:
     specific:
-      replicas: 0
+      replicas: 1
       minecraftPort: 25577
 
   objects:
