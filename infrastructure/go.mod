@@ -2,7 +2,7 @@ module infrastructure
 
 go 1.25.0
 
-toolchain go1.25.5
+toolchain go1.25.6
 
 require (
 	github.com/muhlba91/pulumi-proxmoxve/sdk/v6 v6.18.1
