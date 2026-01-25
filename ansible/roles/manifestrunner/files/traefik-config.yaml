@@ -94,6 +94,16 @@ spec:
         port: 19132
         exposedPort: 19132
         protocol: UDP
+      velocitytcp:
+        expose: *defaultExpose
+        port: 25577
+        exposedPort: 25577
+        protocol: TCP
+      velocityudp:
+        expose: *defaultExpose
+        port: 25577
+        exposedPort: 25577
+        protocol: UDP
       minevoiceedp:
         expose: *defaultExpose
         port: 24454
