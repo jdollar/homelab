@@ -40,7 +40,7 @@ hull:
             config:
               active: configMap
               configMap:
-                name: config
+                name: app
           containers:
             app:
               image:
