@@ -74,7 +74,7 @@ hull:
                 TYPE:
                   value: VELOCITY
                 PLUGINS:
-                  value: "https://cdn.modrinth.com/data/9eGKb6K1/versions/PiiCjCEr/voicechat-velocity-2.5.9.jar"
+                  value: "https://cdn.modrinth.com/data/9eGKb6K1/versions/jMopHMDQ/voicechat-velocity-2.6.4.jar"
               resources:
                 requests:
                   cpu: 500m
