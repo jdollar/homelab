@@ -344,8 +344,6 @@ hull:
 
       radarr: *defaultApplication
 
-      radicale: *defaultApplication
-
       #readarr: *defaultApplication
 
       recyclarr: *defaultApplication
@@ -667,6 +665,8 @@ hull:
                 valueFiles:
                   - values.yaml
                   - $miscpi/app-of-apps/files/values-minecraft.yaml
+
+      radicale: *applicationSingleSourceTailscale
 
       tandoor: *applicationSingleSourceTailscale
 
