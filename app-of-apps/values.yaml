@@ -120,6 +120,8 @@ hull:
 
           radarr: *defaultComponent
 
+          radicale: *defaultComponent
+
           #readarr:
           #  <<: *defaultComponent
           #  destination:
@@ -341,6 +343,8 @@ hull:
       qtorrent: *defaultApplication
 
       radarr: *defaultApplication
+
+      radicale: *defaultApplication
 
       #readarr: *defaultApplication
 
