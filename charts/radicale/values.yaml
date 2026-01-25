@@ -9,7 +9,9 @@ hull:
   objects:
     configmap:
       app:
-        data: {}
+        data: 
+          config:
+            path: files/config.ini
 
     deployment:
       app:
@@ -35,6 +37,10 @@ hull:
               secret:
                 staticName: true
                 secretName: lldap-secret
+            config:
+              active: configMap
+              configMap:
+                name: config
           containers:
             app:
               image:
@@ -55,6 +61,11 @@ hull:
                 radicale-lldap-secret:
                   name: radicale-lldap-secret
                   mountPath: /etc/secrets
+                  readOnly: true
+                config:
+                  name: config
+                  mountPath: /etc/radicale/config
+                  subPath: config
                   readOnly: true
               envFrom:
                 app:
