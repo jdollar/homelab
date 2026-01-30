@@ -167,6 +167,8 @@ github.com/pulumi/pulumi-hcloud/sdk v1.30.0 h1:79xE+EFZuJMloaEoJmsgM/08YA62/RHYR
 github.com/pulumi/pulumi-hcloud/sdk v1.30.0/go.mod h1:ob9quqTcfY4ulvSCEVyi75GG2QyO/s0lch1MMKc7V0k=
 github.com/pulumi/pulumi-hcloud/sdk v1.31.0 h1:gwobXOlCW+0ANdUxmo2FhotR4tqqWTljmhzW4lptZGs=
 github.com/pulumi/pulumi-hcloud/sdk v1.31.0/go.mod h1:ob9quqTcfY4ulvSCEVyi75GG2QyO/s0lch1MMKc7V0k=
+github.com/pulumi/pulumi-hcloud/sdk v1.32.0 h1:U/xWxuTLr1/CIvN6cUY/iIaDy4BOLpbXTXIiRyFO69Y=
+github.com/pulumi/pulumi-hcloud/sdk v1.32.0/go.mod h1:ob9quqTcfY4ulvSCEVyi75GG2QyO/s0lch1MMKc7V0k=
 github.com/pulumi/pulumi-tls/sdk/v5 v5.2.3 h1:HEHeifaSKme+mWXYkps5qYD45JJc86Y/0awBj7UC6vU=
 github.com/pulumi/pulumi-tls/sdk/v5 v5.2.3/go.mod h1:UxIBAyqaLIo5bn63paPM7FU7DahbfeSIKbgTf9KldLY=
 github.com/pulumi/pulumi/sdk/v3 v3.215.0 h1:XZMiv9aSE1pD3kW4JpA53cy7mFflbJYn1fFKH1NMIAY=
