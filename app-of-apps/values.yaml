@@ -231,9 +231,6 @@ hull:
         apiVersion: argoproj.io/v1alpha1
         kind: Application
         spec: &defaultApplicationSpec
-          metadata:
-            finalizers:
-              - resources-finalizer.argocd.argoproj.io
           project: default
           destination:
             namespace: _HT*hull.config.specific.components.§OBJECT_TYPE§.§OBJECT_INSTANCE_KEY§.destination.namespace
