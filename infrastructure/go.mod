@@ -5,7 +5,7 @@ go 1.25.0
 toolchain go1.25.6
 
 require (
-	github.com/muhlba91/pulumi-proxmoxve/sdk/v6 v6.18.1
+	github.com/muhlba91/pulumi-proxmoxve/sdk/v7 v7.11.0
 	github.com/muhlba91/pulumi-proxmoxve/sdk/v7 v7.11.0
 	github.com/pulumi/pulumi-hcloud/sdk v1.32.0
 	github.com/pulumi/pulumi-tls/sdk/v5 v5.3.0
