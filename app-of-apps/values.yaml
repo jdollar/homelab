@@ -230,6 +230,9 @@ hull:
         staticName: true
         apiVersion: argoproj.io/v1alpha1
         kind: Application
+        metadata:
+          finalizers:
+            - resources-finalizer.argocd.argoproj.io
         spec: &defaultApplicationSpec
           project: default
           destination:
