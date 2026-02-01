@@ -25,6 +25,8 @@ hull:
 
           bazarr: *defaultComponent
 
+          bentopdf: *defaultComponent
+
           booklore:
             <<: *defaultComponent
             destination:
@@ -233,6 +235,8 @@ hull:
             automated: {}
 
       bazarr: *defaultApplication
+
+      bentopdf: *defaultApplication
 
       castblock: *defaultApplication
 
