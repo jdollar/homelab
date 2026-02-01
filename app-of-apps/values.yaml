@@ -37,8 +37,6 @@ hull:
             destination:
               namespace: calcom
 
-          calibre-web: *defaultComponent
-
           castblock: *defaultComponent
 
           cyberchef: *defaultComponent
@@ -284,8 +282,6 @@ hull:
       #                  metadataNameOverride: audio-readarr-pvc-config-longhorn
 
       bazarr: *defaultApplication
-
-      calibre-web: *defaultApplication
 
       castblock: *defaultApplication
 
