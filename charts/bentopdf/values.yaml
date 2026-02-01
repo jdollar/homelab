@@ -22,7 +22,7 @@ hull:
           containers:
             app:
               image:
-                repository: ghcr.io/alam00000/bentopdf
+                repository: ghcr.io/alam00000/bentopdf-simple
                 pullPolicy: IfNotPresent
                 tag: _HT**Chart.appVersion
               ports:
