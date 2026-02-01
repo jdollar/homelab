@@ -55,8 +55,6 @@ hull:
             destination:
               namespace: immich
 
-          isponsorblocktv: *defaultComponent
-
           ittools: *defaultComponent
 
           jackett: *defaultComponent
@@ -249,8 +247,6 @@ hull:
       immich: *defaultApplication
 
       ittools: *defaultApplication
-
-      isponsorblocktv: *defaultApplication
 
       jackett: *defaultApplication
 
