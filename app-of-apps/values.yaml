@@ -153,6 +153,8 @@ hull:
 
           yoink: *defaultComponent
 
+          yubal: *defaultComponent
+
           # sources
           redis: *defaultComponent
 
@@ -362,6 +364,8 @@ hull:
       yamtrack: *defaultApplication
 
       yoink: *defaultApplication
+
+      yubal: *defaultApplication
 
       # sources
       redis: &defaultApplicationSources
