@@ -3,7 +3,7 @@
 hull:
   config:
     specific:
-      httpPort: 8096
+      httpPort: 8080
       ingressHost: bentopdf.joeldollarhide.com
 
   objects:
