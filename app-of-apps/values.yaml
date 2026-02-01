@@ -39,11 +39,6 @@ hull:
 
           cyberchef: *defaultComponent
 
-          dispatcharr:
-            <<: *defaultComponent
-            destination:
-              namespace: dispatcharr
-
           flaresolverr: *defaultComponent
 
           garage:
@@ -244,8 +239,6 @@ hull:
       castblock: *defaultApplication
 
       cyberchef: *defaultApplication
-
-      dispatcharr: *defaultApplication
 
       flaresolverr: *defaultApplication
 
