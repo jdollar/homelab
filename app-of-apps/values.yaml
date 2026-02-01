@@ -23,7 +23,7 @@ hull:
             destination:
               namespace: authentik
 
-          #audio-readarr: *defaultComponent
+          audio-readarr: *defaultComponent
 
           bazarr: *defaultComponent
 
@@ -243,43 +243,43 @@ hull:
           syncPolicy:
             automated: {}
 
-      #audio-readarr:
-      #  <<: *defaultApplication
-      #  spec:
-      #    <<: *defaultApplicationSpec
-      #    source:
-      #      <<: *defaultApplicationSource
-      #      path: charts/readarr
-      #      helm:
-      #        <<: *defaultApplicationSourceHelm
-      #        values: |
-      #          hull:
-      #            config:
-      #              specific:
-      #                ingressHost: audioreadarr.joeldollarhide.com
+      audio-readarr:
+        <<: *defaultApplication
+        spec:
+          <<: *defaultApplicationSpec
+          source:
+            <<: *defaultApplicationSource
+            path: charts/readarr
+            helm:
+              <<: *defaultApplicationSourceHelm
+              values: |
+                hull:
+                  config:
+                    specific:
+                      ingressHost: audioreadarr.joeldollarhide.com
 
-      #            objects:
-      #              deployment:
-      #                app:
-      #                  pod:
-      #                    volumes:
-      #                      readarr-pvc-config-longhorn:
-      #                        persistentVolumeClaim:
-      #                          claimName: audio-readarr-pvc-config-longhorn
-      #
-      #              ingress:
-      #                app:
-      #                  annotations:
-      #                    gethomepage.dev/enabled: "true"
-      #                    gethomepage.dev/name: "AudioReadarr"
-      #                    gethomepage.dev/description: "Audio book monitoring"
-      #                    gethomepage.dev/group: "Books"
-      #                    gethomepage.dev/icon: "readarr"
-      #                    gethomepage.dev/weight: "21"
+                  objects:
+                    deployment:
+                      app:
+                        pod:
+                          volumes:
+                            readarr-pvc-config-longhorn:
+                              persistentVolumeClaim:
+                                claimName: audio-readarr-pvc-config-longhorn
+      
+                    ingress:
+                      app:
+                        annotations:
+                          gethomepage.dev/enabled: "true"
+                          gethomepage.dev/name: "AudioReadarr"
+                          gethomepage.dev/description: "Audio book monitoring"
+                          gethomepage.dev/group: "Books"
+                          gethomepage.dev/icon: "readarr"
+                          gethomepage.dev/weight: "21"
 
-      #              persistentvolumeclaim:
-      #                readarr-pvc-config-longhorn:
-      #                  metadataNameOverride: audio-readarr-pvc-config-longhorn
+                    persistentvolumeclaim:
+                      readarr-pvc-config-longhorn:
+                        metadataNameOverride: audio-readarr-pvc-config-longhorn
 
       bazarr: *defaultApplication
 
