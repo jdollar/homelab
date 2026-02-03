@@ -32,6 +32,8 @@ hull:
               persistentVolumeClaim:
                 staticName: true
                 claimName: jellyfin-pvc-media
+          securityContext:
+            fsGroup: 1000
           containers:
             app:
               image:
