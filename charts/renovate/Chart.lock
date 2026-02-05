@@ -1,9 +1,9 @@
 dependencies:
 - name: renovate
   repository: https://docs.renovatebot.com/helm-charts
-  version: 46.3.2
+  version: 46.3.3
 - name: pilibchart
   repository: file://../pilibchart
   version: 0.1.0
-digest: sha256:0f6df81bef4d8ca13d148827587c0e129c4a3d9ecc18f01e2e3d5df293be2b7c
-generated: "2026-02-05T02:03:54.751266617Z"
+digest: sha256:474b974a27402ec1fbb3112e1bc1cd5093ca47256d7966d96a78da64f58bb371
+generated: "2026-02-05T06:03:06.082204973Z"
