@@ -26,7 +26,7 @@ appVersion: "0.18.1"
 
 dependencies:
   - name: hull
-    version: 1.35.0
+    version: 1.35.1
     repository: https://vidispine.github.io/hull
   - name: redis
     condition: redis.enabled

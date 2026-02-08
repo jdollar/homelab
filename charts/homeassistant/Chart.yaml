@@ -29,5 +29,5 @@ dependencies:
     version: 0.1.0
     repository: file://../pilibchart
   - name: hull
-    version: 1.35.0
+    version: 1.35.1
     repository: https://vidispine.github.io/hull

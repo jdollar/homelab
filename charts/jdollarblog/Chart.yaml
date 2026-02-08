@@ -28,5 +28,5 @@ dependencies:
     version: 22.4.7
     repository: oci://registry-1.docker.io/bitnamicharts
   - name: hull
-    version: 1.35.0
+    version: 1.35.1
     repository: https://vidispine.github.io/hull
