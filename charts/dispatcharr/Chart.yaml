@@ -30,5 +30,5 @@ dependencies:
     repository: https://vidispine.github.io/hull
   - name: redis
     condition: redis.enabled
-    version: 24.1.8
+    version: 25.0.0
     repository: oci://registry-1.docker.io/bitnamicharts
