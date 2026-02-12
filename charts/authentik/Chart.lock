@@ -1,9 +1,9 @@
 dependencies:
 - name: authentik
   repository: https://charts.goauthentik.io
-  version: 2025.12.3
+  version: 2025.12.4
 - name: hull
   repository: https://vidispine.github.io/hull
   version: 1.35.1
-digest: sha256:f5ca23265af8b179d03516fd53bc50da925d8a09c6ea229b353668ef6aaca8e2
-generated: "2026-02-08T15:04:23.250314833Z"
+digest: sha256:ce30e33565a994334e4a4ee7876f94bdc666c8b6232b0f19010413d53ddec074
+generated: "2026-02-12T17:03:38.916704515Z"
