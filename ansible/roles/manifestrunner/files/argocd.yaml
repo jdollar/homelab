@@ -77,7 +77,7 @@ spec:
           type: helm
         woodpecker-repo:
           enableOCI: "true"
-          url: oci://ghcr.io/woodpecker-ci/helm/woodpecker
+          url: oci://ghcr.io/woodpecker-ci/helm
           name: woodpecker-repo
           type: helm
 
