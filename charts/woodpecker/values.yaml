@@ -88,7 +88,7 @@ woodpecker:
             - path: /
               backend:
                 serviceName: woodpecker-woodpecker-server
-                servicePort: *servicePort
+                servicePort: 80
       tls:
         - secretName: woodpecker-tls
           hosts:
