@@ -99,22 +99,22 @@ seerr-chart:
     - name: DB_HOST
       valueFrom:
         secretKeyRef:
-          name: jellyseerr-jellyseerr-app-app
+          name: jellyseerr-jellyseer-app-app
           key: host
     - name: DB_USER
       valueFrom:
         secretKeyRef:
-          name: jellyseerr-jellyseerr-app-app
+          name: jellyseerr-jellyseer-app-app
           key: user
     - name: DB_PASS
       valueFrom:
         secretKeyRef:
-          name: jellyseerr-jellyseerr-app-app
+          name: jellyseerr-jellyseer-app-app
           key: password
     - name: DB_NAME
       valueFrom:
         secretKeyRef:
-          name: jellyseerr-jellyseerr-app-app
+          name: jellyseerr-jellyseer-app-app
           key: dbname
 
   resources:
