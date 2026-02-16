@@ -61,7 +61,7 @@ woodpecker:
       WOODPECKER_FORGEJO: "true"
       WOODPECKER_FORGEJO_URL: https://forgejo.joeldollarhide.com
 
-      WOODPECKER_GITHUB: "true"
+      #WOODPECKER_GITHUB: "true"
 
     persistentVolume:
       storageClass: nfs
