@@ -4,130 +4,13 @@ hull:
   config:
     specific:
       httpPort: 5055
-      oldIngressHost: jellyseerr.joeldollarhide.com
-      ingressHost: seerr.joeldollarhide.com
+      oldIngressHost: &oldIngressHost jellyseerr.joeldollarhide.com
+      ingressHost: &ingressHost seerr.joeldollarhide.com
 
   objects:
-    configmap:
-      app:
-        data:
-          TZ:
-            inline: "America/New_York"
-
-    deployment:
-      app:
-        replicas: 1
-        strategy:
-          type: Recreate
-        templateLabels:
-          app.kubernetes.io/type: app
-        pod:
-          securityContext:
-            fsGroup: 1000
-            fsGroupChangePolicy: OnRootMismatch
-          volumes:
-            jellyseerr-pvc-config:
-              active: persistentVolumeClaim
-              persistentVolumeClaim:
-                staticName: true
-                claimName: jellyseerr-pvc-config
-          containers:
-            app:
-              image:
-                repository: ghcr.io/seerr-team/seerr
-                pullPolicy: IfNotPresent
-                tag: _HT**Chart.appVersion
-              ports:
-                http:
-                  containerPort: _HT*hull.config.specific.httpPort
-                  protocol: TCP
-              volumeMounts:
-                jellyseerr-pvc-config:
-                  name: jellyseerr-pvc-config
-                  mountPath: /app/config
-              envFrom:
-                app:
-                  configMapRef:
-                    name: app
-                    optional: false
-              securityContext:
-                allowPrivilegeEscalation: false
-                capabilities:
-                  drop:
-                    - ALL
-                readOnlyRootFilesystem: false
-                runAsNonRoot: true
-                privileged: false
-                runAsUser: 1000
-                runAsGroup: 1000
-                seccompProfile:
-                  type: RuntimeDefault
-              resources:
-                requests:
-                  cpu: 200m
-                  memory: 1500Mi
-                limits:
-                  cpu: 200m
-                  memory: 1500Mi
-
-    service:
-      app:
-        type: ClusterIP
-        ports:
-          http:
-            port: _HT*hull.config.specific.httpPort
-            targetPort: http
-            protocol: TCP
-
-    ingress:
-      app:
-        enabled: true
-        annotations:
-          kubernetes.io/ingress.class: "traefik"
-          cert-manager.io/cluster-issuer: letsencrypt-prod
-          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd,jellyseerr-jellyseer-redirect-seer@kubernetescrd
-
-          gethomepage.dev/enabled: "true"
-          gethomepage.dev/name: "Seerr"
-          gethomepage.dev/description: "Media request platform"
-          gethomepage.dev/group: "Streaming"
-          gethomepage.dev/icon: "seerr"
-          gethomepage.dev/weight: "1"
-        rules:
-          oldApp:
-            host: _HT*hull.config.specific.oldIngressHost
-            http:
-              paths:
-                root:
-                  path: /
-                  pathType: ImplementationSpecific
-                  backend:
-                    service:
-                      name: app
-                      port:
-                        name: http
-          app:
-            host: _HT*hull.config.specific.ingressHost
-            http:
-              paths:
-                root:
-                  path: /
-                  pathType: ImplementationSpecific
-                  backend:
-                    service:
-                      name: app
-                      port:
-                        name: http
-        tls:
-          app:
-            enabled: true
-            secretName: tls
-            hosts:
-              - _HT!
-                [
-                {{ (index . "$").Values.hull.config.specific.oldIngressHost }},
-                {{ (index . "$").Values.hull.config.specific.ingressHost }}
-                ]
+    serviceaccount:
+      default:
+        enabled: false
 
     customresource:
       redirect-seer:
@@ -137,6 +20,31 @@ hull:
           redirectRegex:
             regex: ^https?://jellyseerr\.(.*)
             replacement: https://seer\.${1}
+
+      app:
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Cluster
+        spec:
+          instances: 1
+
+          monitoring:
+            enablePodMonitor: true
+
+          managed:
+            services:
+              disabledDefaultServices: ["ro", "r"]
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+            limits:
+              cpu: 100m
+              memory: 1Gi
+
+          storage:
+            storageClass: nfs
+            size: 5Gi
 
     persistentvolumeclaim:
       jellyseerr-pvc-config:
@@ -148,3 +56,48 @@ hull:
           requests:
             storage: 5Gi
 
+
+seerr-chart:
+  config:
+    persistence:
+      existingClaim: jellyseerr-pvc-config
+
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: "traefik"
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd,jellyseerr-jellyseer-redirect-seer@kubernetescrd
+
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/name: "Seerr"
+      gethomepage.dev/description: "Media request platform"
+      gethomepage.dev/group: "Streaming"
+      gethomepage.dev/icon: "seerr"
+      gethomepage.dev/weight: "1"
+    hosts:
+      - host: *oldIngressHost
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+      - host: *ingressHost
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+    tls:
+      - secretName: jellyseerr-tls
+        hosts:
+          - *oldIngressHost
+          - *ingressHost
+
+  extraEnv:
+    TZ:
+      value: "America/New_York"
+
+  resources:
+    requests:
+      cpu: 200m
+      memory: 1500Mi
+    limits:
+      cpu: 200m
+      memory: 1500Mi

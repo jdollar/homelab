@@ -2,5 +2,8 @@ dependencies:
 - name: hull
   repository: https://vidispine.github.io/hull
   version: 1.35.1
-digest: sha256:f7fcf561e461a0671b8e8170e40928aa1c8307728394d1d7bf0e96d9ca6a7e03
-generated: "2026-02-08T15:06:43.636593444Z"
+- name: seerr-chart
+  repository: oci://ghcr.io/seerr-team/seerr
+  version: 3.1.0
+digest: sha256:1587eb7d56ea269011d432c05b7d1c40250aa41366578348c755a95ec3004de0
+generated: "2026-02-16T07:21:44.397242548-05:00"
