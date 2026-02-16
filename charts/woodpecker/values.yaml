@@ -1,0 +1,101 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+hull:
+  config:
+    specific:
+      ingressHost: &ingressHost woodpecker.joeldollarhide.com
+
+  objects:
+    customresource:
+      app:
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Cluster
+        spec:
+          instances: 1
+
+          monitoring:
+            enablePodMonitor: true
+
+          managed:
+            services:
+              disabledDefaultServices: ["ro", "r"]
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+            limits:
+              cpu: 100m
+              memory: 1Gi
+
+          storage:
+            storageClass: nfs
+            size: 5Gi
+
+woodpecker:
+  agent:
+    env:
+      WOODPECKER_BACKEND_K8S_STORAGE_CLASS: nfs
+    persistence:
+      storageClass: nfs
+
+  server:
+    extraVolumes:
+      - name: woodpecker-db-secret
+        secret:
+          secretName: woodpecker-woodpecker-app-app
+
+    extraVolumeMounts:
+      - name: woodpecker-db-secret
+        mountPath: /secrets/woodpecker-datasource
+        subPath: uri
+        readOnly: true
+
+    env:
+      WOODPECKER_ADMIN: 'woodpecker,admin,jdollar'
+      WOODPECKER_HOST: https://woodpecker.joeldollarhide.com
+      WOODPECKER_REPO_OWNERS: jdollar
+      WOODPECKER_DATABASE_DRIVER: postgres
+      WOODPECKER_DATABASE_DATASOURCE_FILE: /secrets/woodpecker-datasource
+
+      WOODPECKER_FORGEJO: true
+      WOODPECKER_FORGEJO_URL: forgejo.joeldollarhide.com
+
+      WOODPECKER_GITHUB: true
+
+    persistentVolume:
+      storageClass: nfs
+
+    ingress:
+      enabled: true
+      # -- Add annotations to the ingress
+      annotations:
+        kubernetes.io/ingress.class: "traefik"
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/name: "Woodpecker"
+        gethomepage.dev/description: "CI/CD Platform"
+        gethomepage.dev/group: "Applications"
+        gethomepage.dev/icon: "woodpecker"
+        gethomepage.dev/weight: "1"
+
+      ingressClassName: ''
+
+      hosts:
+        - host: ingressHost
+          paths:
+            - path: /
+              backend:
+                serviceName: woodpecker-woodpecker-server
+                servicePort: *servicePort
+      tls:
+        - secretName: woodpecker-tls
+          hosts:
+            - *ingressHost
+
+    extraSecretNamesForEnvFrom:
+      - woodpecker-secret
+  metrics:
+    enabled: true
+

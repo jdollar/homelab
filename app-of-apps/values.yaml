@@ -149,6 +149,11 @@ hull:
 
           wizarr: *defaultComponent
 
+          woodpecker:
+            <<: *defaultComponent
+            destination:
+              namespace: woodpecker
+
           yamtrack: *defaultComponent
 
           yoink: *defaultComponent
@@ -360,6 +365,8 @@ hull:
       uptime-kuma: *defaultApplication
 
       wallos: *defaultApplication
+
+      woodpecker: *defaultApplication
 
       yamtrack: *defaultApplication
 
