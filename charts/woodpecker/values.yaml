@@ -59,7 +59,7 @@ woodpecker:
       WOODPECKER_DATABASE_DATASOURCE_FILE: /secrets/woodpecker-datasource
 
       WOODPECKER_FORGEJO: "true"
-      WOODPECKER_FORGEJO_URL: forgejo.joeldollarhide.com
+      WOODPECKER_FORGEJO_URL: https://forgejo.joeldollarhide.com
 
       WOODPECKER_GITHUB: "true"
 
