@@ -86,8 +86,6 @@ hull:
           kubernetes.io/ingress.class: "traefik"
           cert-manager.io/cluster-issuer: letsencrypt-prod
           traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd,jellyseerr-jellyseer-redirect-seer@kubernetescrd
-          traefik.http.middlewares.test-redirectregex.redirectregex.regex: ^http://jellyseerr\.(.*)
-          traefik.http.middlewares.test-redirectregex.redirectregex.replacement: http://seerr\.$${1}
 
           gethomepage.dev/enabled: "true"
           gethomepage.dev/name: "Seerr"
