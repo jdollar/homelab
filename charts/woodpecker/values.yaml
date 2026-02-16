@@ -84,7 +84,7 @@ woodpecker:
       ingressClassName: ''
 
       hosts:
-        - host: ingressHost
+        - host: *ingressHost
           paths:
             - path: /
               backend:
