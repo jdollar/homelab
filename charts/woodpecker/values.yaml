@@ -34,7 +34,7 @@ hull:
 woodpecker:
   agent:
     env:
-      WOODPECKER_SERVER: https://woodpecker.joeldollarhide.com
+      WOODPECKER_SERVER: woodpecker-server-headless.woodpecker.svc.cluster.local:9000
       WOODPECKER_BACKEND_K8S_STORAGE_CLASS: nfs
     persistence:
       storageClass: nfs
