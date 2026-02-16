@@ -19,7 +19,7 @@ hull:
         spec:
           redirectRegex:
             regex: ^https?://jellyseerr\.(.*)
-            replacement: https://seer\.${1}
+            replacement: https://seerr\.${1}
 
       app:
         apiVersion: postgresql.cnpg.io/v1
