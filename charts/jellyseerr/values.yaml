@@ -91,7 +91,7 @@ seerr-chart:
           - *ingressHost
 
   extraEnv:
-    TZ:
+    - name: TZ
       value: "America/New_York"
 
   resources:
