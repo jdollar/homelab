@@ -28,5 +28,5 @@ dependencies:
   version: 1.35.1
   repository: https://vidispine.github.io/hull
 - name: woodpecker
-  version: 3.1.0
+  version: 3.5.1
   repository: oci://ghcr.io/woodpecker-ci/helm/woodpecker
