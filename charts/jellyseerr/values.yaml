@@ -34,7 +34,7 @@ hull:
           containers:
             app:
               image:
-                repository: seerr-team/seerr
+                repository: ghcr.io/seerr-team/seerr
                 pullPolicy: IfNotPresent
                 tag: _HT**Chart.appVersion
               ports:
