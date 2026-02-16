@@ -94,6 +94,28 @@ seerr-chart:
   extraEnv:
     - name: TZ
       value: "America/New_York"
+    - name: DB_TYPE
+      value: postgres
+    - name: DB_HOST
+      valueFrom:
+        secretKeyRef:
+          name: jellyseerr-jellyseerr-app-app
+          key: host
+    - name: DB_USER
+      valueFrom:
+        secretKeyRef:
+          name: jellyseerr-jellyseerr-app-app
+          key: user
+    - name: DB_PASS
+      valueFrom:
+        secretKeyRef:
+          name: jellyseerr-jellyseerr-app-app
+          key: password
+    - name: DB_NAME
+      valueFrom:
+        secretKeyRef:
+          name: jellyseerr-jellyseerr-app-app
+          key: dbname
 
   resources:
     requests:
