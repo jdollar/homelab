@@ -18,8 +18,9 @@ hull:
         kind: Middleware
         spec:
           redirectRegex:
-            regex: ^https?://jellyseerr\.(.*)
-            replacement: https://seerr\.${1}
+            regex: ^https?://jellyseerr(.*)
+            replacement: https://seerr${1}
+            permanent: true
 
       app:
         apiVersion: postgresql.cnpg.io/v1
