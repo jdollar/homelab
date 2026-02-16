@@ -58,10 +58,10 @@ woodpecker:
       WOODPECKER_DATABASE_DRIVER: postgres
       WOODPECKER_DATABASE_DATASOURCE_FILE: /secrets/woodpecker-datasource
 
-      WOODPECKER_FORGEJO: true
+      WOODPECKER_FORGEJO: "true"
       WOODPECKER_FORGEJO_URL: forgejo.joeldollarhide.com
 
-      WOODPECKER_GITHUB: true
+      WOODPECKER_GITHUB: "true"
 
     persistentVolume:
       storageClass: nfs
