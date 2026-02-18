@@ -3,7 +3,7 @@
 hull:
   config:
     specific:
-      httpPort: 5055
+      httpPort: 80
       oldIngressHost: &oldIngressHost jellyseerr.joeldollarhide.com
       ingressHost: &ingressHost seerr.joeldollarhide.com
 
