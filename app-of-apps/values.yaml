@@ -616,6 +616,7 @@ hull:
               helm:
                 valueFiles:
                   - values.yaml
+                  - $miscpi/charts/homelab/tailscale.yaml
                   - $miscpi/app-of-apps/files/values-jellyseerr.yaml
 
       opodsync: *applicationSingleSourceTailscale
