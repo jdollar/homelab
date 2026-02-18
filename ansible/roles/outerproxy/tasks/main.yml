@@ -19,6 +19,7 @@
       ansible.builtin.get_url:
         url: https://dl.cloudsmith.io/public/caddy/stable/gpg.key
         dest: /etc/apt/keyrings/caddy-stable-archive-keyring.asc
+        mode: "o+r"
 
     - name: setup stable repo
       become: true
