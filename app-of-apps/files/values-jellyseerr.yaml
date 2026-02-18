@@ -1,0 +1,15 @@
+hull:
+  objects:
+    customresource:
+      tailscale:
+        spec:
+          rules:
+            - http:
+                paths:
+                  - path: /
+                    pathType: Prefix
+                    backend:
+                      service:
+                        name: jellyseerr-seerr-chart
+                        port:
+                          number: _HT*hull.config.specific.httpPort

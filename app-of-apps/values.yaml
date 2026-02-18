@@ -604,7 +604,19 @@ hull:
 
       jellyfin: *applicationSingleSourceTailscale
 
-      jellyseerr: *applicationSingleSourceTailscale
+      jellyseerr:
+        <<: *applicationSingleSourceTailscale
+        spec:
+          <<: *defaultApplicationSourcesSpec
+          sources:
+            - repoURL: _HT*hull.config.specific.repoURL
+              targetRevision: HEAD
+              ref: miscpi
+            - <<: *defaultApplicationSource
+              helm:
+                valueFiles:
+                  - values.yaml
+                  - $miscpi/app-of-apps/files/values-jellyseerr.yaml
 
       opodsync: *applicationSingleSourceTailscale
 
