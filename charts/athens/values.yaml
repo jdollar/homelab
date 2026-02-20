@@ -35,7 +35,10 @@ athens-proxy:
       gethomepage.dev/icon: "athens"
       gethomepage.dev/weight: "10"
     hosts:
-      - &ingressHost athens.joeldollarhide.com
+      - host: &ingressHost athens.joeldollarhide.com
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
     tls:
       - secretName: athens-tls
         hosts:
