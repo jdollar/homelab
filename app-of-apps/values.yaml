@@ -18,6 +18,11 @@ hull:
             destination:
               namespace: default
 
+          athens:
+            <<: *defaultComponent
+            destination:
+              namespace: athens
+
           authentik:
             <<: *defaultComponent
             destination:
@@ -240,6 +245,8 @@ hull:
                 - values.yaml
           syncPolicy:
             automated: {}
+
+      athens: *defaultApplication
 
       bazarr: *defaultApplication
 

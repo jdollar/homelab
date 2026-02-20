@@ -378,3 +378,14 @@ metadata:
 spec:
   finalizers:
     - kubernetes
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: athens
+    prometheus: metrics
+  name: athens
+spec:
+  finalizers:
+    - kubernetes

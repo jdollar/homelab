@@ -1,5 +1,7 @@
 config.yml
 *.dec
+*.private.*
+*.private
 /app-of-apps/**/charts/
 /charts/**/charts/
 

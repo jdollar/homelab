@@ -80,6 +80,10 @@ spec:
           url: oci://ghcr.io/woodpecker-ci/helm
           name: woodpecker-repo
           type: helm
+        athens-repo:
+          url: https://gomods.github.io/athens-charts
+          name: athens-repo
+          type: helm
 
       params:
         # Needed for traefik ingress

@@ -1,0 +1,42 @@
+athens-proxy:
+  gitconfig:
+    enabled: true
+    secretName: athens-secret
+  sshGitServers:
+  ## Private git servers over ssh
+  ## to enable uncomment lines with single hash below
+  ## hostname of the git server
+  - host: github.com
+    path: ""
+    user: git
+    port: 22
+    existingSecret:
+      name: athens-secret
+      subPath: id_rsa_github
+  - host: forgejo.joeldollarhide.com
+    path: ""
+    user: git
+    port: 22
+    existingSecret:
+      name: athens-secret
+      subPath: id_rsa_forgejo
+
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: "traefik"
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+      gethomepage.dev/enabled: "true"
+      gethomepage.dev/name: "Athens"
+      gethomepage.dev/description: "Go module proxy"
+      gethomepage.dev/group: "Development"
+      gethomepage.dev/icon: "athens"
+      gethomepage.dev/weight: "10"
+    hosts:
+      - &ingressHost athens.joeldollarhide.com
+    tls:
+      - secretName: athens-tls
+        hosts:
+          - *ingressHost
