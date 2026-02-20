@@ -4,9 +4,10 @@ athens-proxy:
     secretName: athens-secret
   upstreamProxy:
     enabled: true
+    url: https://proxy.golang.org
   configEnvVars:
     - name: ATHENS_DOWNLOAD_MODE
-      value: async_redirect
+      value: redirect
   sshGitServers:
   ## Private git servers over ssh
   ## to enable uncomment lines with single hash below
