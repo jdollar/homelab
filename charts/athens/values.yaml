@@ -2,6 +2,8 @@ athens-proxy:
   gitconfig:
     enabled: true
     secretName: athens-secret
+  upstreamProxy:
+    enabled: true
   configEnvVars:
     - name: ATHENS_DOWNLOAD_MODE
       value: async_redirect
