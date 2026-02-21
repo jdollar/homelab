@@ -57,11 +57,11 @@ hull:
                       optional: false
               resources:
                 requests:
-                  cpu: 500m
-                  memory: 1500Mi
+                  cpu: 1000m
+                  memory: 3000Mi
                 limits:
-                  cpu: 500m
-                  memory: 1500Mi
+                  cpu: 1500m
+                  memory: 3000Mi
 
     service:
       app:
