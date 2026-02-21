@@ -1,0 +1,21 @@
+---
+- name: Populate service facts
+  ansible.builtin.service_facts:
+
+- name: create rancher directory
+  file:
+    path: "/etc/rancher/k3s"
+    state: directory
+    group: root
+    owner: root
+    mode: 0644
+
+
+- name: create registries.yaml
+  ansible.builtin.template:
+    src: templates/registries.yaml.j2
+    dest: /etc/rancher/k3s/registries.yaml
+    group: root
+    owner: root
+    mode: 0644
+  notify: "restart k3s"

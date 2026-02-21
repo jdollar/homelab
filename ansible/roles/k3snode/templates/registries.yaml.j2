@@ -1,0 +1,12 @@
+mirrors:
+  "*":
+    endpoint:
+      - "https://nexus.joeldollarhide.com/repository/docker-hub-proxy/v2"
+configs:
+  "nexus.joeldollarhide.com":
+    auth:
+      username: {{ nexus_username }}
+      password: {{ nexus_password }}
+    tls:
+      insecure_skip_verify: true
+

@@ -10,3 +10,4 @@ infrastructure/dist/*
 !infrastructure/dist/.gitkeep
 node_modules
 
+password-file

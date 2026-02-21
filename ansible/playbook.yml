@@ -5,9 +5,14 @@
   # connect and gather facts
   gather_facts: false
   become: true
+  pre_tasks:
+    - ansible.builtin.include_vars: secrets.enc
+      tags: [always]
   roles:
     - role: ssh
       tags: ssh
+    - role: k3snode
+      tags: k3snode
 
 - hosts: all
   become: true

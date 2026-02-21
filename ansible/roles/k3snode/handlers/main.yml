@@ -1,0 +1,14 @@
+---
+- name: Restart k3s-agent
+  service:
+    name: k3s-agent
+    state: restarted
+  listen: "restart k3s"
+  when: ansible_facts['services']['k3s-agent.service']['status'] | default('not-found') != 'not-found'
+
+- name: Restart k3s
+  service:
+    name: k3s
+    state: restarted
+  listen: "restart k3s"
+  when: ansible_facts['services']['k3s.service']['status'] | default('not-found') != 'not-found'
