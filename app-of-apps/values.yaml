@@ -148,7 +148,10 @@ hull:
 
           unificontroller: *defaultComponent
 
-          uptime-kuma: *defaultComponent
+          uptime-kuma:
+            <<: *defaultComponent
+            destination:
+              namespace: uptime-kuma
 
           wallos: *defaultComponent
 

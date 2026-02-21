@@ -5,6 +5,18 @@ hull:
       ingressHost: uptimekuma.joeldollarhide.com
 
   objects:
+    configmap:
+      app:
+        data:
+          UPTIME_KUMA_DB_TYPE:
+            inline: mariadb
+          UPTIME_KUMA_DB_HOSTNAME:
+            inline: "uptime-kuma-uptime-kuma-db-internal.uptime-kuma.svc.cluster.local"
+          UPTIME_KUMA_DB_NAME:
+            inline: uptimekuma
+          UPTIME_KUMA_DB_USERNAME:
+            inline: uptimekuma
+
     deployment:
       app:
         replicas: 1
@@ -33,6 +45,19 @@ hull:
                 uptime-kuma-pvc-data-longhorn:
                   name: uptime-kuma-pvc-data-longhorn
                   mountPath: /app/data
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+              env:
+                UPTIME_KUMA_DB_PASSWORD:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: uptimekuma-db-secret
+                      key: password
+                      optional: false
 
     service:
       app:
@@ -50,6 +75,14 @@ hull:
           kubernetes.io/ingress.class: "traefik"
           cert-manager.io/cluster-issuer: letsencrypt-prod
           traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Uptime kuma"
+          gethomepage.dev/type: "uptime-kuma"
+          gethomepage.dev/description: "Monitoring"
+          gethomepage.dev/group: "Application"
+          gethomepage.dev/icon: "uptimekuma.png"
+          gethomepage.dev/weight: "1"
         rules:
           app:
             host: _HT*hull.config.specific.ingressHost
@@ -72,6 +105,46 @@ hull:
                 [
                 {{ (index . "$").Values.hull.config.specific.ingressHost }}
                 ]
+
+    customresource:
+      db:
+        apiVersion: k8s.mariadb.com/v1alpha1
+        kind: MariaDB
+        spec:
+          username: uptimekuma
+          passwordSecretKeyRef:
+            name: uptimekuma-db-secret
+            key: password
+            generate: true
+          database: uptimekuma
+
+          port: 3306
+
+          storage:
+            size: 1Gi
+            storageClassName: nfs
+
+          myCnf: |
+            [mariadb]
+            bind-address=*
+            default_storage_engine=InnoDB
+            binlog_format=row
+            innodb_autoinc_lock_mode=2
+            innodb_buffer_pool_size=1600M
+            max_allowed_packet=256M
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 1Gi
+
+          metrics:
+            enabled: true
+
+          tls:
+            enabled: false
 
     persistentvolumeclaim:
       uptime-kuma-pvc-data-longhorn:

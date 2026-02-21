@@ -389,3 +389,14 @@ metadata:
 spec:
   finalizers:
     - kubernetes
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: uptime-kuma
+    prometheus: metrics
+  name: uptime-kuma
+spec:
+  finalizers:
+    - kubernetes
