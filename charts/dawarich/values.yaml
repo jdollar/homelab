@@ -72,10 +72,9 @@ hull:
                     name: app
                     optional: false
                 sealed:
-                  configMapRef:
+                  secretRef:
                     staticName: true
                     name: dawarich-secret
-                    optional: false
               env:
                 DATABASE_HOST:
                   valueFrom:
