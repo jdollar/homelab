@@ -1,0 +1,209 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/vidispine/hull/refs/heads/main/hull/values.schema.json
+
+hull:
+  config:
+    specific:
+      httpPort: 3000
+      ingressHost: dawarich.joeldollarhide.com
+
+  objects:
+    configmap:
+      app:
+        data:
+          REDIS_URL:
+            inline: redis-headless.default.svc.cluster.local
+          APPLICATION_HOSTS:
+            inline: _HT!{{ printf "%s,127.0.0.1" _HT*hull.config.specific.ingressHost }}
+          OIDC_ISSUER:
+            inline: https://authentik.joeldollarhide.com/application/o/dawarich/
+          OIDC_REDIRECT_URI:
+            inline: https://dawarich.joeldollarhide.com/users/auth/openid_connect/callback
+          OIDC_PROVIDER_NAME:
+            inline: "Authentik"
+
+    deployment:
+      app:
+        replicas: 1
+        strategy:
+          type: Recreate
+        templateLabels:
+          app.kubernetes.io/type: app
+        pod:
+          volumes:
+            dawarich-pvc-public:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: dawarich-pvc-public
+            dawarich-watched:
+              active: emptyDir
+              emptyDir:
+                sizeLimit: 2Gi
+            dawarich-pvc-storage:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: dawarich-pvc-storage
+          containers:
+            app: &appContainer
+              image:
+                repository: freikin/dawarich
+                pullPolicy: IfNotPresent
+                tag: _HT**Chart.appVersion
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.httpPort
+                  protocol: TCP
+              command: ["web-entrypoint.sh"]
+              args: ['bin/rails', 'server', '-p', '3000', '-b', '::']
+              volumeMounts:
+                dawarich-pvc-public:
+                  name: dawarich-pvc-public
+                  mountPath: /var/app/public
+                dawarich-pvc-storage:
+                  name: dawarich-pvc-storage
+                  mountPath: /var/app/storage
+                dawarich-watched:
+                  name: dawarich-watched
+                  mountPath: /var/app/tmp/imports/watched
+              envFrom:
+                app:
+                  configMapRef:
+                    name: app
+                    optional: false
+                sealed:
+                  configMapRef:
+                    name: dawarich-secret
+                    optional: false
+              env:
+                DATABASE_HOST:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: dawarich-dawrich-app-app
+                      key: host
+                      optional: false
+                DATABASE_PORT:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: dawarich-dawrich-app-app
+                      key: port
+                      optional: false
+                DATABASE_USERNAME:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: dawarich-dawrich-app-app
+                      key: username
+                      optional: false
+                DATABASE_PASSWORD:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: dawarich-dawrich-app-app
+                      key: password
+                      optional: false
+                DATABASE_NAME:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: dawarich-dawrich-app-app
+                      key: dbname
+                      optional: false
+              resources: {}
+            sidekiq:
+              <<: *appContainer
+              ports: {}
+              command: ["sidekiq-entrypoint.sh"]
+              args: ['sidekiq']
+
+    service:
+      app:
+        type: ClusterIP
+        ports:
+          http:
+            port: _HT*hull.config.specific.httpPort
+            targetPort: http
+            protocol: TCP
+
+    ingress:
+      app:
+        enabled: true
+        annotations:
+          kubernetes.io/ingress.class: "traefik"
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/name: "Dawarich"
+          gethomepage.dev/type: "dawarich"
+          gethomepage.dev/description: "GPS Tracker"
+          gethomepage.dev/group: "Applications"
+          gethomepage.dev/icon: "dawarich.png"
+          gethomepage.dev/weight: "0"
+        rules:
+          app:
+            host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+        tls:
+          app:
+            enabled: true
+            secretName: tls
+            hosts:
+              - _HT!
+                [
+                {{ (index . "$").Values.hull.config.specific.ingressHost }}
+                ]
+
+    customresource:
+      app:
+        apiVersion: postgresql.cnpg.io/v1
+        kind: Cluster
+        spec:
+          instances: 1
+
+          monitoring:
+            enablePodMonitor: true
+
+          managed:
+            services:
+              disabledDefaultServices: ["ro", "r"]
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: 100m
+              memory: 512Mi
+
+          storage:
+            storageClass: nfs
+            size: 5Gi
+
+    persistentvolumeclaim:
+      dawarich-pvc-public:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 3Gi
+      dawarich-pvc-storage:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: nfs
+        resources:
+          requests:
+            storage: 5Gi

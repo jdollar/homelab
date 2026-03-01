@@ -59,6 +59,9 @@
 
 - hosts:
     - vps
+  pre_tasks:
+    - ansible.builtin.include_vars: secrets.enc
+      tags: [always]
   roles:
     - role: outerproxy
       tags: outerproxy

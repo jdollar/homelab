@@ -46,6 +46,11 @@ hull:
 
           cyberchef: *defaultComponent
 
+          dawarich:
+            <<: *defaultComponent
+            destination:
+              namespace: dawarich
+
           flaresolverr: *defaultComponent
 
           garage:
@@ -611,6 +616,8 @@ hull:
       calcom: *applicationSingleSourceTailscale
 
       coral: *applicationSingleSourceTailscale
+
+      dawarich: *applicationSingleSourceTailscale
 
       jellyfin: *applicationSingleSourceTailscale
 

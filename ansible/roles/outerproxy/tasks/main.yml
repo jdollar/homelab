@@ -42,6 +42,13 @@
       - caddy
     state: latest
 
+- name: download custom dns binary
+  become: true
+  get_url:
+    url: https://caddyserver.com/api/download?os=linux&arch=amd64&p=github.com%2Fcaddy-dns%2Fcloudflare&idempotency=79288222921372
+    dest: /usr/bin/caddy
+    mode: "u+rwx"
+
 - name: Set up Caddyfile
   become: true
   ansible.builtin.template:

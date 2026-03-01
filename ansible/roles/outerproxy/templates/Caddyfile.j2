@@ -1,3 +1,14 @@
+# Links
+joeldollarhide.com {
+    redir https://links.joeldollarhide.com permanent
+}
+
+links.joeldollarhide.com {
+    redir https://jdollar.github.io permanent
+    tls {
+      dns cloudflare {{cloudflare_api_token}}
+    }
+}
 
 # Access to jellyfin
 jellyfin.joeldollarhide.com {
@@ -10,7 +21,7 @@ authentik.joeldollarhide.com {
 
 # Access to jellyseerr
 jellyseerr.joeldollarhide.com {
-    redir https://seerr.joeldollarhide.com
+    redir https://seerr.joeldollarhide.com{uri} permanent
 }
 seerr.joeldollarhide.com {
     reverse_proxy https://default-jellyseerr-jellyseer-tailscale-ingress.tail0f9d9.ts.net
