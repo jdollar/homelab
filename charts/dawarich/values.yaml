@@ -5,6 +5,8 @@ hull:
     specific:
       httpPort: 3000
       ingressHost: dawarich.joeldollarhide.com
+      photonHttpPort: 2322
+      photonHost: localhost
 
   objects:
     configmap:
@@ -20,6 +22,16 @@ hull:
             inline: https://dawarich.joeldollarhide.com/users/auth/openid_connect/callback
           OIDC_PROVIDER_NAME:
             inline: "Authentik"
+          PHOTON_API_HOST: 
+            inline: _HT!{{ printf "%s:%d" _HT*hull.config.specific.photonHost _HT*hull.config.specific.photonHttpPort }}
+          PHOTON_API_USE_HTTPS:
+            inline: "false"
+      photon:
+        data:
+          UPDATE_STRATEGY:
+            inline: PARALLEL
+          UPDATE_INTERVAL:
+            inline: 720h
 
     deployment:
       app:
@@ -44,6 +56,11 @@ hull:
               persistentVolumeClaim:
                 staticName: true
                 claimName: dawarich-pvc-storage
+            photon-pvc-data:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: photon-pvc-data
           containers:
             app: &appContainer
               image:
@@ -117,6 +134,26 @@ hull:
               ports: {}
               command: ["sidekiq-entrypoint.sh"]
               args: ['sidekiq']
+            photon:
+              image:
+                repository: rtuszik/photon-docker
+                pullPolicy: IfNotPresent
+                # renovate: image=rtuszik/photon-docker
+                tag: "2.0"
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.photonHttpPort
+                  protocol: TCP
+              volumeMounts:
+                photon-pvc-data:
+                  name: photon-pvc-data
+                  mountPath: /photon/data
+              envFrom:
+                app:
+                  configMapRef:
+                    name: photon
+                    optional: false
+              resources: {}
 
     service:
       app:
@@ -216,3 +253,11 @@ hull:
         resources:
           requests:
             storage: 5Gi
+      photon-pvc-data:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: nfs
+        resources:
+          requests:
+            storage: 250Gi
