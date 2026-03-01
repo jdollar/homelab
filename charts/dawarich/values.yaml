@@ -11,7 +11,7 @@ hull:
       app:
         data:
           REDIS_URL:
-            inline: redis-headless.default.svc.cluster.local
+            inline: redis://redis-headless.default.svc.cluster.local:6379
           APPLICATION_HOSTS:
             inline: _HT!{{ printf "%s,127.0.0.1" _HT*hull.config.specific.ingressHost }}
           OIDC_ISSUER:
