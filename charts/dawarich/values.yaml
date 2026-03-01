@@ -80,35 +80,35 @@ hull:
                   valueFrom:
                     secretKeyRef:
                       staticName: true
-                      name: dawarich-dawrich-app-app
+                      name: dawarich-dawarich-app-app
                       key: host
                       optional: false
                 DATABASE_PORT:
                   valueFrom:
                     secretKeyRef:
                       staticName: true
-                      name: dawarich-dawrich-app-app
+                      name: dawarich-dawarich-app-app
                       key: port
                       optional: false
                 DATABASE_USERNAME:
                   valueFrom:
                     secretKeyRef:
                       staticName: true
-                      name: dawarich-dawrich-app-app
+                      name: dawarich-dawarich-app-app
                       key: username
                       optional: false
                 DATABASE_PASSWORD:
                   valueFrom:
                     secretKeyRef:
                       staticName: true
-                      name: dawarich-dawrich-app-app
+                      name: dawarich-dawarich-app-app
                       key: password
                       optional: false
                 DATABASE_NAME:
                   valueFrom:
                     secretKeyRef:
                       staticName: true
-                      name: dawarich-dawrich-app-app
+                      name: dawarich-dawarich-app-app
                       key: dbname
                       optional: false
               resources: {}
