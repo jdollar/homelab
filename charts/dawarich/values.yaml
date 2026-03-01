@@ -73,6 +73,7 @@ hull:
                     optional: false
                 sealed:
                   configMapRef:
+                    staticName: true
                     name: dawarich-secret
                     optional: false
               env:
