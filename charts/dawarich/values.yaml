@@ -26,6 +26,8 @@ hull:
             inline: _HT!{{ printf "%s:%.0f" _HT*hull.config.specific.photonHost _HT*hull.config.specific.photonHttpPort }}
           PHOTON_API_USE_HTTPS:
             inline: "false"
+          SMTP_STARTTLS:
+            inline: "true"
       photon:
         data:
           UPDATE_STRATEGY:
