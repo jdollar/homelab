@@ -128,6 +128,41 @@ hull:
                       name: dawarich-dawarich-app-app
                       key: dbname
                       optional: false
+                SMTP_SERVER:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: email-secret
+                      key: host
+                      optional: false
+                SMTP_PORT:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: email-secret
+                      key: port
+                      optional: false
+                SMTP_USERNAME:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: email-secret
+                      key: user
+                      optional: false
+                SMTP_PASSWORD:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: email-secret
+                      key: password
+                      optional: false
+                SMTP_FROM:
+                  valueFrom:
+                    secretKeyRef:
+                      staticName: true
+                      name: email-secret
+                      key: user
+                      optional: false
               resources: {}
             sidekiq:
               <<: *appContainer
