@@ -83,7 +83,7 @@ hull:
                 repository: busybox
                 pullPolicy: IfNotPresent
                 tag: "1.37"
-              command: ["/bin/sh", "-c", "wget -O - https://get.hacs.xyz | bash -"]
+              command: ["/bin/sh", "-c", "wget -O - https://get.hacs.xyz | sh -"]
               volumeMounts:
                 homeassistant-pvc-config-longhorn:
                   name: homeassistant-pvc-config-longhorn
