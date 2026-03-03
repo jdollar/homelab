@@ -173,9 +173,9 @@ hull:
               resources:
                 requests:
                   cpu: 200m
-                  memory: 1Gi
+                  memory: 512Mi
                 limits:
-                  memory: 1Gi
+                  memory: 512Mi
             wakeword:
               image:
                 repository: rhasspy/wyoming-piper
