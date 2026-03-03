@@ -180,7 +180,7 @@ hull:
               image:
                 repository: rhasspy/wyoming-piper
                 pullPolicy: IfNotPresent
-                tag: 2.1.0
+                tag: 2.2.2
               args: 
                 - "--preload-model"
                 - "ok_nabu"
