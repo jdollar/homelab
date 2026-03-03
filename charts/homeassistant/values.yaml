@@ -83,7 +83,7 @@ hull:
                 repository: arunvelsriram/utils
                 pullPolicy: IfNotPresent
                 tag: "v1.5.0"
-              command: ["/bin/sh", "-c", "wget -O - https://get.hacs.xyz | sh -"]
+              command: ["/bin/sh", "-c", "wget -O - https://get.hacs.xyz | bash -"]
               volumeMounts:
                 homeassistant-pvc-config-longhorn:
                   name: homeassistant-pvc-config-longhorn
