@@ -125,7 +125,7 @@ hull:
                     optional: false
               resources:
                 requests:
-                  cpu: 200m
+                  cpu: 100m
                   memory: 1Gi
                 limits:
                   memory: 1Gi
@@ -172,7 +172,7 @@ hull:
                   mountPath: /data
               resources:
                 requests:
-                  cpu: 200m
+                  cpu: 100m
                   memory: 512Mi
                 limits:
                   memory: 512Mi
@@ -190,7 +190,7 @@ hull:
                   protocol: TCP
               resources:
                 requests:
-                  cpu: 200m
+                  cpu: 100m
                   memory: 512Mi
                 limits:
                   memory: 512Mi
