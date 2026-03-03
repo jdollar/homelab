@@ -5,6 +5,9 @@ hull:
     specific:
       httpPort: 8123
       ingressHost: homeassistant.joeldollarhide.com
+      whisperPort: 10300
+      piperPort: 10200
+      wakewordPort: 10400
 
   objects:
     configmap:
@@ -38,6 +41,16 @@ hull:
               persistentVolumeClaim:
                 staticName: true
                 claimName: homeassistant-pvc-config-longhorn
+            homeassistant-pvc-whisper-data:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: homeassistant-pvc-whisper-data
+            homeassistant-pvc-piper-data:
+              active: persistentVolumeClaim
+              persistentVolumeClaim:
+                staticName: true
+                claimName: homeassistant-pvc-piper-data
             app:
               active: configMap
               configMap:
@@ -62,6 +75,16 @@ hull:
                 storageFiles:
                   name: storage-files
                   mountPath: /tmp/storage
+                homeassistant-pvc-config-longhorn:
+                  name: homeassistant-pvc-config-longhorn
+                  mountPath: /config
+            02-setup-hacs:
+              image:
+                repository: busybox
+                pullPolicy: IfNotPresent
+                tag: "1.37"
+              command: ["/bin/sh", "-c", "wget -O - https://get.hacs.xyz | bash -"]
+              volumeMounts:
                 homeassistant-pvc-config-longhorn:
                   name: homeassistant-pvc-config-longhorn
                   mountPath: /config
@@ -106,6 +129,71 @@ hull:
                   memory: 2Gi
                 limits:
                   memory: 2Gi
+            whisper:
+              image:
+                repository: rhasspy/wyoming-whisper
+                pullPolicy: IfNotPresent
+                tag: 3.1.0
+              command: ["python3"]
+              args: 
+                - "--model"
+                - "tiny-int8"
+                - "--language"
+                - "en"
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.whisperPort
+                  protocol: TCP
+              volumeMounts:
+                homeassistant-pvc-whisper-data:
+                  name: homeassistant-pvc-whisper-data
+                  mountPath: /data
+              resources:
+                requests:
+                  cpu: 200m
+                  memory: 2Gi
+                limits:
+                  memory: 2Gi
+            piper:
+              image:
+                repository: rhasspy/wyoming-piper
+                pullPolicy: IfNotPresent
+                tag: 2.2.2
+              args: 
+                - "--voice"
+                - "en_US-lessac-medium"
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.piperPort
+                  protocol: TCP
+              volumeMounts:
+                homeassistant-pvc-piper-data:
+                  name: homeassistant-pvc-piper-data
+                  mountPath: /data
+              resources:
+                requests:
+                  cpu: 200m
+                  memory: 1Gi
+                limits:
+                  memory: 1Gi
+            wakeword:
+              image:
+                repository: rhasspy/wyoming-piper
+                pullPolicy: IfNotPresent
+                tag: 2.1.0
+              args: 
+                - "--preload-model"
+                - "ok_nabu"
+              ports:
+                http:
+                  containerPort: _HT*hull.config.specific.wakewordPort
+                  protocol: TCP
+              resources:
+                requests:
+                  cpu: 200m
+                  memory: 512Mi
+                limits:
+                  memory: 512Mi
 
     service:
       app:
@@ -164,3 +252,19 @@ hull:
         resources:
           requests:
             storage: 10Gi
+      homeassistant-pvc-whisper-data:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 5Gi
+      homeassistant-pvc-piper-data:
+        staticName: true
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 5Gi

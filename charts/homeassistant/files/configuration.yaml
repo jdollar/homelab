@@ -6,3 +6,4 @@ http:
   trusted_proxies:
     - 10.0.0.0/8
 mobile_app:
+assist_pipeline:
