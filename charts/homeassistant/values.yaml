@@ -126,9 +126,9 @@ hull:
               resources:
                 requests:
                   cpu: 200m
-                  memory: 2Gi
+                  memory: 1Gi
                 limits:
-                  memory: 2Gi
+                  memory: 1Gi
             whisper:
               image:
                 repository: rhasspy/wyoming-whisper
