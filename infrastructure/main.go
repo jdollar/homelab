@@ -39,7 +39,7 @@ const (
 	fileDebian12ISOName        = "debian12iso"
 	fileDebian12ISOUrl         = "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.1.0-amd64-netinst.iso"
 	fileDebian12CTTemplateName = "debian12cloudinit"
-	fileDebian12CTTemplateUrl  = "http://download.proxmox.com/images/system/debian-12-standard_12.0-1_amd64.tar.zst"
+	fileDebian12CTTemplateUrl  = "http://download.proxmox.com/images/system/debian-12-standard_12.7-1_amd64.tar.zst"
 )
 
 const dataStoreIDNas = "nas-proxmox"
@@ -228,7 +228,7 @@ func setupProxmox(ctx *pulumi.Context) error {
 			},
 			Initialization: vm.VirtualMachineInitializationArgs{
 				Dns: vm.VirtualMachineInitializationDnsArgs{
-					Server: pulumi.String(gatewayIP),
+					Servers: pulumi.StringArray{pulumi.String(gatewayIP)},
 				},
 				Interface: pulumi.String("ide2"),
 				IpConfigs: vm.VirtualMachineInitializationIpConfigArray{

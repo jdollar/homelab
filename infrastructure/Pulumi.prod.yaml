@@ -47,10 +47,10 @@ config:
       vm-id: 9001
   infrastructure:vms:
     daisy:
-      cpu-cores: 3
+      cpu-cores: 4
       dedicated-memory: 12288
       disk-datastore-id: local-lvm
-      disk-size: 250
+      disk-size: 450
       ip: 10.0.0.7/24
       mac-address: BA:3D:60:5F:BD:E4
       machine: pc
@@ -60,7 +60,7 @@ config:
       cpu-cores: 3
       dedicated-memory: 16384
       disk-datastore-id: local-lvm
-      disk-size: 150
+      disk-size: 300
       ip: 10.0.0.93/24
       mac-address: 4A:8A:75:94:90:2F
       machine: pc
@@ -68,7 +68,7 @@ config:
       template: debian-12
     sage:
       cpu-cores: 3
-      dedicated-memory: 16384
+      dedicated-memory: 24576
       disk-datastore-id: local-lvm
       disk-size: 250
       ip: 10.0.0.94/24
@@ -77,11 +77,22 @@ config:
       node-name: pve-gardenesque
       template: debian-12
       vga-type: std
+    cilantro:
+      cpu-cores: 3
+      dedicated-memory: 16384
+      disk-datastore-id: local-lvm
+      disk-size: 250
+      ip: 10.0.0.95/24
+      mac-address: BC:24:11:88:86:F2
+      machine: pc
+      node-name: pve-gardenesque
+      template: debian-12
+      vga-type: std
     tulip:
       cpu-cores: 4
       dedicated-memory: 20480
       disk-datastore-id: ssd
-      disk-size: 300
+      disk-size: 400
       ip: 10.0.0.92/24
       mac-address: 56:94:8F:C6:0B:5E
       machine: pc

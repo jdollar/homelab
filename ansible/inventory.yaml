@@ -24,6 +24,8 @@ all:
           dns_keepalived_priority: 251
         10.0.0.94:
           dns_keepalived_priority: 250
+        10.0.0.95:
+          dns_keepalived_priority: 249
       vars:
         dns_keepalived_state: BACKUP
         dns_keepalived_interface: eth0
