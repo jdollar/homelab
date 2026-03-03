@@ -80,9 +80,9 @@ hull:
                   mountPath: /config
             02-setup-hacs:
               image:
-                repository: busybox
+                repository: arunvelsriram/utils
                 pullPolicy: IfNotPresent
-                tag: "1.37"
+                tag: "v1.5.0"
               command: ["/bin/sh", "-c", "wget -O - https://get.hacs.xyz | sh -"]
               volumeMounts:
                 homeassistant-pvc-config-longhorn:
