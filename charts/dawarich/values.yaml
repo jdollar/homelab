@@ -176,7 +176,7 @@ hull:
                 repository: rtuszik/photon-docker
                 pullPolicy: IfNotPresent
                 # renovate: image=rtuszik/photon-docker
-                tag: "2.0"
+                tag: "2.1"
               ports:
                 http:
                   containerPort: _HT*hull.config.specific.photonHttpPort
