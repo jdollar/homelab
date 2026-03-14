@@ -26,5 +26,5 @@ appVersion: "lidarr-plugins-3.1.1.4884"
 
 dependencies:
   - name: hull
-    version: 1.35.1
+    version: 1.35.2
     repository: https://vidispine.github.io/hull

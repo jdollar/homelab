@@ -1,6 +1,6 @@
 dependencies:
 - name: hull
   repository: https://vidispine.github.io/hull
-  version: 1.35.1
-digest: sha256:f7fcf561e461a0671b8e8170e40928aa1c8307728394d1d7bf0e96d9ca6a7e03
-generated: "2026-02-08T15:05:22.21223096Z"
+  version: 1.35.2
+digest: sha256:56beca2a09053885fa44a8de2e0bd344f6feda5082aa8726b942bdfd21f48d91
+generated: "2026-03-14T22:05:19.732152916Z"
