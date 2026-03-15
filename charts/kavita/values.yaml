@@ -3,7 +3,7 @@
 hull:
   config:
     specific:
-      httpPort: 5005
+      httpPort: 5000
       oldIngressHost: &oldIngressHost booklore.joeldollarhide.com
       ingressHost: &ingressHost kavita.joeldollarhide.com
 
