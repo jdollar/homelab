@@ -3,8 +3,9 @@
 hull:
   config:
     specific:
-      httpPort: 3000
-      ingressHost: booklore.joeldollarhide.com
+      httpPort: 5005
+      oldIngressHost: &oldIngressHost booklore.joeldollarhide.com
+      ingressHost: &ingressHost kavita.joeldollarhide.com
 
   objects:
     configmap:
@@ -12,16 +13,6 @@ hull:
         data:
           TZ:
             inline: "America/New_York"
-          USER_ID:
-            inline: "0"
-          GROUP_ID:
-            inline: "0"
-          DATABASE_URL:
-            inline: "jdbc:mariadb://booklore-booklore-db-internal.booklore.svc.cluster.local:3306/booklore"
-          DATABASE_USERNAME:
-            inline: booklore
-          BOOKLORE_PORT:
-            inline: _HT*hull.config.specific.httpPort
 
     deployment:
       app:
@@ -32,16 +23,11 @@ hull:
           app.kubernetes.io/type: app
         pod:
           volumes:
-            booklore-pvc-data:
+            kavita-pvc-config:
               active: persistentVolumeClaim
               persistentVolumeClaim:
                 staticName: true
-                claimName: booklore-pvc-data
-            booklore-pvc-bookdrop:
-              active: persistentVolumeClaim
-              persistentVolumeClaim:
-                staticName: true
-                claimName: booklore-pvc-bookdrop
+                claimName: kavita-pvc-config
             booklore-pvc-books:
               active: persistentVolumeClaim
               persistentVolumeClaim:
@@ -50,7 +36,7 @@ hull:
           containers:
             app:
               image:
-                repository: booklore/booklore
+                repository: ghcr.io/kareadita/kavita
                 pullPolicy: IfNotPresent
                 tag: _HT**Chart.appVersion
               ports:
@@ -58,12 +44,9 @@ hull:
                   containerPort: _HT*hull.config.specific.httpPort
                   protocol: TCP
               volumeMounts:
-                booklore-pvc-data:
-                  name: booklore-pvc-data
-                  mountPath: /app/data
-                booklore-pvc-bookdrop:
-                  name: booklore-pvc-bookdrop
-                  mountPath: /bookdrop
+                kavita-pvc-config:
+                  name: kavita-pvc-config
+                  mountPath: /kavita/config
                 booklore-pvc-books:
                   name: booklore-pvc-books
                   mountPath: /books
@@ -100,15 +83,27 @@ hull:
           cert-manager.io/cluster-issuer: letsencrypt-prod
           traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
           gethomepage.dev/enabled: "true"
-          gethomepage.dev/name: "Booklore"
-          gethomepage.dev/type: "booklore"
+          gethomepage.dev/name: "Kavita"
+          gethomepage.dev/type: "kavita"
           gethomepage.dev/description: "Selfhosted Book Hosting service"
           gethomepage.dev/group: "Books"
-          gethomepage.dev/icon: "booklore.png"
+          gethomepage.dev/icon: "kavita.png"
           gethomepage.dev/weight: "0"
         rules:
           app:
             host: _HT*hull.config.specific.ingressHost
+            http:
+              paths:
+                root:
+                  path: /
+                  pathType: ImplementationSpecific
+                  backend:
+                    service:
+                      name: app
+                      port:
+                        name: http
+          old-app:
+            host: _HT*hull.config.specific.oldIngressHost
             http:
               paths:
                 root:
@@ -126,51 +121,12 @@ hull:
             hosts:
               - _HT!
                 [
+                {{ (index . "$").Values.hull.config.specific.oldIngressHost }},
                 {{ (index . "$").Values.hull.config.specific.ingressHost }}
                 ]
 
-    customresource:
-      db:
-        apiVersion: k8s.mariadb.com/v1alpha1
-        kind: MariaDB
-        spec:
-          username: booklore
-          passwordSecretKeyRef:
-            name: mariadb-password
-            key: password
-            generate: true
-          database: booklore
-
-          port: 3306
-
-          storage:
-            size: 1Gi
-            storageClassName: nfs
-
-          myCnf: |
-            [mariadb]
-            bind-address=*
-            default_storage_engine=InnoDB
-            binlog_format=row
-            innodb_autoinc_lock_mode=2
-            innodb_buffer_pool_size=1600M
-            max_allowed_packet=256M
-
-          resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
-              memory: 1Gi
-
-          metrics:
-            enabled: true
-
-          tls:
-            enabled: false
-
     persistentvolumeclaim:
-      booklore-pvc-data:
+      kavita-pvc-config:
         staticName: true
         accessModes:
           - ReadWriteOnce
@@ -183,14 +139,6 @@ hull:
         accessModes:
           - ReadWriteMany
         storageClassName: nfs
-        resources:
-          requests:
-            storage: 5Gi
-      booklore-pvc-bookdrop:
-        staticName: true
-        accessModes:
-          - ReadWriteOnce
-        storageClassName: local-path
         resources:
           requests:
             storage: 5Gi
