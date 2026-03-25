@@ -1,6 +1,6 @@
 module infrastructure
 
-go 1.25.6
+go 1.25.8
 
 toolchain go1.26.1
 
@@ -9,7 +9,7 @@ require (
 	github.com/muhlba91/pulumi-proxmoxve/sdk/v7 v7.13.0
 	github.com/pulumi/pulumi-hcloud/sdk v1.32.1
 	github.com/pulumi/pulumi-tls/sdk/v5 v5.3.0
-	github.com/pulumi/pulumi/sdk/v3 v3.227.0
+	github.com/pulumi/pulumi/sdk/v3 v3.228.0
 )
 
 require (
