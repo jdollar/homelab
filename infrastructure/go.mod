@@ -9,7 +9,7 @@ require (
 	github.com/muhlba91/pulumi-proxmoxve/sdk/v7 v7.13.0
 	github.com/pulumi/pulumi-hcloud/sdk v1.32.1
 	github.com/pulumi/pulumi-tls/sdk/v5 v5.3.1
-	github.com/pulumi/pulumi/sdk/v3 v3.228.0
+	github.com/pulumi/pulumi/sdk/v3 v3.229.0
 )
 
 require (
