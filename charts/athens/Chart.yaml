@@ -25,5 +25,5 @@ appVersion: "1.16.0"
 
 dependencies:
 - name: athens-proxy
-  version: 0.15.5
+  version: 0.16.0
   repository: https://gomods.github.io/athens-charts
