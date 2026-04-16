@@ -29,5 +29,5 @@ dependencies:
   version: 1.35.3
   repository: https://vidispine.github.io/hull
 - name: seerr-chart
-  version: 3.5.0
+  version: 3.5.1
   repository: oci://ghcr.io/seerr-team/seerr
