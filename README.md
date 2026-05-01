@@ -1,3 +1,7 @@
+# ARCHIVED NOTE
+
+This repository has been moved over to codeberg: https://codeberg.org/jdollar/homelab
+
 # J-💵 Homelab
 
 ## Overview
